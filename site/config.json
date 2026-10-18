@@ -1,0 +1,15 @@
+{
+  "chainId": 8453,
+  "chainName": "Base",
+  "originalCollection": "0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c",
+  "ganjaCollection": null,
+  "graveyard": null,
+  "renderer": null,
+  "deploymentStatus": "awaiting-contract-deployment",
+  "runtimeCodeHashes": {"ganjaCollection": null, "graveyard": null, "renderer": null},
+  "originalGenesisBlock": 52724924,
+  "maxSupply": 420,
+  "sacrificeCount": 13,
+  "rpcUrls": ["https://mainnet.base.org", "https://base.gateway.tenderly.co"],
+  "important": "Writes remain disabled until status is deployed-verified, all Base addresses and actual deployed runtime keccak256 hashes are recorded, and the browser verifies contract code and immutable wiring. Never use compiler template hashes for live contracts."
+}

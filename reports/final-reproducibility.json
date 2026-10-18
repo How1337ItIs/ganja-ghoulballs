@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-10-18T01:22:38.401274+00:00",
+  "passed": true,
+  "cleanInstall": "npm ci --ignore-scripts --include=dev",
+  "build": "npm run build",
+  "globalNodePath": "unset",
+  "preexistingArtifacts": false,
+  "dependencies": "Pinned package-lock.json; official npm registry",
+  "packageLockSha256": "4ed23c046bf341e050e6fd928301b91e5efef5075b4555e9671138a65d6878e4",
+  "sourceSha256": {
+    "contracts/GanjaGhoulballs.sol": "626c4bd259b14da38ea0f02012f075231e553c995a4dd46455c34577c50ea192",
+    "contracts/GooGraveyard.sol": "6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae",
+    "contracts/GooRenderer.sol": "92037149681b52dfe671ac5b01ab602c5106e872bdfa165265b5ec3579062aa8"
+  },
+  "exactBytecodeMatches": [
+    "GanjaGhoulballs",
+    "GooGraveyard",
+    "GooRenderer"
+  ],
+  "exactPreviewMatches": [
+    "renderer-preview.svg",
+    "renderer-preview-still.svg"
+  ],
+  "notes": [
+    "Clean isolated directory, no shared node_modules symlink or preexisting artifacts.",
+    "No signing, chain write or deployment performed."
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "observedAt": "2026-10-18T01:31:15Z",
+  "url": "https://onchainchecker.xyz/collection/base/0xf3654D0ce6CF518F4eFbbe490F4a26483FB0969C/1",
+  "collection": "Original ghoulballs, not Ganja Ghoulballs",
+  "chainId": 8453,
+  "contract": "0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c",
+  "tokenId": 1,
+  "score": 5,
+  "maxScore": 5,
+  "label": "Fully On-Chain",
+  "criteriaParaphrase": "The highest score requires the metadata, artwork, thumbnails, and their dependencies to be supplied on-chain.",
+  "displayedMetadata": {
+    "source": "tokenURI",
+    "protocol": "Base64 data URI",
+    "contentType": "application/json",
+    "contentSize": "75.1 kB",
+    "displayedCallGas": "34.6M"
+  },
+  "displayedImage": {
+    "source": "tokenURI → image",
+    "protocol": "Percent-encoded data URI",
+    "contentType": "image/svg+xml",
+    "contentSize": "74.4 kB",
+    "inlineAssets": 1
+  },
+  "method": "Read-only normal cloud-browser UI; scoring explanation opened; no wallet connected",
+  "limits": [
+    "Result applies only to this original token, not undeployed GGOO",
+    "Programmatic checker score is not a contract security audit or an immutability proof",
+    "No real original NFTs were sacrificed to test GGOO; local mock metadata evidence is separate"
+  ]
+}

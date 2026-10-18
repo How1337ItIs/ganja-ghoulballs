@@ -1,0 +1,68 @@
+{
+  "observedAt": "2026-10-18T01:27:00Z",
+  "url": "https://basescan.org/address/0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c#code",
+  "method": "Read-only normal cloud-browser page inspection; no wallet connection, hidden API, or transaction",
+  "address": "0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c",
+  "chainId": 8453,
+  "explorerVerification": "Source Code Verified / Exact Match",
+  "contractName": "SolVideoNFT",
+  "compiler": "v0.8.30+commit.73712a01",
+  "optimizerRuns": 200,
+  "evmVersion": "cancun",
+  "deployedRuntime": {
+    "file": "reports/original-basescan-runtime.hex",
+    "byteLength": 8229,
+    "keccak256": "0x4fe189e2554350c36d652e3573f8bbd0dc3b45c99a4bf799998623339ab3873a"
+  },
+  "abiFile": "reports/original-basescan-abi.json",
+  "visibleSourceEvidence": [
+    "contract SolVideoNFT is ERC721",
+    "uint256 public constant MAX_SUPPLY = 6667;",
+    "GenerativeVideo public immutable renderer;",
+    "uint256 public totalSupply;",
+    "if (totalSupply >= MAX_SUPPLY) revert SoldOut();",
+    "tokenId = ++totalSupply;"
+  ],
+  "abiFunctionNames": [
+    "COLLECTION_NAME",
+    "COLLECTION_SYMBOL",
+    "MAX_SUPPLY",
+    "approve",
+    "balanceOf",
+    "getApproved",
+    "gif",
+    "hasMinted",
+    "imageURI",
+    "isApprovedForAll",
+    "mint",
+    "mintTo",
+    "name",
+    "ownerOf",
+    "recipeOf",
+    "renderer",
+    "safeTransferFrom",
+    "safeTransferFrom",
+    "seedOf",
+    "setApprovalForAll",
+    "supportsInterface",
+    "symbol",
+    "tokenURI",
+    "totalSupply",
+    "transferFrom"
+  ],
+  "privilegedEntrypoints": "No owner, admin, upgrade, arbitrary call, rescue, or public burn function found in the explorer-displayed ABI.",
+  "limits": [
+    "Explorer evidence, not an independent direct-RPC snapshot or full bytecode decompilation",
+    "Live wallet eth_getCode must match expected runtime hash/length before deployment",
+    "Exact new GGOO constructor simulation and post-deployment verification remain required"
+  ],
+  "readContractObservations": {
+    "observedAt": "2026-10-18T01:29:42Z",
+    "url": "https://basescan.org/address/0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c#readContract",
+    "method": "Public Basescan Read Contract UI without connecting a wallet",
+    "supportsInterface_0x80ac58cd": true,
+    "MAX_SUPPLY": 6667,
+    "totalSupply": 158,
+    "blockNumber": "Not provided by displayed read result; supply is time-sensitive"
+  }
+}

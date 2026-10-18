@@ -1,0 +1,22 @@
+{
+  "scope": "Independent automated local security probes, not a formal audit; no chain RPC, wallet, signing, or live NFTs used",
+  "generatedAt": "2026-10-18T01:19:32.309Z",
+  "compiler": "0.8.30+commit.73712a01.Emscripten.clang",
+  "sourceSha256": {
+    "contracts/GanjaGhoulballs.sol": "626c4bd259b14da38ea0f02012f075231e553c995a4dd46455c34577c50ea192",
+    "contracts/GooGraveyard.sol": "6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae",
+    "contracts/GooRenderer.sol": "92037149681b52dfe671ac5b01ab602c5106e872bdfa165265b5ec3579062aa8"
+  },
+  "assertions": 2895,
+  "checks": [
+    "Final-transfer revert, silent no-op, and late theft of an earlier ingredient all roll back every deposit",
+    "Mint rejects 1 wei and allows repeated successful redemptions by the same wallet",
+    "Source operator authorization does not let an operator sacrifice another owner’s NFTs",
+    "120 deterministic model-based transfer rounds: unauthorized attempts revert; owner/token-approved/operator paths, self-transfer, both safe overloads, balances, approval clearing, supply and provenance hold"
+  ],
+  "runtimeBytes": {
+    "GanjaGhoulballs": 7911,
+    "GooGraveyard": 524,
+    "GooRenderer": 24124
+  }
+}

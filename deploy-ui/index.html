@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="strict-origin-when-cross-origin"><script>if(!location.pathname.endsWith('/')&&!location.pathname.endsWith('.html')){const base=document.createElement('base');base.href=location.pathname+'/';document.head.prepend(base);}</script><title>Ganja Ghoulballs · Deployment review</title><link rel="stylesheet" href="./style.css"></head>
+<body><main>
+  <a class="back" href="../">← Ganja Ghoulballs</a>
+  <p class="eyebrow">OWNER-OPERATED RELEASE TOOL</p>
+  <h1>Give the goo a home.</h1>
+  <p class="lead">Deploy the reviewed Ganja Ghoulballs contracts on Base. Your wallet controls every signature. This tool never requests a seed phrase or private key.</p>
+  <section class="warning"><strong>Real mainnet deployment · real gas cost.</strong><p>This creates new contracts. It does not approve, transfer, lock, or mint any original NFT. Once deployed, the contracts cannot be upgraded. Do not deploy a second copy if a transaction is already pending.</p></section>
+  <p id="status" role="status" aria-live="polite">Loading release artifacts. Wallet access is not requested.</p>
+  <section><h2>1. Verify the release</h2><dl id="release"><dt>Release</dt><dd>Checking…</dd></dl>
+    <p><a href="./manifest.json">Download release manifest</a> · <a href="./artifact.json">Download compiled artifact</a></p>
+  </section>
+  <section><h2>2. Connect and simulate</h2><p>On Android, open this verified site inside the MetaMask app’s built-in browser. Connection and Base switching happen only when you press the buttons below.</p>
+    <div class="actions"><button id="connect" disabled>Connect my wallet</button><button id="switch" disabled>Switch to Base</button><button id="simulate" disabled>Simulate deployment</button></div>
+    <dl id="wallet"><dt>Wallet</dt><dd>Not connected</dd></dl>
+    <p id="simulation-note">A successful simulation is required before a deployment request can be prepared.</p>
+    <dl id="simulation"></dl>
+  </section>
+  <section><h2>3. Review in your wallet</h2>
+    <p>Sending the request opens your wallet’s confirmation screen. Check the Base network, sender, contract creation, zero ETH value, and final fees there. The wallet’s fee quote is authoritative; Base L1 data fees are additional to the execution fee estimate shown here.</p>
+    <label class="consent"><input id="ack" type="checkbox" disabled><span>I reviewed this exact deployment and gas estimate. I want to create these contracts on Base mainnet and pay the wallet’s displayed gas fee.</span></label>
+    <button id="deploy" class="primary" disabled>Review deployment in my wallet</button>
+    <button id="download" disabled>Download simulation + unsigned transaction</button>
+    <p id="submitted" role="status" aria-live="polite"></p>
+  </section>
+  <section><h2>Check an existing transaction</h2><p>If you leave this page, paste the deployment transaction hash here to check its receipt. Do not send a replacement deployment blindly.</p>
+    <label for="txhash">Base transaction hash</label><input id="txhash" type="text" placeholder="0x…" spellcheck="false" autocomplete="off"><button id="check" disabled>Check transaction</button>
+    <pre id="receipt"></pre><button id="receipt-download" disabled>Download deployment record</button>
+  </section>
+  <footer>420 GGOO · Exactly 13 originals locked per later mint · Deployment itself locks none.<br><a href="https://support.metamask.io/configure/wallet/how-to-use-the-metamask-mobile-browser/" target="_blank" rel="noopener noreferrer">MetaMask mobile browser help</a></footer>
+</main><script type="module" src="./deploy.js"></script></body></html>

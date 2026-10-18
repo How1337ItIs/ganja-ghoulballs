@@ -1,0 +1,15 @@
+{
+  "chainId": 8453,
+  "network": "Base mainnet",
+  "status": "not_deployed",
+  "originalCollection": "0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c",
+  "ganjaCollection": null,
+  "graveyard": null,
+  "renderer": null,
+  "transactionHash": null,
+  "deployedBlock": null,
+  "compiler": "0.8.30",
+  "mintSupplyCap": 420,
+  "originalsPerMint": 13,
+  "notes": "Zero Base deployment claimed until chain receipts and code verified."
+}

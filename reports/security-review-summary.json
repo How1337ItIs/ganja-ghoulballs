@@ -1,0 +1,71 @@
+{
+  "reviewDate": "2026-10-18",
+  "status": "complete_local_review_live_Base_gate_open",
+  "report": "reports/SECURITY_REVIEW.md",
+  "unresolvedExploitFindings": {
+    "critical": 0,
+    "high": 0,
+    "medium": 0
+  },
+  "openProductionGates": [
+    "Live Base original eth_getCode matches verified explorer runtime hash/length",
+    "Exact final constructor simulation against live Base original",
+    "Owner-controlled direct wallet deployment approval",
+    "Deployment receipt, three runtime/source verifications and immutable wiring",
+    "Only then enable public mint writes"
+  ],
+  "sourceSha256": {
+    "contracts/GanjaGhoulballs.sol": "626c4bd259b14da38ea0f02012f075231e553c995a4dd46455c34577c50ea192",
+    "contracts/GooGraveyard.sol": "6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae",
+    "contracts/GooRenderer.sol": "92037149681b52dfe671ac5b01ab602c5106e872bdfa165265b5ec3579062aa8",
+    "site/app.js": "bc86466563cce723f61e6eb828e552ea41d0dededb5fe99087904d509c695b84",
+    "deploy-ui/deploy.js": "2215b3429694249c55e4a98e5bb10b53dd5689351dc168f08167df4a2c2dc134",
+    "deploy-ui/lib.mjs": "23c0b1ed8f0bd7b438e1aaf706bd3eb2e0bab732a2ee76230598da4c3c0a63c1",
+    "deploy-ui/build.mjs": "8f54d7242a3b2079adde5c1cf47d6b526db3f0073364f1126f8b3f2823772a33",
+    "deploy-ui/test.mjs": "d822a3f393436070b9d63ea16c2736af8a98267e7089c8cca909f203487e7add"
+  },
+  "verified": {
+    "contractTestGroups": 22,
+    "independentSecurityAssertions": 2895,
+    "base64OracleCalls": 570,
+    "independentFrontendScenarios": 27,
+    "coordinatorAggregateFrontendScenarios": 28,
+    "coordinatorAggregateExitCode": 0,
+    "deploymentUITests": "passed on final exact-original-runtime pin, funding, fee-scope and nested-module-path checkpoint",
+    "originalExplorerSource": "Exact Match observed on Basescan 2026-10-18T01:27:00Z; visible source confirms IDs1..6667",
+    "fullyOnchainMetadata": {
+      "status": "passed",
+      "localMintedMetadataSamples": 39,
+      "animatedSVGs": 39,
+      "stillSVGs": 39,
+      "additionalRendererFixtureSVGs": 32,
+      "negativeDependencyTests": 14,
+      "externalDependenciesFound": 0,
+      "scriptOrFontDependenciesFound": 0,
+      "proof": "reports/onchain-metadata-probes.json"
+    },
+    "originalOnChainChecker": {
+      "score": "5/5 Fully On-Chain",
+      "appliesTo": "Original ghoulballs token1 only, not GGOO",
+      "evidence": "reports/onchainchecker-original-evidence.json"
+    },
+    "originalRuntimePin": "Verified hash and 8,229-byte length enforced before constructor simulation and immediately before wallet send; empty, wrong-length and same-length mutations rejected"
+  },
+  "limitations": [
+    "Automated review, not a professional audit or formal proof",
+    "Local mock EVM, not a Base fork",
+    "No real NFT, wallet approval, signature, deployment, or broadcast",
+    "Gas excludes intrinsic transaction costs and Base L1 data fees"
+  ],
+  "originalRuntimeReference": {
+    "byteLength": 8229,
+    "keccak256": "0x4fe189e2554350c36d652e3573f8bbd0dc3b45c99a4bf799998623339ab3873a",
+    "evidence": "reports/original-basescan-evidence.json"
+  },
+  "reviewedCreation": {
+    "creationBytecodeKeccak256": "0x479fb353fa1c628ae5a97b72a05a7d713c87ecb188cd65fb06ee24243a72bc62",
+    "deploymentDataKeccak256": "0xd222acf40438b5852558fd60093e63b15c0c885cec68fa284fe089c287129662",
+    "deploymentDataBytes": 33456,
+    "originalCollectionArgument": "0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c"
+  }
+}

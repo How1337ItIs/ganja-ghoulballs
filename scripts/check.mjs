@@ -1,0 +1,18 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const root=path.resolve(import.meta.dirname,'..');
+const load=f=>fs.readFileSync(path.join(root,f),'utf8');
+const requireTrue=(v,msg)=>{if(!v)throw Error(msg);};
+const nft=load('contracts/GanjaGhoulballs.sol'),vault=load('contracts/GooGraveyard.sol'),renderer=load('contracts/GooRenderer.sol');
+requireTrue(nft.includes('MAX_SUPPLY = 420'),'420 cap');
+requireTrue(nft.includes('SACRIFICE_COUNT = 13'),'13 sacrifice constant');
+requireTrue(nft.includes('uint256[13] calldata originalIds'),'mint must accept exactly 13 ids');
+requireTrue(nft.includes('originalCollection.safeTransferFrom(msg.sender, address(graveyard), originalIds[i])'),'atomic source transfer');
+requireTrue(nft.includes('emit GhoulballsSacrificed'),'provenance event');
+requireTrue(!/function\s+(withdraw|rescue|sweep|ownerMint|airdrop|upgradeTo|setRenderer|setBaseURI|pause)\s*\(/.test(nft+vault),'no withdrawal / admin / bypass');
+requireTrue(vault.includes('operator != redeemer')&&vault.includes('msg.sender != originalCollection'),'vault source and operator checks');
+requireTrue(renderer.includes('<animate'),'native SVG animation');
+requireTrue(renderer.includes('repeatCount'),'looping animation');
+requireTrue(!/<(?:script|foreignObject|image)\b/i.test(renderer),'no scripts, external media, or embedded image');
+requireTrue(!/uint256\[15\]|SACRIFICE_COUNT = 15|locking 15/.test(nft),'no obsolete mint economics');
+console.log('Static invariants: PASS (executable behavior is checked separately by npm run test:contracts)');

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#10180f" />
+  <meta name="description" content="Ganja Ghoulballs: 420 native animated onchain SVG goo ghosts. Lock 13 original Base Ghoulballs forever to summon one." />
+  <!-- Resolve the mount directory before the browser requests any local asset.
+       Supports /, /index.html, /ganjaghoulballs and /ganjaghoulballs/. -->
+  <script>
+    (() => {
+      const directory = location.pathname.replace(/\/index\.html$/i, '/');
+      const base = document.createElement('base');
+      base.href = location.origin + (directory.endsWith('/') ? directory : directory + '/') + location.search;
+      document.head.append(base);
+      document.addEventListener('click', event => {
+        const anchor = event.target instanceof Element ? event.target.closest('a[href^="#"]') : null;
+        if (!anchor || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        const hash = anchor.getAttribute('href');
+        if (location.hash === hash) document.getElementById(hash.slice(1))?.scrollIntoView();
+        else location.hash = hash;
+      });
+    })();
+  </script>
+  <title>GANJA GHOULBALLS — ONLY 420. NO TAKEBACKS.</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./style.css" />
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <div class="topline"><span>✳ GANJA GHOULBALLS</span><span class="topline-mid">FULLY ONCHAIN • FULLY STICKY</span><span>BASE ↗ 8453</span></div>
+  <header class="nav shell">
+    <a href="#top" class="brand" aria-label="Ganja Ghoulballs home"><span class="brand-blob">G</span><span>GANJA<br><b>GHOULBALLS</b></span></a>
+    <nav aria-label="Main navigation"><a href="#summon">SUMMON</a><a href="#graveyard">THE RITUAL</a><a href="#gallery">THE CONGREGATION</a></nav>
+    <button class="wallet-btn" id="connect-wallet" type="button"><span class="status-dot"></span> CONNECT WALLET <span aria-hidden="true">↗</span></button>
+  </header>
+  <main id="top">
+    <div class="launch-banner shell" id="launch-banner" role="status">PREDEPLOY PREVIEW · No live mint or token claims. Contract verification is pending.</div>
+    <section class="hero shell">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="blink-mark">✳</span> DIRECT FROM THE COSMIC PARKING LOT <span class="line"></span> EDITION OF 420</div>
+        <h1>THE GOO<br><em>SHALL</em><br>INHERIT<span class="h1-small"> THE</span><br>EARTH<span class="dot">.</span></h1>
+        <p class="hero-sub">THEY'RE NOT DEAD. THEY'RE JUST <strong>REALLY, REALLY HIGH.</strong></p>
+        <p class="hero-detail">Hand-rolled from haunted oats, chocolate hash and questionable cosmic decisions. A crunchy little onchain poltergeist. You can't buy your way in. You have to give up <strong>13 OG Ghoulballs</strong> to summon just one.</p>
+        <div class="hero-actions"><a class="cta" href="#summon">SUMMON YOUR GOO <span>↗</span></a><a class="plain-link" href="#graveyard">HOW DOES IT WORK? ↘</a></div>
+        <div class="hero-foot"><span class="tiny-marker">✦</span> ART AND METADATA LIVE ON BASE · NO IPFS · NO OFFCHAIN IMAGE SERVERS</div>
+      </div>
+      <div class="hero-art">
+        <div class="hero-art-tag"><span>∿ THE HOUSE BLEND</span><span>RENDERER PREVIEW</span></div>
+        <div class="poster-stars"></div>
+        <div class="orb-halo halo-one"></div><div class="orb-halo halo-two"></div>
+        <picture class="goo-picture"><source srcset="./assets/renderer-preview-still.svg" media="(prefers-reduced-motion: reduce)" /><img class="goo-specimen" src="./assets/renderer-preview.svg" alt="Native renderer preview of a crunchy, chocolate-hash pixel ghoul with red eyes. Not a minted NFT." width="512" height="512" /></picture>
+        <div class="specimen-coin">✳</div>
+        <div class="hero-art-bottom"><span>STICKY SINCE 2026</span><span>NATIVE SVG · PREDEPLOY</span></div>
+      </div>
+    </section>
+    <section class="stats shell" aria-label="Collection statistics">
+      <div><span class="stat-num">420</span><span class="stat-label">GGOO MAX SUPPLY</span></div>
+      <div><span class="stat-num">13<span class="stat-unit">:1</span></span><span class="stat-label">ORIGINALS PER SUMMON</span></div>
+      <div><span class="stat-num">5,460</span><span class="stat-label">POTENTIALLY LOCKED FOREVER</span></div>
+      <div><span class="stat-num" id="live-supply">—</span><span class="stat-label">GGOO ACTUALLY SUMMONED</span></div>
+    </section>
+    <section class="ritual shell" id="graveyard">
+      <div class="section-heading"><span class="kicker">01 / THE RITUAL</span><h2>NO BURNER.<br><em>JUST</em> ETERNAL GOO.</h2></div>
+      <div class="ritual-content">
+        <p>To summon one Ganja Ghoulball, you must surrender thirteen authentic Ghoulballs from the original <a href="https://ghoulballs.vercel.app/" target="_blank" rel="noopener noreferrer">Base collection ↗</a>. They don't vanish from the old contract: they enter an <strong>immutable, ownerless graveyard</strong> that has no withdrawal function.</p>
+        <div class="mathline"><div><span>13</span><small>OG GHOULBALLS</small></div><div class="math-sign">→</div><div><span>1</span><small>GANJA GHOULBALL</small></div></div>
+        <div class="ritual-notice"><span>⚠</span><p><b>THIS IS IRREVERSIBLE.</b> Your 13 originals become untradeable and cannot be recovered. The original contract's recorded total supply does not decrease. No protocol fee, but you pay network gas and sacrifice the originals themselves.</p></div>
+      </div>
+    </section>
+    <section class="summon-wrap" id="summon"><div class="summon shell">
+      <div class="summon-title"><span class="kicker">02 / THE SUMMONING CIRCLE</span><h2>BRING YOUR<br><em>OWN GOO.</em></h2><p>Bring 13 real originals. Put them in the graveyard. Receive one immortal goo ghost. Once you send them, there are <strong>no takebacks.</strong></p></div>
+      <div class="mint-panel">
+        <div class="panel-top"><span>THE GOO EXCHANGE</span><span class="live-indicator" id="contract-status">● CHECKING CHAIN</span></div>
+        <div id="wallet-details" class="wallet-details" hidden>
+          <div class="address-label">CONNECTED WALLET / NEW NFT RECIPIENT</div><div id="wallet-address" class="full-address"></div>
+          <div class="wallet-controls"><button id="switch-account" class="mini" type="button">SWITCH ACCOUNT</button><button id="refresh-account" class="mini" type="button">REFRESH ACCOUNT</button><button id="switch-base" class="mini" type="button" hidden>SWITCH TO BASE</button><button id="disconnect-wallet" class="mini" type="button">DISCONNECT</button></div>
+          <details id="wallet-help"><summary>Using a mobile wallet?</summary><p>Open this site inside your wallet’s browser. To change accounts, use your wallet’s account selector, then choose Refresh account here. Connecting or switching accounts never signs a transaction.</p><a id="metamask-link" class="mini" hidden>OPEN IN METAMASK ↗</a></details>
+        </div>
+        <div class="mint-progress"><div class="mint-count"><span id="mint-count-now">—</span><span> / 420 SUMMONED</span></div><div class="meter"><div id="mint-progress-bar"></div></div></div>
+        <div class="steps"><span class="step active" id="step-connect"><b>01</b> CONNECT</span><span class="step" id="step-select"><b>02</b> SELECT 13</span><span class="step" id="step-approve"><b>03</b> APPROVE</span><span class="step" id="step-redeem"><b>04</b> SUMMON</span></div>
+        <div id="mint-state-message" class="state-message" role="status">Checking the verified production deployment…</div>
+        <div class="wallet-summary" id="wallet-summary" hidden><span>YOUR OG GHOULBALLS</span><strong id="og-balance">—</strong><button class="mini" id="scan-inventory" type="button">SCAN MY WALLET ↻</button></div>
+        <progress id="scan-progress" aria-label="Wallet scan progress" max="100" value="0" hidden></progress><div class="selection-actions"><button id="select-thirteen" class="mini" type="button" disabled>SELECT FIRST 13</button><button id="clear-selection" class="mini" type="button" disabled>CLEAR SELECTION</button></div>
+        <div id="inventory" class="inventory" aria-label="Original Ghoulballs found in wallet"></div>
+        <label for="manual-ids" class="input-label">PASTE YOUR ORIGINAL TOKEN IDS <small>(separate with spaces or commas)</small></label>
+        <textarea id="manual-ids" rows="2" placeholder="e.g. 21, 58, 104, ... (13 unique IDs)" spellcheck="false" disabled></textarea>
+        <div class="selected-line"><span>SELECTED <b id="selected-count">0</b> / 13</span><button id="verify-ids" class="mini" type="button" disabled>VERIFY OWNERSHIP →</button></div>
+        <div id="selection-feedback" class="feedback" role="status"></div>
+        <div id="approval-note" class="approval-note" hidden></div>
+        <button id="approve-button" class="secondary-button" type="button" disabled hidden>REVIEW COLLECTION APPROVAL</button>
+        <label class="consent"><input id="consent" type="checkbox" disabled /><span>I understand these <b>13 original NFTs will be locked forever</b> without a recovery mechanism.</span></label>
+        <button id="main-mint-button" class="mint-button" type="button" disabled><span>AWAITING MAINNET CONTRACT</span><b>↗</b></button>
+        <div id="transaction-result" class="transaction-result" role="status" hidden></div>
+        <div class="mint-footer"><span>BASE MAINNET ONLY · NETWORK GAS APPLIES</span><a id="original-contract-link" href="https://basescan.org/address/0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c" target="_blank" rel="noopener noreferrer">ORIGINAL CONTRACT ↗</a></div>
+      </div>
+    </div></section>
+    <section class="gallery-section shell" id="gallery"><div class="gallery-top"><span class="kicker">03 / THE CONGREGATION</span><h2>THE <em>GOO</em> CREW.</h2><p>420 possible weirdos. Each one formed entirely by code and the permanent sacrifice of thirteen originals.</p></div><div id="renderer-studies" class="renderer-studies"><p class="study-label">FROM THE RENDERER / PREDEPLOY STUDIES</p><p class="study-explainer">Four deterministic test specimens. These are native SVG artwork previews, not minted NFTs.</p><div class="studies-grid"><article class="study-card"><picture><source srcset="./assets/goo-preview-2-still.svg" media="(prefers-reduced-motion: reduce)" /><img src="./assets/goo-preview-2.svg" alt="CHOCOLATE OAT deterministic renderer study, not a minted NFT" width="512" height="512" loading="lazy" /></picture><div><b>CHOCOLATE OAT</b><span>RENDERER STUDY · NOT MINTED</span></div></article><article class="study-card"><picture><source srcset="./assets/goo-preview-5-still.svg" media="(prefers-reduced-motion: reduce)" /><img src="./assets/goo-preview-5.svg" alt="PURPLE HASH deterministic renderer study, not a minted NFT" width="512" height="512" loading="lazy" /></picture><div><b>PURPLE HASH</b><span>RENDERER STUDY · NOT MINTED</span></div></article><article class="study-card"><picture><source srcset="./assets/goo-preview-16-still.svg" media="(prefers-reduced-motion: reduce)" /><img src="./assets/goo-preview-16.svg" alt="AMBER RESIN deterministic renderer study, not a minted NFT" width="512" height="512" loading="lazy" /></picture><div><b>AMBER RESIN</b><span>RENDERER STUDY · NOT MINTED</span></div></article><article class="study-card"><picture><source srcset="./assets/goo-preview-6-still.svg" media="(prefers-reduced-motion: reduce)" /><img src="./assets/goo-preview-6.svg" alt="ASTRAL FOUR-PACK deterministic renderer study, not a minted NFT" width="512" height="512" loading="lazy" /></picture><div><b>ASTRAL FOUR-PACK</b><span>RENDERER STUDY · NOT MINTED</span></div></article></div></div><div id="gallery-content" class="gallery-grid"></div><div id="gallery-message" class="gallery-msg">Onchain gallery becomes available once the collection is deployed.</div><button id="gallery-more" type="button" class="wallet-btn" hidden>LOAD MORE GHOULS ↓</button></section>
+    <section class="token-page shell" id="token-page" hidden aria-labelledby="token-title"><a href="#gallery" class="plain-link">← BACK TO THE CONGREGATION</a><div class="token-layout"><img id="token-art" class="token-art" alt="Onchain Ganja Ghoulball" /><div><span class="kicker">ONCHAIN PROVENANCE</span><h2 id="token-title">GGOO</h2><p id="token-status" role="status"></p><div id="token-traits" class="token-traits"></div><dl id="token-facts"></dl><h3>13 ORIGINALS. FOREVER LOCKED.</h3><div id="token-ingredients" class="token-ingredients"></div><div class="token-links"><a id="token-basescan" class="plain-link" target="_blank" rel="noopener noreferrer">BASESCAN ↗</a><button id="token-share" type="button" class="wallet-btn">SHARE THIS GHOUL ↗</button></div></div></div></section>
+    <section class="endcap shell"><div class="endcap-star">✳</div><div><span class="kicker">SOMEWHERE BETWEEN SHAKEDOWN STREET AND THE AFTERLIFE</span><h2>LONG LIVE<br>THE <em>GOO.</em></h2><p>Not affiliated with the creators of original Ghoulballs. The new collection is a fan-made artistic derivative with independently authored code and artwork.</p></div></section>
+  </main>
+  <footer class="footer shell"><div class="footer-brand">GANJA GHOULBALLS <span>✳</span></div><div>ONLY 420. NO TAKEBACKS. © 2026</div><div><a href="https://basescan.org/address/0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c" target="_blank" rel="noopener noreferrer">THE ORIGINALS ↗</a><a id="animation-preview-link" href="./animation-preview.html">NATIVE ANIMATION ↗</a><a href="#top">BACK UP ↑</a></div></footer>
+  <dialog id="review-dialog" aria-labelledby="review-title"><div class="dialog-content"><span class="kicker">READ BEFORE YOUR WALLET OPENS</span><h2 id="review-title">Review transaction</h2><div id="review-copy"></div><label class="consent"><input id="review-consent" type="checkbox" /><span id="review-consent-label"></span></label><div class="dialog-actions"><button id="cancel-review" type="button" class="secondary-button">CANCEL</button><button id="confirm-review" type="button" class="mint-button" disabled>CONTINUE IN WALLET ↗</button></div></div></dialog>
+  <a class="skip-link" href="#summon">Skip to mint controls</a>
+  <div class="toast" id="toast" aria-live="polite"></div>
+</body>
+</html>

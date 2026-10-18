@@ -1,0 +1,486 @@
+{
+  "timestamp": "2026-10-18T01:33:20.883Z",
+  "status": "passed",
+  "scope": "Local in-memory mock mint and decoded data-URI dependency crawl; no live GGOO token or external-checker GGOO score claimed",
+  "sourceSha256": {
+    "contracts/GanjaGhoulballs.sol": "626c4bd259b14da38ea0f02012f075231e553c995a4dd46455c34577c50ea192",
+    "contracts/GooGraveyard.sol": "6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae",
+    "contracts/GooRenderer.sol": "92037149681b52dfe671ac5b01ab602c5106e872bdfa165265b5ec3579062aa8"
+  },
+  "mintedMetadataSamples": 39,
+  "stillSVGSamples": 39,
+  "additionalRendererFixtureSVGs": 32,
+  "examinedElements": 24726,
+  "examinedAttributes": 83443,
+  "negativeTests": 14,
+  "externalDependenciesFound": 0,
+  "scriptOrFontDependenciesFound": 0,
+  "metadataUnchangedAfterTransfer": true,
+  "immutableOriginalVaultRendererAndChain": true,
+  "rendererFunctionsAllPure": true,
+  "noProxyOrDestructionPathInSource": true,
+  "samples": [
+    {
+      "tokenId": 1,
+      "seed": "31874545153849664221465830842128599811966340045563132040648799356963030904192",
+      "target": {
+        "balls": 1
+      },
+      "metadataKeccak256": "0xa1623a45cabc35e790295cf87bbd1f0696755cf4d98a815fc30ac026c39c6287",
+      "svgKeccak256": "0x1318bb4235a64893e34a42f22bc226bfb9e01fb89ff157f9fa5f9fa4eb718132",
+      "nativeAnimationElements": 5
+    },
+    {
+      "tokenId": 2,
+      "seed": "86448131309844270809025211139912789740107241640802592745604956439234482841585",
+      "target": {
+        "balls": 2
+      },
+      "metadataKeccak256": "0x1440927cc0b9606cd8f62e40f188588739a9c334ec57fdd791df118330047faa",
+      "svgKeccak256": "0x2ff2fd78ff3be43d319a72ffaabd5f3dd743de9559bab8597715665ab4e7cf48",
+      "nativeAnimationElements": 9
+    },
+    {
+      "tokenId": 3,
+      "seed": "76808707651185890917481683250193639965256691754554765777359814254783615588479",
+      "target": {
+        "balls": 4
+      },
+      "metadataKeccak256": "0x985a08d1d6b530677221835c9270878bce2018d30455b5a7b5eda495b83bfcce",
+      "svgKeccak256": "0x0b0757714ef395b3adc4d34fb0989282ec7112b72f77f210ac301fc0e36111a0",
+      "nativeAnimationElements": 18
+    },
+    {
+      "tokenId": 4,
+      "seed": "24031968680327510786063548433124240967786234823204910162046172411083508532447",
+      "target": {
+        "balls": 6,
+        "scene": 0,
+        "hat": 0
+      },
+      "metadataKeccak256": "0x85fbd76c357edb35ec79cac1d1a14e6dfd38194ae4f44d728e96b56f1f73b394",
+      "svgKeccak256": "0x8962406adadd04731140e43bf4b676ca7e6dad55571277daa05edecb87f7fd72",
+      "nativeAnimationElements": 22
+    },
+    {
+      "tokenId": 5,
+      "seed": "26536562664520857955288926056333177828517909183283231819412463687557399040986",
+      "target": {
+        "balls": 6,
+        "scene": 0,
+        "hat": 1
+      },
+      "metadataKeccak256": "0x4a513b098898f1d2624df0981b59d0453bff3d95783c9a1a0db8f6cfb0748d28",
+      "svgKeccak256": "0xb108443d0afdef3728e72ffdb936c8fe9b502290673bc84b5463a3b396f5e306",
+      "nativeAnimationElements": 20
+    },
+    {
+      "tokenId": 6,
+      "seed": "26134511295803648854042724140685529878941502206750573417866624769288319051361",
+      "target": {
+        "balls": 6,
+        "scene": 0,
+        "hat": 2
+      },
+      "metadataKeccak256": "0x81bd9941841bd423edc10d2ac7e4ed55c8cef73ecba2cb97cf29050a54d4fefd",
+      "svgKeccak256": "0x836f3d997058f3336662cfbf7c3cb8b69911d64348bd014f237f4b4e217eb99d",
+      "nativeAnimationElements": 22
+    },
+    {
+      "tokenId": 7,
+      "seed": "32513158078725385273489038433371098590586731160627518819366061368847960777922",
+      "target": {
+        "balls": 6,
+        "scene": 0,
+        "hat": 3
+      },
+      "metadataKeccak256": "0x14091b231c329ee7d5fc9640f93e62d91cde97ece7b01a8895ac432fee9a02e6",
+      "svgKeccak256": "0xd9719055449ff0e3724ad535e744845f63a3b8215ef4aa98b7c0a68b501db605",
+      "nativeAnimationElements": 22
+    },
+    {
+      "tokenId": 8,
+      "seed": "80319388466798248574899230372187095100079599244604903778500122235315613133793",
+      "target": {
+        "balls": 6,
+        "scene": 0,
+        "hat": 4
+      },
+      "metadataKeccak256": "0xf4b736405260fcb1c91e8048c9e33d1bc49f484ed541ba2ece91f562b4ebcc5a",
+      "svgKeccak256": "0xa84c694d06e6dd407f3f6bcd5c4c9a72b6d34161f9bffbabb2757cc21b004d0a",
+      "nativeAnimationElements": 22
+    },
+    {
+      "tokenId": 9,
+      "seed": "16325944957006483419626251962077679543053862461148635442645315284665356559539",
+      "target": {
+        "balls": 6,
+        "scene": 0,
+        "hat": 5
+      },
+      "metadataKeccak256": "0x9f9a258452459b11f7518fb3c88c71bb2192db7ab343e16dd83626cbf3138cba",
+      "svgKeccak256": "0xfc5bd82aab516b671bbc818dffd5c9be601b34243bbb37c0cc0e8add0a35581d",
+      "nativeAnimationElements": 21
+    },
+    {
+      "tokenId": 10,
+      "seed": "103446738416131760928117851354997545367703614522735600513891912111443402338373",
+      "target": {
+        "balls": 6,
+        "scene": 1,
+        "hat": 0
+      },
+      "metadataKeccak256": "0x153a2f21d4d49bb5730a6757bb957478aa45d9e9ced3f9e4b900f96bc6d55fa3",
+      "svgKeccak256": "0x66018bf252bcb774100672640459b117bfb43aeddf6623d9cb6a423519573462",
+      "nativeAnimationElements": 20
+    },
+    {
+      "tokenId": 11,
+      "seed": "5770933157607095330096385133336034138952835943827970678980732618497783681067",
+      "target": {
+        "balls": 6,
+        "scene": 1,
+        "hat": 1
+      },
+      "metadataKeccak256": "0xbf687374138cb2dcdcecace8a20a38b620f9dc847b8817b35bb3e170be6c882b",
+      "svgKeccak256": "0x1055399d0e973b51c013316abba2d3c26c077494df0d26b8abcfd76dc0b94904",
+      "nativeAnimationElements": 20
+    },
+    {
+      "tokenId": 12,
+      "seed": "29245275120347372034371894907712821683823691045741121889605140711871490908966",
+      "target": {
+        "balls": 6,
+        "scene": 1,
+        "hat": 2
+      },
+      "metadataKeccak256": "0xd1b00f137ee816abbae48c1430aa71fc1d32cf7e2c20d207a62973c52955ee3a",
+      "svgKeccak256": "0xf5e3bec20d487642476f48af9ba558a543c7e939f1f0344065d66af26860baeb",
+      "nativeAnimationElements": 22
+    },
+    {
+      "tokenId": 13,
+      "seed": "84777433608968446744514148724627796528807179999818318549958052829143788119035",
+      "target": {
+        "balls": 6,
+        "scene": 1,
+        "hat": 3
+      },
+      "metadataKeccak256": "0xa4c973ea6920de04bc938b96a57e59de8e8b3e59f30d4a19dd9c7540ffdca0b1",
+      "svgKeccak256": "0xf60fce5b99b85f8abe447a12b4295bfb3be4d84187a7b08e591e80d621af4d3e",
+      "nativeAnimationElements": 21
+    },
+    {
+      "tokenId": 14,
+      "seed": "34921766634183723574704041169642489506711796652929026896369793512810330144991",
+      "target": {
+        "balls": 6,
+        "scene": 1,
+        "hat": 4
+      },
+      "metadataKeccak256": "0x8875199532fc91bfa8b81d0c217b2e58aa3e59e04f4fb86d3f771b5cb50db88b",
+      "svgKeccak256": "0xc49e9a2e004bdc683db19fd8811cacb73a1de304406c5989aefe28f823572802",
+      "nativeAnimationElements": 21
+    },
+    {
+      "tokenId": 15,
+      "seed": "85833734305780951887314991315047724561136157363432984552126762880716599549174",
+      "target": {
+        "balls": 6,
+        "scene": 1,
+        "hat": 5
+      },
+      "metadataKeccak256": "0x0d74c8d7a4206c50a6b82769075a7f43420b1537d8a53b3e4b4b246dc8ae7724",
+      "svgKeccak256": "0xe2b2fcf048af76dd0903b0633066de4164d750aac3b9e4ea28f53de0a671c91a",
+      "nativeAnimationElements": 21
+    },
+    {
+      "tokenId": 16,
+      "seed": "5071726536403779835204891012970180964643786198445289181572698540660857851445",
+      "target": {
+        "balls": 6,
+        "scene": 2,
+        "hat": 0
+      },
+      "metadataKeccak256": "0xf4eab022b63cfdd6d2dedf462ea7d7a208af4cd27c72e36119b461ed72223ed6",
+      "svgKeccak256": "0x6488b0919fdc1ef836350c52865d9ac4c67d6f50ec00a488ef62837767d8bb8b",
+      "nativeAnimationElements": 21
+    },
+    {
+      "tokenId": 17,
+      "seed": "82163241413556374319774923015401196946391129319536513030974067920340054328529",
+      "target": {
+        "balls": 6,
+        "scene": 2,
+        "hat": 1
+      },
+      "metadataKeccak256": "0xffab84231df47f1c0d192398ac0966ddf92798829f8c89dfb3abcd0c0fbae203",
+      "svgKeccak256": "0x8ca3d9dc857e85f4ffdc53e21b1c0150a1fc385db9faa2ae462c7d1a0207956b",
+      "nativeAnimationElements": 20
+    },
+    {
+      "tokenId": 18,
+      "seed": "50000442301815235113039489145575062314271792642281764549678178055533827937693",
+      "target": {
+        "balls": 6,
+        "scene": 2,
+        "hat": 2
+      },
+      "metadataKeccak256": "0x1e8810d38281015a0e50f8b4ccc30b3f9a677b5aa62d77ce62e13bee4647bc06",
+      "svgKeccak256": "0xa25db2a70bcebddeff6656e99e6cc69dc98244c5f50dd94f154330027d3b93ec",
+      "nativeAnimationElements": 22
+    },
+    {
+      "tokenId": 19,
+      "seed": "2322934348785871311757818192561692828052442781042170669883116739277393136863",
+      "target": {
+        "balls": 6,
+        "scene": 2,
+        "hat": 3
+      },
+      "metadataKeccak256": "0x7d89d8a333ecf118ba8ff6c42ba043da316c2af4550072e73fa3cb77e3191d7d",
+      "svgKeccak256": "0x32aab34763ae2398f7cd0051fb0eafc3b02bd755b99fc245d171809e8b5c98ac",
+      "nativeAnimationElements": 23
+    },
+    {
+      "tokenId": 20,
+      "seed": "98982947952452154169215585283972888303541634997874816825701801740400513919376",
+      "target": {
+        "balls": 6,
+        "scene": 2,
+        "hat": 4
+      },
+      "metadataKeccak256": "0xbfe3083a7874f35bde15754be5e79194e7b347926b65f2352dc75f040a4ca3f9",
+      "svgKeccak256": "0x0db677157084b5b4e2b2dc05f17c2f52558ad3733cfa71d93f588abd63a67c13",
+      "nativeAnimationElements": 21
+    },
+    {
+      "tokenId": 21,
+      "seed": "37319486608826638726944062458596854235567649798248081955450312629939944058102",
+      "target": {
+        "balls": 6,
+        "scene": 2,
+        "hat": 5
+      },
+      "metadataKeccak256": "0x28b469e10649d91a3cd470724c61b3169721f6f445052f84cfbf28b21f547067",
+      "svgKeccak256": "0x11ea759ff72622417196be6d25e85f1f81e4b1aa167884fcdb1cf239753b1527",
+      "nativeAnimationElements": 21
+    },
+    {
+      "tokenId": 22,
+      "seed": "105701028798427932006161127929323544742577414274875720774401526805160205810556",
+      "target": {
+        "balls": 6,
+        "scene": 3,
+        "hat": 0
+      },
+      "metadataKeccak256": "0x10721b3426eb8863a765f2fc72965c1377cd547bd78f4c22054e818d2d23fb24",
+      "svgKeccak256": "0x57c14bcd72b5dde86bbd82abe16dfbe5e70caf9d2295fa27bd305b67581463ff",
+      "nativeAnimationElements": 22
+    },
+    {
+      "tokenId": 23,
+      "seed": "102574236995309793775343358174740308290540629071333174661708151238277382442895",
+      "target": {
+        "balls": 6,
+        "scene": 3,
+        "hat": 1
+      },
+      "metadataKeccak256": "0x5da1f993411bb34a772666abd1ba0e85b48d13842944b2d81c8482625315db6c",
+      "svgKeccak256": "0x8a912ef07d9a3465b5d093867a894c201de8d595f763fbbd5945d16c6ef677b6",
+      "nativeAnimationElements": 23
+    },
+    {
+      "tokenId": 24,
+      "seed": "16866362409616218990741828864153850157522949677891294629093136439284019306850",
+      "target": {
+        "balls": 6,
+        "scene": 3,
+        "hat": 2
+      },
+      "metadataKeccak256": "0x34055c2103bdd9583441bfcbb3b64d34c3bb656f3a4c982828342623df2bbeef",
+      "svgKeccak256": "0x4b2500aa21b3df090d411ac3ed4a8af2836112fd470a348b7a5909c261a07b15",
+      "nativeAnimationElements": 20
+    },
+    {
+      "tokenId": 25,
+      "seed": "63359569158977916219983943001552013185255393209542182639159105171100502803636",
+      "target": {
+        "balls": 6,
+        "scene": 3,
+        "hat": 3
+      },
+      "metadataKeccak256": "0x56781a2ab65b257a7f480eeda0cfd5e9337e2f43e4cf717843466f0ce50ddd91",
+      "svgKeccak256": "0xadf575c7c25b8c450102a057da6e1d6818b4a359167f7f55b82e6531b3fae135",
+      "nativeAnimationElements": 22
+    },
+    {
+      "tokenId": 26,
+      "seed": "59119406949502072352551856988146375536869545103545993222462623895093101879275",
+      "target": {
+        "balls": 6,
+        "scene": 3,
+        "hat": 4
+      },
+      "metadataKeccak256": "0xbafac64b9028d0cd449917862b94ad5571113f4299e879d5df02fbec43b6c82b",
+      "svgKeccak256": "0x9d988417e784ac7223d20e85fd02fdeae4ef9c20a63a7bee5a885bf7ceb255c2",
+      "nativeAnimationElements": 22
+    },
+    {
+      "tokenId": 27,
+      "seed": "61291457692521088877003761871329720427687954174401382893947370214472452317559",
+      "target": {
+        "balls": 6,
+        "scene": 3,
+        "hat": 5
+      },
+      "metadataKeccak256": "0x5190210dea8c335f8b4da06a8df83d2c35bc2cc1af553821b93168e3b8da20cb",
+      "svgKeccak256": "0x55541e2832800261fdec27c4dd7d951b928861a004cc8b7b8bfb0b9c24f480d8",
+      "nativeAnimationElements": 21
+    },
+    {
+      "tokenId": 28,
+      "seed": "98677635486101233759132492762375819895372004657342002635742874123089574165616",
+      "target": {
+        "balls": 6,
+        "scene": 4,
+        "hat": 0
+      },
+      "metadataKeccak256": "0x02e293aefd07980d1418f51fe8a3a83115de97f02e68d097e93f8729dbd05cba",
+      "svgKeccak256": "0xe64250f59a6fb81a7cd597ec7c3cc3bae9bf316b5bf1a3d7fdeb1fbdfbe366a3",
+      "nativeAnimationElements": 20
+    },
+    {
+      "tokenId": 29,
+      "seed": "62588995359065368042822198556027067638021023960458912549218335791099878354627",
+      "target": {
+        "balls": 6,
+        "scene": 4,
+        "hat": 1
+      },
+      "metadataKeccak256": "0xc3750cd505e6ce1695d8f093a8514765f04fbc5091421686861d285f1f163666",
+      "svgKeccak256": "0x1421554e53342caf1def3dd61027d8168781a8ff41a509930d908a8354ee016f",
+      "nativeAnimationElements": 22
+    },
+    {
+      "tokenId": 30,
+      "seed": "79543946452262075180285645078254519160108654850479821292184722467485912531585",
+      "target": {
+        "balls": 6,
+        "scene": 4,
+        "hat": 2
+      },
+      "metadataKeccak256": "0xb570bde6dc467d254f154a0439d3846db0c807159bdfc83bde5fe2b27a287644",
+      "svgKeccak256": "0xfb1eb414266739ce5c8e32edc5a3a37e3796dae16d0fa33c9edd2ce5558b1296",
+      "nativeAnimationElements": 22
+    },
+    {
+      "tokenId": 31,
+      "seed": "109574722636087290526272106963706910152913890363356439586869774049973683438387",
+      "target": {
+        "balls": 6,
+        "scene": 4,
+        "hat": 3
+      },
+      "metadataKeccak256": "0x355d4551cd83d06bcab12425bdf0c5ef253b539839d52001b6af1d5b9e3f1fba",
+      "svgKeccak256": "0x591a3f1af2b5bf472c2990e99ee8898784340cd673cae422aa9babb7cf544266",
+      "nativeAnimationElements": 21
+    },
+    {
+      "tokenId": 32,
+      "seed": "38424351587777752421697182446827806417008547150218531311719982056827329523474",
+      "target": {
+        "balls": 6,
+        "scene": 4,
+        "hat": 4
+      },
+      "metadataKeccak256": "0xa49cdb21cb09db77d8f5c1fc15402355c65de5201d25556d81d92806687c489e",
+      "svgKeccak256": "0xdf0cd96826c356b87ab2504531762c24c7a9c2075b39d7451b12960affb48705",
+      "nativeAnimationElements": 23
+    },
+    {
+      "tokenId": 33,
+      "seed": "65188804997969701149536933269789338762615036754764572652019306061284482743855",
+      "target": {
+        "balls": 6,
+        "scene": 4,
+        "hat": 5
+      },
+      "metadataKeccak256": "0xd0698f4703881c54499cdd04c48ca2be75fcc32de93d06a44b2d9c2082274225",
+      "svgKeccak256": "0x043c8773688e834ee614f4f088c251143bdf3ad8b4d1fe264ba32c5f7b3e47aa",
+      "nativeAnimationElements": 24
+    },
+    {
+      "tokenId": 34,
+      "seed": "9483968490513278006838220438768552238760884171965386635809866050991794600152",
+      "target": {
+        "balls": 6,
+        "scene": 5,
+        "hat": 0
+      },
+      "metadataKeccak256": "0x7afad00cb12abee53181f12fe1c3eea806412f94e1f8b59715732da00ad18fb0",
+      "svgKeccak256": "0x14f6092dad75991ed8d313d9220b5d04ae3c169b11bea6f0650be691279917ea",
+      "nativeAnimationElements": 22
+    },
+    {
+      "tokenId": 35,
+      "seed": "15906148167665833352368086366221900892118533514173969072719718147247118119559",
+      "target": {
+        "balls": 6,
+        "scene": 5,
+        "hat": 1
+      },
+      "metadataKeccak256": "0x5c64a6b7765095ad084b861f1ea61fcc22f2b7eb58842697e002043ad758260c",
+      "svgKeccak256": "0xedb05f205bba686e00d56b76c040ef647473c7dda5302adffaff1b44521976b3",
+      "nativeAnimationElements": 23
+    },
+    {
+      "tokenId": 36,
+      "seed": "49546305624058337437610730468254339705580633626406056490626915372213255079157",
+      "target": {
+        "balls": 6,
+        "scene": 5,
+        "hat": 2
+      },
+      "metadataKeccak256": "0x501d84d12a03ef854eacfc7db01e2108ea11f7297f5c13e6ed32538df3b90644",
+      "svgKeccak256": "0x1d1703216be31d09d3b36ae4a9c57710f88152f0d14940653dd2f8f782335854",
+      "nativeAnimationElements": 23
+    },
+    {
+      "tokenId": 37,
+      "seed": "52073749363216371016919553272488613025897907205915496585431543045191203643770",
+      "target": {
+        "balls": 6,
+        "scene": 5,
+        "hat": 3
+      },
+      "metadataKeccak256": "0xd8be06e3684a0098dc46a5d0f87a5dec9cb1f8e96605f844bf18abeddefdaae2",
+      "svgKeccak256": "0x8e8ab033e454288daa0f438658e657b128057cf5423d58c358bcaf87fc167c17",
+      "nativeAnimationElements": 22
+    },
+    {
+      "tokenId": 38,
+      "seed": "54032862297985382164548374710194836204436821427535905092052516172298332980275",
+      "target": {
+        "balls": 6,
+        "scene": 5,
+        "hat": 4
+      },
+      "metadataKeccak256": "0x5f4f3f37df8cdde3477e9c24d9fb27f942f7156de45207bfaf7d4e50fb0e7e9d",
+      "svgKeccak256": "0x9b20acd023a56cc68356b953916c427c35ec395ab941bc5a7bc3e1e01c7347c4",
+      "nativeAnimationElements": 24
+    },
+    {
+      "tokenId": 39,
+      "seed": "103600066795469117164732110565826980852598381890643983528624498382445272790483",
+      "target": {
+        "balls": 6,
+        "scene": 5,
+        "hat": 5
+      },
+      "metadataKeccak256": "0x21de95562ca0d8927c89bd654a984683ff95c205f35b9ea0762f160c09a05c55",
+      "svgKeccak256": "0x6d477413e81f55e8a64c0a9eab157aaf2481e561b3a16144d29e45147baaeffa",
+      "nativeAnimationElements": 21
+    }
+  ]
+}

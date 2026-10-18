@@ -1,0 +1,37 @@
+{
+  "name": "ganja-ghoulballs",
+  "private": true,
+  "version": "1.0.0",
+  "description": "420 fully onchain animated ERC-721 NFTs; exactly 13 original Ghoulballs permanently locked per mint on Base",
+  "scripts": {
+    "build": "node scripts/compile.mjs && node scripts/art-samples.mjs && node scripts/build-site.mjs",
+    "check": "node scripts/check.mjs",
+    "compile": "node scripts/compile.mjs",
+    "test:contracts": "node test/contracts.mjs",
+    "test": "npm run compile && npm run check && npm run test:contracts && npm run test:gas && npm run test:security && npm run test:report",
+    "test:gas": "node scripts/gas-profile.mjs",
+    "test:security": "node reports/security-probes.mjs && node reports/base64-probes.mjs",
+    "test:frontend": "node test/frontend/mobile-wallet.mjs",
+    "test:all": "npm test && npm run test:art && npm run test:frontend && npm run test:deploy",
+    "test:deploy": "node --experimental-vm-modules deploy-ui/test.mjs",
+    "test:report": "node scripts/write-contract-report.mjs",
+    "test:art": "node scripts/art-samples.mjs && node test/art.mjs"
+  },
+  "dependencies": {
+    "solc": "0.8.30"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@ethereumjs/common": "10.1.0",
+    "@ethereumjs/tx": "10.1.0",
+    "@ethereumjs/util": "10.1.0",
+    "@ethereumjs/vm": "10.1.0",
+    "ethers": "6.15.0",
+    "jsdom": "27.0.0",
+    "playwright": "1.56.0",
+    "sharp": "0.35.5"
+  }
+}
