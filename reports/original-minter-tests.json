@@ -1,0 +1,61 @@
+{
+  "passed": 28,
+  "suite": "original batch minter local VM",
+  "sourceSha256": "3912d48ce14c11266b45c583c12ce38083c64877e711aaf8ff2080545153fb8a",
+  "creationBytecodeKeccak256": "0xfd05fc6e651540802d65c5c8337286d616d35136fc873706e605d73cde511d43",
+  "capturedRuntimes": [
+    {
+      "address": "0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c",
+      "file": "original-basescan-runtime.hex",
+      "keccak256": "0x4fe189e2554350c36d652e3573f8bbd0dc3b45c99a4bf799998623339ab3873a"
+    },
+    {
+      "address": "0x5902E513C974f5d644DDe577b46626a4BF7CEB30",
+      "file": "original-renderer-runtime.hex",
+      "keccak256": "0x39d1a5801e46373b0ec825b695c523d0c50bf2a823db9457ef066f4f2c2d11ad"
+    }
+  ],
+  "checks": [
+    "1 originals: exact recipient, unique eligible children, no custody or value",
+    "13 originals: exact recipient, unique eligible children, no custody or value",
+    "30 originals: exact recipient, unique eligible children, no custody or value",
+    "invalid quantity 0 reverts before mint",
+    "invalid quantity 31 reverts before mint",
+    "invalid quantity 115792089237316195423570985008687907853269984665640564039457584007913129639935 reverts before mint",
+    "chain 1 rejected",
+    "chain 84532 rejected",
+    "nonzero ETH 1 rejected without retained value",
+    "nonzero ETH 1000000000000000000 rejected without retained value",
+    "exact final 1 originals succeeds at 6667",
+    "exact final 13 originals succeeds at 6667",
+    "exact final 30 originals succeeds at 6667",
+    "1 requested with 0 remaining reverts atomically",
+    "2 requested with 1 remaining reverts atomically",
+    "13 requested with 7 remaining reverts atomically",
+    "recipient can mint repeated batches even after consuming its direct mint",
+    "second wallet receives its own originals, never the first wallet or origin from prior calls",
+    "13th child failure rolls back earlier tokens, eligibility, balances, and child deployments",
+    "smart account recipient receives all callbacks and NFTs, not its initiating EOA",
+    "receiver rejection mode 1 rolls back entire batch and callback state",
+    "receiver rejection mode 2 rolls back entire batch and callback state",
+    "contract without ERC721 receiver cannot strand originals",
+    "receiver-triggered nested batch keeps recipient and ownership correct",
+    "supply consumed during receiver reentry rolls back outer and nested batches",
+    "captured original runtime mints 1 directly to the wallet",
+    "captured original runtime mints 13 directly to the wallet",
+    "captured original runtime mints 30 directly to the wallet"
+  ],
+  "executionGas": {
+    "mock-1": "179780",
+    "mock-13": "1565144",
+    "mock-30": "3527743",
+    "captured-runtime-1": "155800",
+    "captured-runtime-13": "1276936",
+    "captured-runtime-30": "2865212"
+  },
+  "limitations": [
+    "Local EthereumJS simulations only; no RPC writes, signing, wallet requests, or real NFTs.",
+    "Captured runtime storage starts empty; not a live Base fork or live supply check.",
+    "Execution gas excludes transaction intrinsic gas and Base L1 data fees."
+  ]
+}

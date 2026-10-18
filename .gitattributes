@@ -1,0 +1,5 @@
+batch-minter/GhoulBatchDeploy.sol text eol=lf
+batch-minter/build.mjs text eol=lf
+site/GhoulBatchDeploy.sol text eol=lf
+* text=auto eol=lf
+site/vendor/GIFENC-LICENSE.md whitespace=-blank-at-eof

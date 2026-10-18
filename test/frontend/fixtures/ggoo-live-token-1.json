@@ -1,0 +1,18 @@
+{
+  "chainId": 8453,
+  "collection": "0xeec423a9ed7b303e23f41fbc005944fa3fc631b8",
+  "renderer": "0xc5a2cceec73758464c3f50bf506cb49c6e621034",
+  "tokenId": "1",
+  "revealed": true,
+  "block": 52776818,
+  "owner": "0x794c94f1b5E455c1dBA27BB28C6085dB0FE544F9",
+  "codeHashes": {
+    "ganjaCollection": "0xe3cfe1ef4b81c234ec6c7ab5b8876a3fcab204a6f9e51f3a901d87c8102181fc",
+    "renderer": "0xe02ddf10a3dcf9a7db2bb733be4d27e034642ad1c03a61ea54fe6872d9e5a874"
+  },
+  "svgSha256": "c4464411c1f0a286643eed8b5ef70afabbca20cf243c79babbd89b77a719176e",
+  "svgBytes": 8797,
+  "endpoint": "https://mainnet.base.org",
+  "readAt": "2026-10-18T17:03:03.520Z",
+  "method": "eth_call(svg(1), revealed(1), ownerOf(1)) and eth_getCode at one pinned block; read only"
+}

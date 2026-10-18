@@ -1,0 +1,24 @@
+{
+  "observedAt": "2026-10-18T17:01:16.861Z",
+  "endpoint": "https://mainnet.base.org",
+  "chainId": 8453,
+  "block": "0x3254f3c",
+  "blockNumber": 52776764,
+  "original": {
+    "address": "0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c",
+    "codeHash": "0x4fe189e2554350c36d652e3573f8bbd0dc3b45c99a4bf799998623339ab3873a",
+    "totalSupply": 229,
+    "maxSupply": 6667,
+    "remaining": 6438
+  },
+  "ggoo": {
+    "address": "0xEec423a9eD7b303E23f41fBC005944fa3FC631b8",
+    "totalSupply": 3,
+    "maxSupply": 420,
+    "sacrificeCount": 13
+  },
+  "limitations": [
+    "Read-only calls at one fixed Base block; no transactions, wallet requests, signing or broadcast.",
+    "Supply may change after the observation; no originals were reserved or used."
+  ]
+}

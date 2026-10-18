@@ -1,0 +1,851 @@
+{
+  "checks": [
+    "opacity: source-derived animation matches native browser timing",
+    "rotate: source-derived animation matches native browser timing",
+    "scale: source-derived animation matches native browser timing",
+    "translate: source-derived animation matches native browser timing",
+    "motion: source-derived animation matches native browser timing",
+    "smoke: source-derived animation matches native browser timing",
+    "renderer validation SVG: combined smoke, spin, figure eight, blink and body motion match native frames",
+    "pinned public Base token #1 SVG matches native frames; saved source hash matches read-only provenance",
+    "all 16 checked-in animated art samples preserve native timing across one to six figures",
+    "unsafe, external, malformed, static, oversized and unrevealed inputs fail before rendering",
+    "X compose intent preserves nested-path and fallback token deep links without private query data",
+    "pre-cancelled export stops without a file",
+    "in-flight cancellation stops at the next frame and concurrent exports are blocked",
+    "browser download decodes to 60 distinct 256px GIF89a frames, 100ms delay and infinite restart"
+  ],
+  "provenance": {
+    "rendererFixture": {
+      "path": "reports/onchain-metadata-sample.svg",
+      "description": "Checked-in contract-renderer validation fixture with synthetic genome; not a live token read.",
+      "sha256": "2e0cf3eda7e63e4fb22f7fe7ed7ed4a57c7f8e0c62c77914884643dbdb8c55e1"
+    },
+    "liveToken": {
+      "chainId": 8453,
+      "collection": "0xeec423a9ed7b303e23f41fbc005944fa3fc631b8",
+      "renderer": "0xc5a2cceec73758464c3f50bf506cb49c6e621034",
+      "tokenId": "1",
+      "revealed": true,
+      "block": 52776818,
+      "owner": "0x794c94f1b5E455c1dBA27BB28C6085dB0FE544F9",
+      "codeHashes": {
+        "ganjaCollection": "0xe3cfe1ef4b81c234ec6c7ab5b8876a3fcab204a6f9e51f3a901d87c8102181fc",
+        "renderer": "0xe02ddf10a3dcf9a7db2bb733be4d27e034642ad1c03a61ea54fe6872d9e5a874"
+      },
+      "svgSha256": "c4464411c1f0a286643eed8b5ef70afabbca20cf243c79babbd89b77a719176e",
+      "svgBytes": 8797,
+      "endpoint": "https://mainnet.base.org",
+      "readAt": "2026-10-18T17:03:03.520Z",
+      "method": "eth_call(svg(1), revealed(1), ownerOf(1)) and eth_getCode at one pinned block; read only"
+    }
+  },
+  "comparisonLimits": {
+    "maxMeanRgbChannelDelta": 1.2,
+    "maxChangedPixelFraction": 0.035,
+    "changedPixelThresholdSumRgb": 48,
+    "maxDecodedGifMeanRgbaDelta": 2.5
+  },
+  "comparisons": [
+    {
+      "label": "opacity",
+      "time": 0,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "opacity",
+      "time": 1.92,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "opacity",
+      "time": 2.07,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "opacity",
+      "time": 2.22,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "opacity",
+      "time": 2.37,
+      "mean": 0.060017903645833336,
+      "changedFraction": 0
+    },
+    {
+      "label": "opacity",
+      "time": 2.52,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "rotate",
+      "time": 0,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "rotate",
+      "time": 1.3,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "rotate",
+      "time": 3.9,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "rotate",
+      "time": 7,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "scale",
+      "time": 0,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "scale",
+      "time": 0.5,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "scale",
+      "time": 1,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "scale",
+      "time": 2.5,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "translate",
+      "time": 0,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "translate",
+      "time": 0.5,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "translate",
+      "time": 1,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "translate",
+      "time": 2.5,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "motion",
+      "time": 0,
+      "mean": 0.012842814127604166,
+      "changedFraction": 0
+    },
+    {
+      "label": "motion",
+      "time": 0.6,
+      "mean": 0.037078857421875,
+      "changedFraction": 0
+    },
+    {
+      "label": "motion",
+      "time": 1.5,
+      "mean": 0.013712565104166666,
+      "changedFraction": 0
+    },
+    {
+      "label": "motion",
+      "time": 3,
+      "mean": 0.013727823893229166,
+      "changedFraction": 0
+    },
+    {
+      "label": "motion",
+      "time": 4.5,
+      "mean": 0.0132598876953125,
+      "changedFraction": 0
+    },
+    {
+      "label": "smoke",
+      "time": 0,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "smoke",
+      "time": 0.5,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "smoke",
+      "time": 1,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "smoke",
+      "time": 2,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "smoke",
+      "time": 3,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "renderer-fixture",
+      "time": 0,
+      "mean": 0.06427001953125,
+      "changedFraction": 0.00091552734375
+    },
+    {
+      "label": "renderer-fixture",
+      "time": 0.7,
+      "mean": 0.13254801432291666,
+      "changedFraction": 0.0016326904296875
+    },
+    {
+      "label": "renderer-fixture",
+      "time": 1.92,
+      "mean": 0.18024698893229166,
+      "changedFraction": 0.0024871826171875
+    },
+    {
+      "label": "renderer-fixture",
+      "time": 2.22,
+      "mean": 0.12621053059895834,
+      "changedFraction": 0.001678466796875
+    },
+    {
+      "label": "renderer-fixture",
+      "time": 3.3,
+      "mean": 0.09171040852864583,
+      "changedFraction": 0.0011444091796875
+    },
+    {
+      "label": "renderer-fixture",
+      "time": 5.9,
+      "mean": 0.1827239990234375,
+      "changedFraction": 0.0023651123046875
+    },
+    {
+      "label": "live-token-1",
+      "time": 0,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "live-token-1",
+      "time": 0.7,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "live-token-1",
+      "time": 1.9,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "live-token-1",
+      "time": 2.2,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "live-token-1",
+      "time": 3.3,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "live-token-1",
+      "time": 5.9,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "goo-17",
+      "time": 0.3,
+      "mean": 0.19629414876302084,
+      "changedFraction": 0.002227783203125
+    },
+    {
+      "label": "goo-17",
+      "time": 2.3,
+      "mean": 0.0117340087890625,
+      "changedFraction": 0.000152587890625
+    },
+    {
+      "label": "goo-18",
+      "time": 0.3,
+      "mean": 0.08449300130208333,
+      "changedFraction": 0.001129150390625
+    },
+    {
+      "label": "goo-18",
+      "time": 2.3,
+      "mean": 0.034505208333333336,
+      "changedFraction": 0.0004425048828125
+    },
+    {
+      "label": "goo-22",
+      "time": 0.3,
+      "mean": 0.09363810221354167,
+      "changedFraction": 0.0009307861328125
+    },
+    {
+      "label": "goo-22",
+      "time": 2.3,
+      "mean": 0.07532755533854167,
+      "changedFraction": 0.0008392333984375
+    },
+    {
+      "label": "goo-26",
+      "time": 0.3,
+      "mean": 0.027079264322916668,
+      "changedFraction": 0.0003662109375
+    },
+    {
+      "label": "goo-26",
+      "time": 2.3,
+      "mean": 0.07187398274739583,
+      "changedFraction": 0.001007080078125
+    },
+    {
+      "label": "goo-30",
+      "time": 0.3,
+      "mean": 0.040395100911458336,
+      "changedFraction": 0.000518798828125
+    },
+    {
+      "label": "goo-30",
+      "time": 2.3,
+      "mean": 0.0230560302734375,
+      "changedFraction": 0.000335693359375
+    },
+    {
+      "label": "goo-35",
+      "time": 0.3,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "goo-35",
+      "time": 2.3,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "goo-39",
+      "time": 0.3,
+      "mean": 0.0001220703125,
+      "changedFraction": 0
+    },
+    {
+      "label": "goo-39",
+      "time": 2.3,
+      "mean": 0.0001220703125,
+      "changedFraction": 0
+    },
+    {
+      "label": "goo-41",
+      "time": 0.3,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "goo-41",
+      "time": 2.3,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "goo-43",
+      "time": 0.3,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "goo-43",
+      "time": 2.3,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "goo-47",
+      "time": 0.3,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "goo-47",
+      "time": 2.3,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "goo-5",
+      "time": 0.3,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "goo-5",
+      "time": 2.3,
+      "mean": 0,
+      "changedFraction": 0
+    },
+    {
+      "label": "goo-52",
+      "time": 0.3,
+      "mean": 0.033808390299479164,
+      "changedFraction": 0.0003814697265625
+    },
+    {
+      "label": "goo-52",
+      "time": 2.3,
+      "mean": 0.0615997314453125,
+      "changedFraction": 0.0007781982421875
+    },
+    {
+      "label": "goo-56",
+      "time": 0.3,
+      "mean": 0.028996785481770832,
+      "changedFraction": 0.0003662109375
+    },
+    {
+      "label": "goo-56",
+      "time": 2.3,
+      "mean": 0.06691996256510417,
+      "changedFraction": 0.000701904296875
+    },
+    {
+      "label": "goo-60",
+      "time": 0.3,
+      "mean": 0.0562744140625,
+      "changedFraction": 0.0006866455078125
+    },
+    {
+      "label": "goo-60",
+      "time": 2.3,
+      "mean": 0.08846537272135417,
+      "changedFraction": 0.0011138916015625
+    },
+    {
+      "label": "goo-61",
+      "time": 0.3,
+      "mean": 0.028355916341145832,
+      "changedFraction": 0.000396728515625
+    },
+    {
+      "label": "goo-61",
+      "time": 2.3,
+      "mean": 0.030232747395833332,
+      "changedFraction": 0.0004425048828125
+    },
+    {
+      "label": "goo-64",
+      "time": 0.3,
+      "mean": 0.06694539388020833,
+      "changedFraction": 0.000823974609375
+    },
+    {
+      "label": "goo-64",
+      "time": 2.3,
+      "mean": 0.0575408935546875,
+      "changedFraction": 0.0007476806640625
+    }
+  ],
+  "decodedComparisons": [
+    {
+      "frame": 0,
+      "time": 0,
+      "meanRgbaChannelDelta": 0.15445327758789062
+    },
+    {
+      "frame": 7,
+      "time": 0.7,
+      "meanRgbaChannelDelta": 0.15613937377929688
+    },
+    {
+      "frame": 19,
+      "time": 1.9,
+      "meanRgbaChannelDelta": 0.15560531616210938
+    },
+    {
+      "frame": 22,
+      "time": 2.2,
+      "meanRgbaChannelDelta": 0.15562820434570312
+    },
+    {
+      "frame": 33,
+      "time": 3.3,
+      "meanRgbaChannelDelta": 0.15624237060546875
+    },
+    {
+      "frame": 59,
+      "time": 5.9,
+      "meanRgbaChannelDelta": 0.154022216796875
+    }
+  ],
+  "export": {
+    "filename": "ggoo-1-animated-preview.gif",
+    "frameCount": 60,
+    "durationMs": 6000,
+    "type": "image/gif",
+    "progress": [
+      {
+        "completed": 0,
+        "total": 60,
+        "percent": 0
+      },
+      {
+        "completed": 1,
+        "total": 60,
+        "percent": 2
+      },
+      {
+        "completed": 2,
+        "total": 60,
+        "percent": 3
+      },
+      {
+        "completed": 3,
+        "total": 60,
+        "percent": 5
+      },
+      {
+        "completed": 4,
+        "total": 60,
+        "percent": 7
+      },
+      {
+        "completed": 5,
+        "total": 60,
+        "percent": 8
+      },
+      {
+        "completed": 6,
+        "total": 60,
+        "percent": 10
+      },
+      {
+        "completed": 7,
+        "total": 60,
+        "percent": 12
+      },
+      {
+        "completed": 8,
+        "total": 60,
+        "percent": 13
+      },
+      {
+        "completed": 9,
+        "total": 60,
+        "percent": 15
+      },
+      {
+        "completed": 10,
+        "total": 60,
+        "percent": 17
+      },
+      {
+        "completed": 11,
+        "total": 60,
+        "percent": 18
+      },
+      {
+        "completed": 12,
+        "total": 60,
+        "percent": 20
+      },
+      {
+        "completed": 13,
+        "total": 60,
+        "percent": 22
+      },
+      {
+        "completed": 14,
+        "total": 60,
+        "percent": 23
+      },
+      {
+        "completed": 15,
+        "total": 60,
+        "percent": 25
+      },
+      {
+        "completed": 16,
+        "total": 60,
+        "percent": 27
+      },
+      {
+        "completed": 17,
+        "total": 60,
+        "percent": 28
+      },
+      {
+        "completed": 18,
+        "total": 60,
+        "percent": 30
+      },
+      {
+        "completed": 19,
+        "total": 60,
+        "percent": 32
+      },
+      {
+        "completed": 20,
+        "total": 60,
+        "percent": 33
+      },
+      {
+        "completed": 21,
+        "total": 60,
+        "percent": 35
+      },
+      {
+        "completed": 22,
+        "total": 60,
+        "percent": 37
+      },
+      {
+        "completed": 23,
+        "total": 60,
+        "percent": 38
+      },
+      {
+        "completed": 24,
+        "total": 60,
+        "percent": 40
+      },
+      {
+        "completed": 25,
+        "total": 60,
+        "percent": 42
+      },
+      {
+        "completed": 26,
+        "total": 60,
+        "percent": 43
+      },
+      {
+        "completed": 27,
+        "total": 60,
+        "percent": 45
+      },
+      {
+        "completed": 28,
+        "total": 60,
+        "percent": 47
+      },
+      {
+        "completed": 29,
+        "total": 60,
+        "percent": 48
+      },
+      {
+        "completed": 30,
+        "total": 60,
+        "percent": 50
+      },
+      {
+        "completed": 31,
+        "total": 60,
+        "percent": 52
+      },
+      {
+        "completed": 32,
+        "total": 60,
+        "percent": 53
+      },
+      {
+        "completed": 33,
+        "total": 60,
+        "percent": 55
+      },
+      {
+        "completed": 34,
+        "total": 60,
+        "percent": 57
+      },
+      {
+        "completed": 35,
+        "total": 60,
+        "percent": 58
+      },
+      {
+        "completed": 36,
+        "total": 60,
+        "percent": 60
+      },
+      {
+        "completed": 37,
+        "total": 60,
+        "percent": 62
+      },
+      {
+        "completed": 38,
+        "total": 60,
+        "percent": 63
+      },
+      {
+        "completed": 39,
+        "total": 60,
+        "percent": 65
+      },
+      {
+        "completed": 40,
+        "total": 60,
+        "percent": 67
+      },
+      {
+        "completed": 41,
+        "total": 60,
+        "percent": 68
+      },
+      {
+        "completed": 42,
+        "total": 60,
+        "percent": 70
+      },
+      {
+        "completed": 43,
+        "total": 60,
+        "percent": 72
+      },
+      {
+        "completed": 44,
+        "total": 60,
+        "percent": 73
+      },
+      {
+        "completed": 45,
+        "total": 60,
+        "percent": 75
+      },
+      {
+        "completed": 46,
+        "total": 60,
+        "percent": 77
+      },
+      {
+        "completed": 47,
+        "total": 60,
+        "percent": 78
+      },
+      {
+        "completed": 48,
+        "total": 60,
+        "percent": 80
+      },
+      {
+        "completed": 49,
+        "total": 60,
+        "percent": 82
+      },
+      {
+        "completed": 50,
+        "total": 60,
+        "percent": 83
+      },
+      {
+        "completed": 51,
+        "total": 60,
+        "percent": 85
+      },
+      {
+        "completed": 52,
+        "total": 60,
+        "percent": 87
+      },
+      {
+        "completed": 53,
+        "total": 60,
+        "percent": 88
+      },
+      {
+        "completed": 54,
+        "total": 60,
+        "percent": 90
+      },
+      {
+        "completed": 55,
+        "total": 60,
+        "percent": 92
+      },
+      {
+        "completed": 56,
+        "total": 60,
+        "percent": 93
+      },
+      {
+        "completed": 57,
+        "total": 60,
+        "percent": 95
+      },
+      {
+        "completed": 58,
+        "total": 60,
+        "percent": 97
+      },
+      {
+        "completed": 59,
+        "total": 60,
+        "percent": 98
+      },
+      {
+        "completed": 60,
+        "total": 60,
+        "percent": 100
+      }
+    ],
+    "bytes": 358275,
+    "uniqueFrames": 60
+  },
+  "safety": {
+    "script": true,
+    "event": true,
+    "image": true,
+    "use": true,
+    "foreignObject": true,
+    "style": true,
+    "inlineStyle": true,
+    "urlPaint": true,
+    "malformed": true,
+    "static": true,
+    "oversized": true,
+    "doctype": true,
+    "unknownAnimation": true,
+    "pending": true,
+    "zero": true,
+    "fraction": true,
+    "aboveCap": true,
+    "missingReveal": true
+  },
+  "unexpectedRequests": []
+}

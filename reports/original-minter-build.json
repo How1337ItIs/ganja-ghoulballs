@@ -1,0 +1,15 @@
+{
+  "upstream": "https://github.com/How1337ItIs/ghoulbatch-minter",
+  "revision": "9a3422c54145118d012649e6a64b4068e3d605e5",
+  "sourceGitBlob": "2851fbfa570773fc2ec8e6a8127b92eb91de9a8d",
+  "upstreamBuildGitBlob": "43a3789e223f6b550fb3fc0268db5db4e27d04a5",
+  "compiler": "0.8.30+commit.73712a01.Emscripten.clang",
+  "sourceSha256": "3912d48ce14c11266b45c583c12ce38083c64877e711aaf8ff2080545153fb8a",
+  "creationBytecodeKeccak256": "0xfd05fc6e651540802d65c5c8337286d616d35136fc873706e605d73cde511d43",
+  "creationBytecodeBytes": 921,
+  "artifactSha256": "a777443a701b3fd994abaa40417141c8c0133d856b091eed7fad4886caef7c52",
+  "rebuild": "Two consecutive helper builds produced byte-identical source and artifact outputs.",
+  "lineEndings": "Scoped .gitattributes preserves reviewed LF bytes on Windows checkouts.",
+  "deployedContractChanges": false,
+  "broadcasts": 0
+}

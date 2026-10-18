@@ -1,0 +1,51 @@
+{
+  "baseline": "ddaf3d204b8b21c87650c1a89fd06665ce6c353c",
+  "files": [
+    {
+      "path": "ganjaghoulballs/app.js",
+      "bytes": 96666,
+      "sha256": "73d82eaba3c5706212e166a0add0a2580bc86bae5eff973ed9c69e105084c151"
+    },
+    {
+      "path": "ganjaghoulballs/index.html",
+      "bytes": 22433,
+      "sha256": "6f5b94dedc0e4d9c1fea03ad972b85c69e57016b4e2706d29f6f7132c90a858d"
+    },
+    {
+      "path": "ganjaghoulballs/style.css",
+      "bytes": 37900,
+      "sha256": "610c5329989534232beb4ce6874f344c4bb8890d8941841baedcfdff3df34bb8"
+    },
+    {
+      "path": "ganjaghoulballs/GhoulBatchDeploy.sol",
+      "bytes": 1127,
+      "sha256": "3912d48ce14c11266b45c583c12ce38083c64877e711aaf8ff2080545153fb8a"
+    },
+    {
+      "path": "ganjaghoulballs/gif-export.js",
+      "bytes": 12899,
+      "sha256": "9d734fa3563e660a1035222b969eab5dda9c992ff420b14ffb7fedddf1afec63"
+    },
+    {
+      "path": "ganjaghoulballs/original-mint.js",
+      "bytes": 4336,
+      "sha256": "194ccb2a73d5d8c8e7bc334e70557eca583698ecec01e57afdf9677b460868be"
+    },
+    {
+      "path": "ganjaghoulballs/original-minter.json",
+      "bytes": 2954,
+      "sha256": "a777443a701b3fd994abaa40417141c8c0133d856b091eed7fad4886caef7c52"
+    },
+    {
+      "path": "ganjaghoulballs/vendor/gifenc-1.0.3.js",
+      "bytes": 9098,
+      "sha256": "217761244379253ba5815510d3048a4fb1f4c4dbe9fb51a5cfbfe26f34eec093"
+    },
+    {
+      "path": "ganjaghoulballs/vendor/GIFENC-LICENSE.md",
+      "bytes": 1083,
+      "sha256": "47bc590c39d8ccccfc544875a9faebf44bafa828ef20315b396b5d0629f0cfd6"
+    }
+  ],
+  "note": "Overlay these nine files only after final review; preserve all other current custom-domain files including lab/manifest.json."
+}

@@ -1,9 +1,12 @@
 import { buildDeployUI } from '../deploy-ui/build.mjs';
 import { checkSiteAssets } from './check-site-assets.mjs';
+import './check-gif-vendor.mjs';
+import { buildOriginalMinter } from './build-original-minter.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {createRequire} from 'node:module';
 const root=path.resolve(import.meta.dirname,'..');
+await buildOriginalMinter();
 fs.rmSync(path.join(root,'dist'),{recursive:true,force:true});
 fs.cpSync(path.join(root,'site'),path.join(root,'dist'),{recursive:true});
 const require=createRequire(import.meta.url);

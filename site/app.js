@@ -1,6 +1,8 @@
 /* GGOO production client. No write is possible until Base code, wiring and economics verify. */
 import {Interface, keccak256, getAddress, formatEther} from './vendor/ethers.min.js';
 import {decodeLineage, THEMES, MOTIONS} from './lineage.js';
+import {CREATION_HASH, quantityOf, verifyOriginalArtifact, originalCreationData, rpcAmount, buffered, originalGasLimit, originalFeeCall, assertOriginalTransaction, parseOriginalReceipt} from './original-mint.js';
+import {downloadTokenGif, buildTokenShareUrl} from './gif-export.js';
 const $ = id => document.getElementById(id);
 // The script URL is authoritative for assets/config, independent of root or subpath hosting.
 const SITE_ROOT = new URL('./', import.meta.url);
@@ -44,6 +46,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 let cfg, provider, account = null, chain = null, generation = 0, live = false, minted = null;
 let selected = new Set(), owned = [], verified = null, approved = false, busy = null, scanning = false;
 let originalReady=false, scanGeneration=0, inventoryTask=null;
+let originalHelper=null, originalSupply=null, originalSupplyGeneration=0, originalReview=null;
+let gifExportController=null;
 const originalCards=new Map(), recipeCache=new Map(), recipeRequests=new Map();
 let review = null, pending = null, galleryCursor = null, galleryLoading = false, tokenGeneration = 0;
 let toastTimer, providerBound = null, providerListeners = [], walletEpoch = 0, walletSession = 0, reserve=null, latestMint=null, revealPolling=false, reserveGeneration=0, activeTokenId=null;
@@ -83,16 +87,22 @@ function humanError(e) {
 function cacheGet(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } }
 function cacheSet(key,value) { try { localStorage.setItem(key,JSON.stringify(value)); } catch {} }
 function cacheDelete(key) { try { localStorage.removeItem(key); } catch {} }
-function pendingKey() { return `ggoo:pending:8453:${lower(cfg?.ganjaCollection)}`; }
+const ORIGINAL_PENDING_KEY=`ggoo:originals:pending:8453:${ORIGINAL}`;
+function pendingKey(value=pending) { return value?.kind==='originals'?ORIGINAL_PENDING_KEY:`ggoo:pending:8453:${lower(cfg?.ganjaCollection)}`; }
+function validOriginalIntent(saved){return saved&&(hashPattern.test(saved.hash)||saved.hash===null)&&saved.kind==='originals'&&saved.chainId===8453&&validAddress(saved.recipient)&&Number.isInteger(saved.quantity)&&saved.quantity>=1&&saved.quantity<=30&&saved.creationHash===CREATION_HASH&&lower(saved.originalCollection)===ORIGINAL;}
+function restoreOriginalIntent(){
+ try{const raw=localStorage.getItem(ORIGINAL_PENDING_KEY);if(!raw)return;let saved;try{saved=JSON.parse(raw);}catch{}pending=validOriginalIntent(saved)?saved:{kind:'recovery-lock',needsReview:true};}catch{/* A new send still requires durable storage write/read-back. */}
+}
 function savePendingIntent(value) {
  const encoded=JSON.stringify(value);
- try {localStorage.setItem(pendingKey(),encoded);if(localStorage.getItem(pendingKey())!==encoded)throw Error('Storage read-back mismatch.');}
+ try {localStorage.setItem(pendingKey(value),encoded);if(localStorage.getItem(pendingKey(value))!==encoded)throw Error('Storage read-back mismatch.');}
  catch {throw Error('Browser storage is unavailable or full. No transaction was started. Enable site storage or clear the optional image cache before trying again.');}
 }
 function invalidate(clear = false) {
  generation++; verified=null; approved=false; $('consent').checked=false;
  if(clear) { stopInventory(false); selected.clear(); owned=[]; $('manual-ids').value=''; text('og-balance','—'); text('inventory-status',account ? chain===BASE?'Finding this wallet’s original Ghoulballs…':'Switch to Base to find this wallet’s original Ghoulballs.':'Connect your wallet to automatically find your original Ghoulballs on Base.'); }
  if($('review-dialog').open) $('review-dialog').close(); review=null;
+ if($('original-review-dialog').open)$('original-review-dialog').close();originalReview=null;
  render();
 }
 async function rawRpc(url, method, params) {
@@ -175,6 +185,7 @@ function render() {
  $('main-mint-button').querySelector('span').textContent=label;
  for(const [id,active] of [['step-connect',!connected||chain!==BASE],['step-select',connected&&!verificationCurrent()],['step-approve',needApproval],['step-redeem',verificationCurrent()&&approved]]) $(id).classList.toggle('active',!!active);
  renderMintFlow();
+ renderOriginalMint();
 }
 function renderMintFlow() {
  const checked=!!verificationCurrent(),eligible=!!(writable()&&reserve?.ready&&checked&&approved);
@@ -230,6 +241,7 @@ async function refreshSupply() {
 function applyAccount(next, nextChain=chain) {
  const normalized=validAddress(next)?lower(next):null;
  if(account!==normalized || chain!==nextChain) {account=normalized;chain=nextChain;invalidate(true);feedback('Wallet changed. Select and verify originals again.');}
+ if(!pending&&!['original-review','originals'].includes(busy))originalStatus(account?(chain===BASE?'Choose 1–30 originals, then review the exact recipient and network fee.':'Switch to Base to mint originals to this wallet.'):'Connect your wallet above to mint originals.');
  render();
 }
 function renderWalletDialog() {
@@ -352,8 +364,110 @@ async function verifyOriginal() {
  const code=await rpc('eth_getCode',[ORIGINAL,'latest']);
  if(!/^0x[0-9a-f]+$/i.test(code)||(code.length-2)/2!==8229||lower(keccak256(code))!==ORIGINAL_HASH)throw Error('Original Ghoulballs code could not be verified.');
 }
+function originalStatus(message,error=false){text('original-mint-status',message);$('original-mint-status').classList.toggle('error',error);}
+function originalQuantity(){return quantityOf($('original-quantity').value);}
+function renderOriginalMint(){
+ const locked=!!busy||!!pending;let quantity;try{quantity=originalQuantity();}catch{}
+ $('original-quantity').disabled=locked;
+ for(const button of document.querySelectorAll('[data-original-quantity]')){button.disabled=locked;button.setAttribute('aria-pressed',String(Number(button.dataset.originalQuantity)===quantity));}
+ text('original-recipient',pending?.kind==='originals'?getAddress(pending.recipient):account?getAddress(account):'Connect your wallet to set the recipient.');
+ text('original-supply',originalSupply===null?'Original supply unavailable. Recheck before minting.':`${6667-originalSupply} of 6,667 originals remaining. Supply is checked again before your wallet opens.`);
+ const ready=!!originalHelper&&originalSupply!==null&&quantity!==undefined&&quantity<=6667-originalSupply;
+ $('original-review-button').disabled=locked||!!account&&chain===BASE&&(!quantity||originalSupply===6667||originalSupply!==null&&quantity>6667-originalSupply);
+ text('original-review-button',pending?'TRANSACTION PENDING':busy==='original-review'?'CHECKING ORIGINAL MINT…':busy==='originals'?'CONTINUE IN YOUR WALLET':!account?'CONNECT TO MINT ORIGINALS':chain!==BASE?'SWITCH TO BASE':originalSupply===6667?'ORIGINALS SOLD OUT':!ready?'RECHECK ORIGINAL MINT':'REVIEW ORIGINAL MINT');
+}
+async function refreshOriginalSupply(){
+ const version=++originalSupplyGeneration;
+ try{
+  await verifyOriginal();const value=await call(ORIGINAL,'totalSupply');
+  if(value<0n||value>6667n)throw Error('Original collection supply is out of bounds.');
+  if(version===originalSupplyGeneration)originalSupply=Number(value);
+ }catch(e){if(version===originalSupplyGeneration){originalSupply=null;originalStatus('Original mint paused. '+humanError(e),true);}}
+ finally{if(version===originalSupplyGeneration)renderOriginalMint();}
+}
+async function loadOriginalHelper(){
+ const response=await fetch(siteURL('original-minter.json'),{cache:'no-store'});
+ if(!response.ok)throw Error('Original batch helper is unavailable. Retry before minting.');
+ originalHelper=verifyOriginalArtifact(await response.json());return originalHelper;
+}
+function originalSnapshot(){return {account,chain,generation,provider,session:walletSession,quantity:originalQuantity()};}
+function originalContextCurrent(snap){return snap.provider===provider&&snap.provider===window.ethereum&&snap.session===walletSession&&snap.generation===generation&&snap.account===account&&snap.chain===chain&&chain===BASE&&String(snap.quantity)===$('original-quantity').value;}
+async function assertOriginalWallet(snap){
+ if(!originalContextCurrent(snap))throw Error('Wallet, network or original quantity changed. Review the original mint again.');
+ const [accounts,id]=await Promise.all([snap.provider.request({method:'eth_accounts'}),snap.provider.request({method:'eth_chainId'})]);
+ if(!originalContextCurrent(snap)||lower(accounts?.[0])!==snap.account||lower(id)!==BASE)throw Error('Wallet changed during original-mint review. No new transaction was submitted.');
+}
+async function prepareOriginalMint(snap){
+ await assertOriginalWallet(snap);
+ const checked=async work=>{const result=await work;await assertOriginalWallet(snap);return result;};
+ await checked(verifyOriginal());
+ const supply=await checked(call(ORIGINAL,'totalSupply'));
+ if(supply<0n||supply>6667n)throw Error('Original collection supply is out of bounds.');
+ originalSupplyGeneration++;originalSupply=Number(supply);renderOriginalMint();
+ if(snap.quantity>6667-originalSupply)throw Error(`Only ${6667-originalSupply} originals remain. Choose fewer and review again.`);
+ const tx={chainId:BASE,from:snap.account,data:originalCreationData(originalHelper,snap.quantity),value:'0x0'};
+ // The exact contract creation is simulated without signing. Contract recipients must accept ERC-721s.
+ await checked(rpc('eth_call',[tx,'latest']));
+ const estimateHex=await checked(snap.provider.request({method:'eth_estimateGas',params:[tx]}));
+ const gasLimit=originalGasLimit(estimateHex);tx.gas='0x'+gasLimit.toString(16);
+ const gasPrice=rpcAmount(await checked(snap.provider.request({method:'eth_gasPrice'})),'gas price');
+ if(gasPrice===0n)throw Error('Base gas price is unavailable. Retry the estimate.');
+ tx.gasPrice='0x'+gasPrice.toString(16);
+ const size=BigInt((tx.data.length-2)/2+256);
+ const l1Fee=rpcAmount(await checked(rpc('eth_call',[originalFeeCall('0xf1c7a58b',size),'latest'])),'L1 fee reserve');
+ const operatorFee=rpcAmount(await checked(rpc('eth_call',[originalFeeCall('0x275aedd2',gasLimit),'latest'])),'operator fee reserve');
+ const balance=rpcAmount(await checked(snap.provider.request({method:'eth_getBalance',params:[snap.account,'pending']})),'Base ETH balance');
+ const feeReserve=buffered(gasLimit*gasPrice+l1Fee+operatorFee);
+ if(balance<feeReserve)throw Error(`Insufficient Base ETH for gas. Available ${formatEther(balance)} ETH; conservative fee reserve ${formatEther(feeReserve)} ETH. Choose fewer originals or add Base ETH.`);
+ return {tx,executionFee:rpcAmount(estimateHex,'gas estimate')*gasPrice,feeReserve,l1Fee,operatorFee};
+}
+async function openOriginalReview(){
+ if(busy||pending)return;if(!account)return connectWallet();if(chain!==BASE)return switchBase();
+ let snap;try{snap=originalSnapshot();}catch(e){originalStatus(humanError(e),true);return;}
+ busy='original-review';render();originalStatus('Checking original contract, remaining supply, recipient and network fees. No transaction is sent.');
+ try{
+  if(!originalHelper){await loadOriginalHelper();await assertOriginalWallet(snap);}
+  const quote=await prepareOriginalMint(snap);await assertOriginalWallet(snap);originalReview={...snap,quote};
+  const box=$('original-review-copy');box.replaceChildren();
+  text('original-review-title',`Mint ${snap.quantity} original Ghoulball${snap.quantity===1?'':'s'}`);
+  paragraph(box,'Recipient: '+getAddress(snap.account));
+  paragraph(box,'Network: Base mainnet (8453). Original collection: '+getAddress(ORIGINAL));
+  paragraph(box,`${snap.quantity} original NFTs arrive in this wallet. One contract-creation transaction, 0 ETH value, no NFT approval. No originals are locked and no GGOO is summoned by this action.`,'critical');
+  paragraph(box,`Estimated L2 execution fee: ${formatEther(quote.executionFee)} ETH. Conservative total fee reserve: ${formatEther(quote.feeReserve)} ETH, including buffered gas, L1 upper-bound fee and operator fee. This is an estimate, not a charge or guaranteed final fee. Your wallet shows the final network fee.`);
+  paragraph(box,'Another minter can take the remaining supply before inclusion. If this batch fails, the entire mint reverts; network gas may still be charged. Contract wallets must support contract creation and receiving ERC-721 NFTs.');
+  paragraph(box,'After confirmation, refresh your owned originals here and choose any 13 yourself. The permanent-lock GGOO mint has its own approval and explicit review.');
+  text('original-review-consent-label',`I checked the recipient and fees and want to mint ${snap.quantity} original Ghoulball${snap.quantity===1?'':'s'} to this wallet.`);
+  $('original-review-consent').checked=false;$('original-confirm-review').disabled=true;$('original-review-dialog').showModal();$('original-review-title').focus({preventScroll:true});$('original-review-dialog').scrollTop=0;
+  originalStatus('Review the quantity, exact recipient and estimated fees. Your wallet approval is still required.');
+ }catch(e){originalStatus(humanError(e),true);}
+ finally{busy=null;render();}
+}
+async function submitOriginalReview(){
+ if(!originalReview||!$('original-review-consent').checked||busy||pending)return;
+ const snap=originalReview;originalReview=null;$('original-review-dialog').close();busy='originals';render();let sendStarted=false;
+ try{
+  originalStatus('Rechecking the exact original mint before opening your wallet.');
+  const quote=await prepareOriginalMint(snap);
+  if(quote.feeReserve>snap.quote.feeReserve)throw Error('The estimated network fee increased. Review the updated original mint again.');
+  await assertOriginalWallet(snap);
+  const intent={hash:null,phase:'awaiting-wallet',kind:'originals',recipient:snap.account,quantity:snap.quantity,creationHash:CREATION_HASH,originalCollection:ORIGINAL,collection:cfg.ganjaCollection,chainId:8453,submittedAt:Date.now()};
+  savePendingIntent(intent);pending=intent;render();
+  originalStatus(`Confirm one zero-value contract creation in your wallet to mint ${snap.quantity} originals to ${getAddress(snap.account)}.`);
+  sendStarted=true;const hash=await snap.provider.request({method:'eth_sendTransaction',params:[quote.tx]});
+  if(!hashPattern.test(hash))throw Error('Wallet returned no valid transaction hash. Check its Base history before retrying.');
+  pending={...intent,hash,phase:'submitted'};cacheSet(pendingKey(),pending);render();await trackPending();
+ }catch(e){
+  if(sendStarted&&pending&&!pending.hash){
+   const code=e?.code??e?.error?.code;
+   if(code===4001||code==='ACTION_REJECTED'){cacheDelete(pendingKey(pending));pending=null;}
+   else{pending.phase='uncertain';cacheSet(pendingKey(),pending);showUncertain(pending);}
+  }
+  originalStatus(humanError(e),true);
+ }finally{busy=null;render();}
+}
 function scanInventory() {
  if(!cfg||!account||chain!==BASE||pending)return Promise.resolve();
+ if(!Number.isSafeInteger(cfg.originalGenesisBlock)||cfg.originalGenesisBlock<0){text('inventory-status','Original discovery configuration is unavailable. Minting originals uses separate supply and runtime checks.');return Promise.resolve();}
  if(scanning)return inventoryTask;
  const version=++scanGeneration,snap={account,chain},current=()=>version===scanGeneration&&snap.account===account&&snap.chain===chain;
  const assertCurrent=()=>{if(!current())throw Error('Search cancelled.');};
@@ -463,7 +577,7 @@ async function preflight(snap, kind) {
 }
 function resultLink(hash,kind,recipient,tokenId) {
  const box=$('transaction-result');box.hidden=false;box.replaceChildren();box.dataset.txHash=hash;box.dataset.tokenId=tokenId?String(tokenId):'';
- paragraph(box,`${kind==='mint'?'Mint':'Approval'} transaction for wallet ${getAddress(recipient)}.`);
+ paragraph(box,`${kind==='originals'?'Original Ghoulballs mint':kind==='mint'?'GGOO mint':'Approval'} transaction for wallet ${getAddress(recipient)}.`);
  const a=document.createElement('a');a.href=`https://basescan.org/tx/${hash}`;a.target='_blank';a.rel='noopener noreferrer';a.textContent='VIEW TRANSACTION ON BASESCAN ↗';box.append(a);
  if(tokenId) {const b=document.createElement('a');b.href='#token/'+tokenId;b.textContent='VIEW GGOO #'+tokenId+' & ITS 13 ORIGINALS ↗';box.append(document.createElement('br'),b);}
 }
@@ -473,16 +587,22 @@ function showUncertain(saved) {
  const label=document.createElement('label');label.textContent='Already submitted? Paste the transaction hash:';label.className='input-label';
  const input=document.createElement('input');input.type='text';input.placeholder='0x… (66 characters)';input.className='hash-input';input.autocomplete='off';input.setAttribute('aria-label','Submitted transaction hash');
  const track=document.createElement('button');track.className='secondary-button';track.textContent='VERIFY & TRACK TRANSACTION';track.type='button';
- track.onclick=async()=>{track.disabled=true;try{
+ let recovering=false;
+ track.onclick=async()=>{if(pending!==saved||recovering)return;recovering=true;track.disabled=true;clear.disabled=true;try{
   const hash=input.value.trim();if(!hashPattern.test(hash))throw Error('Enter a valid Base transaction hash.');
   const tx=await rpc('eth_getTransactionByHash',[hash]);
-  const expected=ABI.encodeFunctionData(saved.kind==='mint'?'mint':'setApprovalForAll',saved.kind==='mint'?[saved.ids]:[saved.collection,true]);
-  if(!tx||lower(tx.from)!==saved.recipient||lower(tx.to)!==lower(saved.kind==='mint'?saved.collection:ORIGINAL)||lower(tx.input||tx.data)!==lower(expected)||BigInt(tx.value||0)!==0n)throw Error('This transaction does not match the saved wallet, target and exact action.');
-  pending={...saved,hash,phase:'submitted'};cacheSet(pendingKey(),pending);render();await trackPending();
- }catch(e){status(humanError(e),true);}finally{track.disabled=false;}};
+  if(pending!==saved)return;
+  if(saved.kind==='originals'){
+   if(!originalHelper)await loadOriginalHelper();if(pending!==saved)return;assertOriginalTransaction(tx,{...saved,hash},originalHelper);
+  }else{
+   const expected=ABI.encodeFunctionData(saved.kind==='mint'?'mint':'setApprovalForAll',saved.kind==='mint'?[saved.ids]:[saved.collection,true]);
+   if(!tx||lower(tx.from)!==saved.recipient||lower(tx.to)!==lower(saved.kind==='mint'?saved.collection:ORIGINAL)||lower(tx.input||tx.data)!==lower(expected)||BigInt(tx.value||0)!==0n)throw Error('This transaction does not match the saved wallet, target and exact action.');
+  }
+  if(pending!==saved)return;const recovered={...saved,hash,phase:'submitted'};savePendingIntent(recovered);pending=recovered;render();await trackPending();
+ }catch(e){if(pending===saved)status(humanError(e),true);}finally{recovering=false;track.disabled=pending!==saved;clear.disabled=pending!==saved||!checkbox.checked;}};
  const clearLabel=document.createElement('label');clearLabel.className='consent';const checkbox=document.createElement('input');checkbox.type='checkbox';const copy=document.createElement('span');copy.textContent='I checked this wallet’s Base history and confirmed that no transaction was submitted or is still awaiting my approval.';clearLabel.append(checkbox,copy);
- const clear=document.createElement('button');clear.className='secondary-button';clear.textContent='CLEAR UNSENT REQUEST';clear.type='button';clear.disabled=true;checkbox.onchange=()=>clear.disabled=!checkbox.checked;
- clear.onclick=()=>{if(!checkbox.checked||pending!==saved)return;pending=null;cacheDelete(pendingKey());invalidate();box.hidden=true;status('Unsent request cleared after your confirmation. Verify your originals again before a new transaction.');};
+ const clear=document.createElement('button');clear.className='secondary-button';clear.textContent='CLEAR UNSENT REQUEST';clear.type='button';clear.disabled=true;checkbox.onchange=()=>clear.disabled=recovering||!checkbox.checked;
+ clear.onclick=()=>{if(recovering||!checkbox.checked||pending!==saved)return;cacheDelete(pendingKey(saved));pending=null;invalidate();box.hidden=true;status('Unsent request cleared after your confirmation. Review again before a new transaction.');if(saved.kind==='originals')originalStatus('Unsent original request cleared after your confirmation. Review the quantity and recipient again.');};
  box.append(label,input,track,clearLabel,clear);status('Wallet submission outcome is unknown. Check the saved wallet’s Base history before sending another transaction.',true);render();
 }
 async function submitReview() {
@@ -530,11 +650,29 @@ async function trackPending() {
  resultLink(saved.hash,saved.kind,saved.recipient);let failures=0;
  while(pending===saved) {
   let receipt;
-  try {receipt=await rpc('eth_getTransactionReceipt',[saved.hash]);failures=0;}
+  try {receipt=await rpc('eth_getTransactionReceipt',[saved.hash]);if(pending!==saved)return;failures=0;}
   catch(e){failures++;status(`Transaction submitted for ${short(saved.recipient)}. Base RPC is temporarily unavailable; checking again. Use the receipt link below.`,true);}
   if(receipt?.blockNumber) {
-   if(BigInt(receipt.status)!==1n) {pending=null;cacheDelete(pendingKey());invalidate();status('Transaction reverted on Base. No originals were locked by this transaction. Network gas may have been charged.',true);return;}
-   if(saved.kind==='mint') {
+   if(saved.kind==='originals'){
+    let tx;
+    try{tx=await rpc('eth_getTransactionByHash',[saved.hash]);if(pending!==saved)return;if(tx===null)throw Error('Transaction lookup not indexed yet.');}
+    catch{status('Original mint receipt found, but its exact transaction could not be checked. Do not submit again. Retrying the read.',true);await sleep(4000);continue;}
+    try{
+     assertOriginalTransaction(tx,saved,originalHelper);
+     if(lower(receipt.transactionHash)!==lower(saved.hash))throw Error('Original mint receipt hash does not match.');
+     const minedStatus=rpcAmount(receipt.status,'receipt status');
+     if(minedStatus!==0n&&minedStatus!==1n)throw Error('Original mint receipt status is invalid.');
+     if(minedStatus===0n){cacheDelete(pendingKey(saved));pending=null;invalidate();const message='Original mint reverted on Base. No originals were minted by this transaction. Network gas may have been charged. Review supply and fees before retrying.';status(message,true);originalStatus(message,true);await refreshOriginalSupply();return;}
+     const originalIds=parseOriginalReceipt(receipt,saved);
+     cacheDelete(pendingKey(saved));pending=null;invalidate();resultLink(saved.hash,saved.kind,saved.recipient);
+     const message=`ORIGINALS MINTED. ${originalIds.length} original Ghoulballs were minted to ${getAddress(saved.recipient)}. No originals were locked. Choose your 13 separately below.`;
+     status(message);originalStatus(message);paragraph($('transaction-result'),'Minted originals: '+originalIds.map(id=>'#'+id).join(', '));
+     for(const id of originalIds){const link=document.createElement('a');link.href=`https://basescan.org/nft/${ORIGINAL}/${id}`;link.textContent='VIEW ORIGINAL #'+id;link.target='_blank';link.rel='noopener noreferrer';$('transaction-result').append(link,document.createElement('br'));}
+     await refreshOriginalSupply();
+     if(account===saved.recipient&&chain===BASE){stopInventory(false);await refreshWallet();}
+    }catch(e){saved.needsReview=true;cacheSet(pendingKey(),saved);const message='Original mint receipt needs review. '+humanError(e)+' Do not repeat the mint.';status(message,true);originalStatus(message,true);}
+   } else if(BigInt(receipt.status)!==1n) {pending=null;cacheDelete(pendingKey());invalidate();status('Transaction reverted on Base. No originals were locked by this transaction. Network gas may have been charged.',true);return;}
+   else if(saved.kind==='mint') {
     let tokenId;
     try {tokenId=parseMintReceipt(receipt,saved);}catch(e){saved.needsReview=true;cacheSet(pendingKey(),saved);live=false;status(humanError(e),true);return;}
     resultLink(saved.hash,saved.kind,saved.recipient,tokenId);
@@ -559,7 +697,7 @@ async function trackPending() {
    }
    render();return;
   }
-  if(!failures)status(`${saved.kind==='mint'?'Mint':'Approval'} submitted for ${getAddress(saved.recipient)}. Waiting for the Base receipt. Do not submit again. This transaction remains tracked if the wallet account changes.`);
+  if(!failures){const message=`${saved.kind==='originals'?'Original mint':saved.kind==='mint'?'Mint':'Approval'} submitted for ${getAddress(saved.recipient)}. Waiting for the Base receipt. Do not submit again. This transaction remains tracked if the wallet account changes.`;status(message);if(saved.kind==='originals')originalStatus(message);}
   await sleep(document.hidden?12000:4000);
  }
 }
@@ -673,6 +811,7 @@ function renderLineage(ids,genes,genome) {
 }
 async function routeToken(options={}) {
  updateWalletDeeplink();
+ gifExportController?.abort();gifExportController=null;$('token-gif-cancel').hidden=true;$('token-download-gif').disabled=true;$('token-share-x').hidden=true;text('token-export-status','');
  const match=location.hash.match(/^#token\/(\d+)$/),current=++tokenGeneration,renderMotion=motionGeneration;
  $('token-page').hidden=!match;activeTokenId=null;if(!match)return;
  const id=BigInt(match[1]);text('token-title','GGOO #'+id);text('token-status','Reading immutable onchain provenance…');$('token-facts').replaceChildren();$('token-ingredients').replaceChildren();$('token-traits').replaceChildren();$('token-lineage').replaceChildren();$('token-lineage').hidden=true;$('token-art').removeAttribute('src');delete $('token-art').dataset.tokenId;$('token-basescan').hidden=true;$('token-share').disabled=true;
@@ -696,19 +835,35 @@ async function routeToken(options={}) {
   for(const trait of (Array.isArray(attributes)?attributes:attributes.attributes||[])){const span=document.createElement('span');span.textContent=String(trait.trait_type)+': '+String(trait.value);$('token-traits').append(span);}
   for(const ingredient of ids){const a=document.createElement('a');a.textContent='#'+ingredient;a.href=`https://basescan.org/nft/${ORIGINAL}/${ingredient}`;a.target='_blank';a.rel='noopener noreferrer';$('token-ingredients').append(a);}
   const url=`https://basescan.org/nft/${cfg.ganjaCollection}/${id}`;$('token-basescan').href=url;$('token-basescan').hidden=false;$('token-share').disabled=false;text('token-status',revealed?'Revealed art, traits and inherited lineage read directly from Base. All 13 originals remain in the permanent vault.':'MINTED · AWAITING RANDOMNESS. The 13 originals are permanently locked already. Final offspring is not known yet. This page checks read-only; no second transaction is required. If the oracle never delivers, it may remain pending permanently. There is no cancellation or reroll.');
+  if(revealed){$('token-download-gif').disabled=false;$('token-share-x').href=buildTokenShareUrl({tokenId:String(id),pageUrl:location.href});$('token-share-x').hidden=false;text('token-export-status','6-second animated preview; loop restarts. GIF export runs locally. Attach the downloaded GIF yourself when sharing on X.');}
+  else text('token-export-status','GIF download and X sharing are available after this GGOO reveals.');
   if(options.scroll!==false)$('token-page').scrollIntoView({behavior:'smooth',block:'start'});
  }catch(e){if(current===tokenGeneration)text('token-status','Onchain token data is unavailable or invalid. No reveal is claimed. '+humanError(e));}
 }
 async function initialize() {
+ restoreOriginalIntent();render();
+ if(pending){
+  if(pending.kind==='recovery-lock')originalStatus('Saved transaction records require manual review. Minting remains locked.',true);
+  else if(!pending.hash){showUncertain(pending);originalStatus('Original wallet submission outcome is unknown. Check the saved recipient history on Base. Do not send again.',true);}
+  else{resultLink(pending.hash,pending.kind,pending.recipient);originalStatus('Saved original mint remains locked while the Base connection is checked. Use its transaction link below.');}
+ }
  try {
   const res=await fetch(siteURL('config.json'),{cache:'no-store'});if(!res.ok)throw Error('Missing deployment configuration.');cfg=await res.json();
-  if(!Array.isArray(cfg.rpcUrls)||!cfg.rpcUrls.length||!Number.isSafeInteger(cfg.originalGenesisBlock)||cfg.originalGenesisBlock<0)throw Error('Invalid RPC or original deployment block configuration.');
-  live=await verifyDeployment();
-  if(live){const saved=cacheGet(pendingKey());if(saved&&(hashPattern.test(saved.hash)||saved.hash===null)&&saved.chainId===8453&&lower(saved.collection)===lower(cfg.ganjaCollection)&&validAddress(saved.recipient)&&['mint','approve'].includes(saved.kind)&&Array.isArray(saved.ids)&&saved.ids.length===COUNT){pending=saved;}}
+  if(!Array.isArray(cfg.rpcUrls)||!cfg.rpcUrls.length)throw Error('Invalid Base RPC configuration.');
+  // Recover before deployment reads: original acquisition does not depend on GGOO cap or oracle readiness.
+  const saved=cacheGet(pendingKey(null));
+  if(saved&&(hashPattern.test(saved.hash)||saved.hash===null)&&saved.chainId===8453&&lower(saved.collection)===lower(cfg.ganjaCollection)&&validAddress(saved.recipient)){
+   if(['mint','approve'].includes(saved.kind)&&Array.isArray(saved.ids)&&saved.ids.length===COUNT){if(pending)pending={kind:'recovery-lock',needsReview:true};else pending=saved;}
+   if(!pending&&validOriginalIntent(saved)){savePendingIntent(saved);cacheDelete(pendingKey(null));pending=saved;}
+  }
+  let deploymentError=null;try{live=await verifyDeployment();}catch(e){live=false;deploymentError=e;}
+  try{await loadOriginalHelper();}catch(e){originalStatus(humanError(e),true);}
+  refreshOriginalSupply();
   if(live){text('contract-status','● BASE CODE VERIFIED');$('contract-status').classList.add('live');text('launch-banner','BASE MAINNET · Runtime code and immutable contract wiring verified. 13 originals per GGOO. 0 ETH protocol fee.');status('Contract verified on Base. Connect your wallet and choose exactly 13 originals.');await refreshSupply();await refreshReserve();}
   else{text('contract-status','● MINTING NOT OPEN');status('Minting is not open. We are waiting for verified Base contracts. Approvals and minting remain disabled.');updateSupply(null);}
+  if(deploymentError){text('contract-status','GGOO MINT SAFETY LOCK');status('Cannot verify the GGOO deployment. GGOO approval and permanent-lock mint controls are disabled. '+humanError(deploymentError),true);}
   loadGallery();bindProvider();
-  if(pending){const saved=pending;if(!saved.hash){saved.phase='uncertain';cacheSet(pendingKey(),saved);showUncertain(saved);}else if(saved.needsReview){live=false;status('A previously submitted receipt needs manual review. Use its Basescan link before any further mint.',true);resultLink(saved.hash,saved.kind,saved.recipient);}else trackPending().catch(e=>status(humanError(e),true));}
+  if(pending){const saved=pending;if(saved.kind==='recovery-lock'){status('Saved transaction records require manual review. Check wallet history on Base before any further transaction.',true);originalStatus('Saved transaction records require manual review. Minting remains locked.',true);}else if(!saved.hash){saved.phase='uncertain';cacheSet(pendingKey(),saved);showUncertain(saved);}else if(saved.needsReview){if(saved.kind!=='originals')live=false;status('A previously submitted receipt needs manual review. Use its Basescan link before any further mint.',true);if(saved.kind==='originals')originalStatus('Original mint receipt needs review. Do not repeat the mint. Inspect the saved transaction below.',true);resultLink(saved.hash,saved.kind,saved.recipient);}else if(saved.kind==='originals'&&!originalHelper){resultLink(saved.hash,saved.kind,saved.recipient);originalStatus('The original helper could not be verified. Your saved transaction remains locked; reload to retry the receipt check.',true);}else trackPending().catch(e=>status(humanError(e),true));}
   updateWalletDeeplink();
   if(provider&&!busy) {try{if(await readWalletAccount()&&account)refreshWallet();}catch(e){walletStatus('Wallet connection could not be read. Tap Connect wallet to try again. '+humanError(e),true);}}
 
@@ -738,9 +893,30 @@ $('mint-next-step').onclick=()=>{if(busy||pending)return;if(!account)return conn
 $('consent').onchange=render;$('approve-button').onclick=()=>openReview('approve');$('main-mint-button').onclick=()=>openReview('mint');
 $('cancel-review').onclick=()=>{$('review-dialog').close();review=null;};$('review-dialog').addEventListener('cancel',()=>{review=null;});
 $('review-consent').onchange=()=>{$('confirm-review').disabled=!$('review-consent').checked;};$('confirm-review').onclick=submitReview;
+$('original-review-button').onclick=openOriginalReview;
+function changeOriginalQuantity(){originalReview=null;$('original-review-consent').checked=false;$('original-confirm-review').disabled=true;if($('original-review-dialog').open)$('original-review-dialog').close();try{const quantity=originalQuantity();originalStatus(originalSupply!==null&&quantity>6667-originalSupply?`Only ${6667-originalSupply} originals remain. Choose fewer.`:'Review the quantity and recipient before opening your wallet.');}catch(e){originalStatus(humanError(e),true);}renderOriginalMint();}
+$('original-quantity').oninput=changeOriginalQuantity;
+for(const button of document.querySelectorAll('[data-original-quantity]'))button.onclick=()=>{if(busy||pending)return;$('original-quantity').value=button.dataset.originalQuantity;changeOriginalQuantity();};
+$('original-close-review').onclick=()=>{$('original-review-dialog').close();originalReview=null;};$('original-review-dialog').addEventListener('cancel',()=>{originalReview=null;});
+$('original-review-consent').onchange=()=>{$('original-confirm-review').disabled=!$('original-review-consent').checked;};$('original-confirm-review').onclick=submitOriginalReview;
+$('token-download-gif').onclick=async()=>{
+ if(gifExportController||!activeTokenId||revealStates.get(activeTokenId)!==true)return;
+ const id=activeTokenId,version=tokenGeneration,controller=new AbortController();gifExportController=controller;$('token-download-gif').disabled=true;$('token-gif-cancel').hidden=false;
+ const current=()=>gifExportController===controller&&tokenGeneration===version&&activeTokenId===id;
+ try{
+  text('token-export-status','Reading this revealed token’s animated SVG from Base…');
+  const svg=await call(cfg.ganjaCollection,'svg',[id]);
+  if(!current())return;if(controller.signal.aborted){text('token-export-status','GIF export cancelled.');return;}
+  await downloadTokenGif({svg,tokenId:id,revealed:true,signal:controller.signal,onProgress:({completed,total})=>{if(current())text('token-export-status',`Creating GIF locally: ${completed} / ${total} frames. You can cancel at any time.`);}});
+  if(current())text('token-export-status','GIF download ready: a 6-second animated preview; the loop restarts. X opens a draft. Attach this downloaded GIF yourself.');
+ }catch(e){if(current())text('token-export-status',controller.signal.aborted?'GIF export cancelled.':`GIF export unavailable: ${humanError(e)}`);}
+ finally{if(current()){gifExportController=null;$('token-gif-cancel').hidden=true;$('token-download-gif').disabled=false;}}
+};
+$('token-gif-cancel').onclick=()=>gifExportController?.abort();
 $('gallery-more').onclick=loadGallery;window.addEventListener('hashchange',routeToken);
 $('token-share').onclick=async()=>{try{if(navigator.share)await navigator.share({title:$('token-title').textContent+' · Ganja Ghoulballs',url:location.href});else{await navigator.clipboard.writeText(location.href);notify('Provenance link copied.');}}catch(e){if(e.name!=='AbortError')notify('Copy this page address to share its provenance.');}};
 setInterval(()=>{if(live&&!document.hidden&&!busy&&!pending){refreshSupply();refreshReserve();}},30000);
+setInterval(()=>{if(cfg&&!document.hidden&&!busy&&!pending)refreshOriginalSupply();},30000);
 setInterval(pollReveals,12000);
 window.addEventListener('visibilitychange',()=>{if(!document.hidden)pollReveals();});
 initialize();

@@ -1,0 +1,14 @@
+{
+  "passed": 113,
+  "viewportWidths": [
+    320,
+    360,
+    390,
+    412,
+    768,
+    1440
+  ],
+  "pageErrors": [],
+  "liveTransactions": 0,
+  "note": "Mocked EIP-1193 wallet and mocked Base RPC, headless Chromium. No physical mobile wallet was tested."
+}

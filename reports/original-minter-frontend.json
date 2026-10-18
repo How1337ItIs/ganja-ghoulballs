@@ -1,0 +1,323 @@
+{
+  "passed": 79,
+  "failed": 0,
+  "results": [
+    {
+      "name": "quantity 1 exact creation, durable intent, receipt and inventory",
+      "passed": true
+    },
+    {
+      "name": "quantity 13 exact creation, durable intent, receipt and inventory",
+      "passed": true
+    },
+    {
+      "name": "quantity 30 exact creation, durable intent, receipt and inventory",
+      "passed": true
+    },
+    {
+      "name": "mobile 320 mounted panel, explicit review, pending and confirmed layout",
+      "passed": true
+    },
+    {
+      "name": "mobile 390 mounted panel, explicit review, pending and confirmed layout",
+      "passed": true
+    },
+    {
+      "name": "invalid quantity \"0\" never reviews or sends",
+      "passed": true
+    },
+    {
+      "name": "invalid quantity \"31\" never reviews or sends",
+      "passed": true
+    },
+    {
+      "name": "invalid quantity \"1.5\" never reviews or sends",
+      "passed": true
+    },
+    {
+      "name": "invalid quantity \"-1\" never reviews or sends",
+      "passed": true
+    },
+    {
+      "name": "invalid quantity \"\" never reviews or sends",
+      "passed": true
+    },
+    {
+      "name": "fail closed source or remaining supply {\"originalSupply\":6667}",
+      "passed": true
+    },
+    {
+      "name": "fail closed source or remaining supply {\"originalSupply\":6660}",
+      "passed": true
+    },
+    {
+      "name": "fail closed source or remaining supply {\"originalSupply\":null}",
+      "passed": true
+    },
+    {
+      "name": "fail closed source or remaining supply {\"badOriginal\":true}",
+      "passed": true
+    },
+    {
+      "name": "fail closed source or remaining supply {\"changedOriginal\":true}",
+      "passed": true
+    },
+    {
+      "name": "originals independent of GGOO {\"supply\":420}",
+      "passed": true
+    },
+    {
+      "name": "originals independent of GGOO {\"reserve\":\"0\"}",
+      "passed": true
+    },
+    {
+      "name": "originals independent of GGOO {\"quote\":null}",
+      "passed": true
+    },
+    {
+      "name": "originals independent of GGOO {\"config\":{\"deploymentStatus\":\"awaiting-contract-deployment\"}}",
+      "passed": true
+    },
+    {
+      "name": "supply race during confirmation blocks creation send",
+      "passed": true
+    },
+    {
+      "name": "atomic creation simulation revert blocks wallet send",
+      "passed": true
+    },
+    {
+      "name": "gas estimate fail cannot use fallback",
+      "passed": true
+    },
+    {
+      "name": "gas estimate zero cannot use fallback",
+      "passed": true
+    },
+    {
+      "name": "gas estimate huge cannot use fallback",
+      "passed": true
+    },
+    {
+      "name": "wallet has no ETH blocks without fallback",
+      "passed": true
+    },
+    {
+      "name": "L1 or operator unavailable blocks without fallback",
+      "passed": true
+    },
+    {
+      "name": "balance read unavailable blocks without fallback",
+      "passed": true
+    },
+    {
+      "name": "invalid gas price blocks without fallback",
+      "passed": true
+    },
+    {
+      "name": "account-event at gas estimate aborts stale confirmation",
+      "passed": true
+    },
+    {
+      "name": "account-silent at gas estimate aborts stale confirmation",
+      "passed": true
+    },
+    {
+      "name": "chain-event at gas estimate aborts stale confirmation",
+      "passed": true
+    },
+    {
+      "name": "chain-silent at gas estimate aborts stale confirmation",
+      "passed": true
+    },
+    {
+      "name": "provider-event at gas estimate aborts stale confirmation",
+      "passed": true
+    },
+    {
+      "name": "provider-silent at gas estimate aborts stale confirmation",
+      "passed": true
+    },
+    {
+      "name": "silent account mutation after code RPC is detected",
+      "passed": true
+    },
+    {
+      "name": "silent account mutation after supply RPC is detected",
+      "passed": true
+    },
+    {
+      "name": "silent account mutation after gasprice RPC is detected",
+      "passed": true
+    },
+    {
+      "name": "silent account mutation after fee RPC is detected",
+      "passed": true
+    },
+    {
+      "name": "silent account mutation after balance RPC is detected",
+      "passed": true
+    },
+    {
+      "name": "silent account mutation after simulate RPC is detected",
+      "passed": true
+    },
+    {
+      "name": "wallet switch to Base on mobile preserves explicit originals review",
+      "passed": true
+    },
+    {
+      "name": "cancel and Escape never prompt wallet",
+      "passed": true
+    },
+    {
+      "name": "double confirmation remains one send and shares pending lock",
+      "passed": true
+    },
+    {
+      "name": "storage failure refuses send before request",
+      "passed": true
+    },
+    {
+      "name": "definite wallet rejection clears intent without automatic retry",
+      "passed": true
+    },
+    {
+      "name": "uncertain transport persists across reload with no retransmit",
+      "passed": true
+    },
+    {
+      "name": "uncertain invalidhash persists across reload with no retransmit",
+      "passed": true
+    },
+    {
+      "name": "submitted pending survives reload and resumes receipt only",
+      "passed": true
+    },
+    {
+      "name": "recipient remains captured when wallet changes after broadcast",
+      "passed": true
+    },
+    {
+      "name": "receipt missing remains review locked across reload",
+      "passed": true
+    },
+    {
+      "name": "receipt duplicate remains review locked across reload",
+      "passed": true
+    },
+    {
+      "name": "receipt extra remains review locked across reload",
+      "passed": true
+    },
+    {
+      "name": "receipt wrongRecipient remains review locked across reload",
+      "passed": true
+    },
+    {
+      "name": "receipt nonzeroFrom remains review locked across reload",
+      "passed": true
+    },
+    {
+      "name": "receipt wrongCollection remains review locked across reload",
+      "passed": true
+    },
+    {
+      "name": "receipt zeroId remains review locked across reload",
+      "passed": true
+    },
+    {
+      "name": "receipt tooHighId remains review locked across reload",
+      "passed": true
+    },
+    {
+      "name": "receipt removed remains review locked across reload",
+      "passed": true
+    },
+    {
+      "name": "receipt malformed remains review locked across reload",
+      "passed": true
+    },
+    {
+      "name": "reverted creation receipt clears pending and never claims originals minted",
+      "passed": true
+    },
+    {
+      "name": "fee increase after reviewed estimate requires new review",
+      "passed": true
+    },
+    {
+      "name": "pending wallet prompt persists intent and blocks every new action",
+      "passed": true
+    },
+    {
+      "name": "existing GGOO approve pending also blocks originals",
+      "passed": true
+    },
+    {
+      "name": "existing GGOO mint pending also blocks originals",
+      "passed": true
+    },
+    {
+      "name": "wrong receipt hash requires manual review",
+      "passed": true
+    },
+    {
+      "name": "uncertain recovery rejects wrong from",
+      "passed": true
+    },
+    {
+      "name": "uncertain recovery rejects wrong chain",
+      "passed": true
+    },
+    {
+      "name": "uncertain recovery rejects wrong missingChain",
+      "passed": true
+    },
+    {
+      "name": "uncertain recovery rejects wrong target",
+      "passed": true
+    },
+    {
+      "name": "uncertain recovery rejects wrong value",
+      "passed": true
+    },
+    {
+      "name": "uncertain recovery rejects wrong input",
+      "passed": true
+    },
+    {
+      "name": "uncertain recovery rejects wrong hash",
+      "passed": true
+    },
+    {
+      "name": "uncertain recovery of exact creation tracks receipt without resending",
+      "passed": true
+    },
+    {
+      "name": "original uncertain lock survives GGOO address changed",
+      "passed": true
+    },
+    {
+      "name": "original uncertain lock survives invalid deployment block",
+      "passed": true
+    },
+    {
+      "name": "original uncertain lock survives configuration unavailable",
+      "passed": true
+    },
+    {
+      "name": "legacy original intent migrates to immutable original-collection key",
+      "passed": true
+    },
+    {
+      "name": "async hash verification cannot race clear-unsent or duplicate recovery",
+      "passed": true
+    },
+    {
+      "name": "receipt preceding transaction lookup retries read-only without unlocking",
+      "passed": true
+    }
+  ],
+  "pageErrors": []
+}

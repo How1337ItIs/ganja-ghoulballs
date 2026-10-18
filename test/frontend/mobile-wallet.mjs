@@ -12,6 +12,7 @@ const OG='0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c',G='0x333333333333333333333
 const abi=new Interface(['function recipeOf(uint256) view returns((uint256 seed,uint256 scene,uint256 ballCount,bytes palette,(uint256 radius,uint256 xPhase,uint256 yPhase,bytes3 colour)[] balls,uint256 theme,uint256 motion))','function totalSupply() view returns(uint256)','function MAX_SUPPLY() view returns(uint256)','function SACRIFICE_COUNT() view returns(uint256)','function deploymentChainId() view returns(uint256)','function originalCollection() view returns(address)','function graveyard() view returns(address)','function renderer() view returns(address)','function redeemer() view returns(address)','function ownerOf(uint256) view returns(address)','function balanceOf(address) view returns(uint256)','function getApproved(uint256) view returns(address)','function isApprovedForAll(address,address) view returns(bool)','function setApprovalForAll(address,bool)','function mint(uint256[13])','function svg(uint256) view returns(string)','function svgStill(uint256) view returns(string)','function ingredientsOf(uint256) view returns(uint256[13])','function seedOf(uint256) view returns(uint256)','function traitsOf(uint256) view returns(string)', 'function backdrop() view returns(address)', 'function vrfWrapper() view returns(address)', 'function maxRequestPrice() view returns(uint256)', 'function quoteRandomness() view returns(uint256)', 'function CALLBACK_GAS_LIMIT() view returns(uint32)', 'function REQUEST_CONFIRMATIONS() view returns(uint16)', 'function NUM_WORDS() view returns(uint32)', 'function estimateRequestPriceNative(uint32,uint32,uint256) view returns(uint256)', 'function s_configured() view returns(bool)', 'function s_disabled() view returns(bool)', 'function s_vrfCoordinator() view returns(address)', 'function mintBlockOf(uint256) view returns(uint256)', 'function mintedBy(uint256) view returns(address)', 'function ART_VERSION() view returns(string)', 'function revealed(uint256) view returns(bool)', 'function requestIdOf(uint256) view returns(uint256)', 'function requestPaid(uint256) view returns(uint256)', 'function parentGenesOf(uint256) view returns(uint256[13])', 'function parentDigestOf(uint256) view returns(bytes32)', 'function genomeOf(uint256) view returns(uint256)','event Transfer(address indexed from,address indexed to,uint256 indexed tokenId)','event GhoulballsSacrificed(address indexed redeemer,uint256 indexed gooId,uint256[13] originalIds)']);
 const ids=Array.from({length:13},(_,i)=>String(i+1)),zero='0x0000000000000000000000000000000000000000';
 const originalCode=fs.readFileSync(path.join(ROOT,'reports/original-basescan-runtime.hex'),'utf8').trim();
+const gifLiveSvg=fs.readFileSync(path.join(ROOT,'test/frontend/fixtures/ggoo-live-token-1.svg'),'utf8');
 const originalRecipes=JSON.parse(fs.readFileSync(path.join(ROOT,'reports/original-trait-probes.json'))).parentExamples;
 const code={ganjaCollection:'0x6001600055',graveyard:'0x6002600055',renderer:'0x6003600055',backdrop:'0x6004600055',vrfWrapper:fs.readFileSync(path.join(ROOT,'reports/chainlink-base-wrapper-runtime.hex'),'utf8').trim()};
 const pack=(...fields)=>fields.reduce((word,[offset,value])=>word|(BigInt(value)<<BigInt(offset)),0n);
@@ -22,7 +23,7 @@ function staticFile(requestURL) {
  let p=new URL(requestURL,'http://local').pathname;
  if(p==='/ganjaghoulballs'||p.startsWith('/ganjaghoulballs/'))p=p.slice('/ganjaghoulballs'.length)||'/';
  if(p==='/animation-preview')p='/animation-preview.html';
- return path.join(ROOT,'site',p==='/'?'index.html':p);
+ return path.join(ROOT,'dist',p==='/'?'index.html':p);
 }
 function mime(file){return file.endsWith('.js')?'application/javascript':file.endsWith('.json')?'application/json':file.endsWith('.css')?'text/css':file.endsWith('.svg')?'image/svg+xml':'text/html';}
 const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://local');if(url.pathname==='/ganjaghoulballs'){res.writeHead(308,{Location:'/ganjaghoulballs/'+url.search});res.end();return;}if(url.pathname==='/ggoo'||url.pathname==='/ggoo/'){res.writeHead(302,{Location:'/ganjaghoulballs/'+url.search});res.end();return;}const file=staticFile(req.url);if(!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);res.end('Not found');return;}res.setHeader('Content-Type',mime(file));res.end(fs.readFileSync(file));}).listen(0,'127.0.0.1');
@@ -86,7 +87,7 @@ async function fixture(width=390,options={}){
      case'isApprovedForAll':value=state.approved;break;case'getApproved':value=zero;break;
      case'ingredientsOf':value=ids;break;case'seedOf':if(!state.revealed)throw Error('RevealPending');value=state.seedValue??123456789n;break;
      case'traitsOf':value=JSON.stringify(state.revealed?[{trait_type:'Texture',value:'Chocolate hash'},{trait_type:'Mood',value:'Cosmic stoner'}]:[{trait_type:'Reveal',value:'Pending Chainlink VRF'}]);break;
-     case'svg':case'svgStill':{const capturedReveal=state.revealed;if(state.artDelay&&fn.name==='svg')await new Promise(r=>setTimeout(r,state.artDelay));if(state.pendingArtDelay&&!capturedReveal)await new Promise(r=>setTimeout(r,state.pendingArtDelay));value='<svg data-revealed="'+capturedReveal+'" data-mode="'+fn.name+'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#251f1a"/><path d="M128 128H384V384H128Z" fill="#75623e"/><path d="M170 220h50v30h-50zm120 0h50v30h-50z" fill="#e15c38"/></svg>';break;}
+     case'svg':case'svgStill':{const capturedReveal=state.revealed;if(state.artDelay&&fn.name==='svg')await new Promise(r=>setTimeout(r,state.artDelay));if(state.pendingArtDelay&&!capturedReveal)await new Promise(r=>setTimeout(r,state.pendingArtDelay));value=state.svgOverride!==undefined&&String(fn.args[0])==='1'?state.svgOverride:'<svg data-revealed="'+capturedReveal+'" data-mode="'+fn.name+'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#251f1a"/><path d="M128 128H384V384H128Z" fill="#75623e"/><path d="M170 220h50v30h-50zm120 0h50v30h-50z" fill="#e15c38"/></svg>';break;}
      case'setApprovalForAll':case'mint':result='0x';break;
      default:throw Error('Unexpected ABI '+fn.name);
     }
@@ -111,6 +112,7 @@ async function expectPreviewMode(page,still){
 async function expectChainImageMode(page,selector,mode){await page.waitForFunction(({selector,mode})=>[...document.querySelectorAll(selector)].length>0&&[...document.querySelectorAll(selector)].every(img=>decodeURIComponent(img.getAttribute('src')||'').includes('data-mode="'+mode+'"')),{selector,mode});}
 
 try{
+ if(!process.env.GGOO_GIF_WIRING_ONLY){
  for(const width of [320,390]){
   const {page,state}=await fixture(width,{revealed:false});
   const actions=page.locator('#mint-actions .mint-button:visible');
@@ -392,7 +394,64 @@ try{
  {
   const {page,state}=await fixture(390,{config:{deploymentStatus:'awaiting-contract-deployment'}});await page.evaluate(()=>localStorage.setItem('ggoo:recipe:8453:0x4fe189e2554350c36d652e3573f8bbd0dc3b45c99a4bf799998623339ab3873a:1',JSON.stringify({count:2,theme:0,motion:1,colors:['url(https://invalid.example/steal)','<img src=x onerror=alert(1)>']})));await connect(page);await page.waitForFunction(()=>document.querySelectorAll('.id-chip').length===13);await page.locator('#inventory').scrollIntoViewIfNeeded();await page.waitForFunction(()=>document.querySelector('.original-colors').children.length>0);assert.equal(await page.locator('.original-colors span').first().evaluate(el=>/^rgb\(/.test(el.style.backgroundColor)),true);assert.equal(state.requests.some(url=>url.includes('invalid.example')),false);assert.equal(state.abiCalls.includes('recipeOf'),true);assert.equal(state.abiCalls.some(fn=>fn==='tokenURI'||fn==='imageURI'),false);assert.equal(await page.locator('.original-card img').count(),0);await page.close();await pass('malformed cached recipe colors are discarded and replaced by actual bounded recipe data without external artwork calls');
  }
+ }
+ // Optional focused invocation: GGOO_GIF_WIRING_ONLY=1. The normal suite keeps
+ // every prior assertion and adds these six checks against the built app.
+ {
+  const {page}=await fixture(320,{svgOverride:gifLiveSvg,startPath:'/ganjaghoulballs/#token/1'});
+  await page.waitForFunction(()=>!document.querySelector('#token-download-gif').disabled);
+  assert.equal(await page.locator('#token-share-x').isVisible(),true);
+  const intent=new URL(await page.locator('#token-share-x').getAttribute('href'));
+  assert.equal(intent.origin,'https://x.com');assert.equal(intent.pathname,'/intent/post');
+  assert.equal(intent.searchParams.get('url'),origin+'/ganjaghoulballs/#token/1');assert.match(intent.searchParams.get('text'),/#1/);
+  assert.match(await page.locator('#token-export-status').textContent(),/6-second.*loop restarts/);
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+  assert.equal(await page.evaluate(()=>window.sent.length),0);await page.close();await pass('GIF controls enable for revealed token and X draft preserves the nested token URL at 320px');
+ }
+ {
+  const {page}=await fixture(390,{svgOverride:gifLiveSvg,startPath:'/ganjaghoulballs/#token/1'});
+  await page.waitForFunction(()=>!document.querySelector('#token-download-gif').disabled);
+  const downloaded=page.waitForEvent('download');await page.locator('#token-download-gif').click();
+  const download=await downloaded;assert.equal(download.suggestedFilename(),'ggoo-1-animated-preview.gif');
+  const destination=path.join(OUT,'token-page-live-token-1.gif');await download.saveAs(destination);
+  assert.equal(fs.readFileSync(destination).subarray(0,6).toString(),'GIF89a');
+  await page.waitForFunction(()=>document.querySelector('#token-export-status').textContent.includes('GIF download ready'));
+  assert.match(await page.locator('#token-export-status').textContent(),/Attach this downloaded GIF yourself/);
+  assert.equal(await page.evaluate(()=>window.sent.length),0);await page.close();await pass('actual token-page download button saves a GIF89a file from the revealed live SVG without a wallet request');
+ }
+ {
+  const {page}=await fixture(390,{revealed:false,startPath:'/ganjaghoulballs/#token/1'});
+  await page.waitForFunction(()=>document.querySelector('#token-status').textContent.includes('AWAITING RANDOMNESS'));
+  assert.equal(await page.locator('#token-download-gif').isDisabled(),true);assert.equal(await page.locator('#token-share-x').isVisible(),false);
+  assert.match(await page.locator('#token-export-status').textContent(),/reveal|pending/i);
+  assert.equal(await page.evaluate(()=>window.sent.length),0);await page.close();await pass('pending token cannot download a GIF or expose a revealed-art X share action');
+ }
+ {
+  const {page,state}=await fixture(390,{svgOverride:gifLiveSvg,startPath:'/ganjaghoulballs/#token/1'});let downloads=0;page.on('download',()=>downloads++);
+  await page.waitForFunction(()=>!document.querySelector('#token-download-gif').disabled);state.artDelay=550;
+  await page.locator('#token-download-gif').click();await page.locator('#token-gif-cancel').click();
+  await page.waitForFunction(()=>!document.querySelector('#token-download-gif').disabled);await page.waitForTimeout(150);
+  assert.equal(downloads,0);assert.equal(await page.locator('#token-gif-cancel').isVisible(),false);assert.equal(await page.evaluate(()=>window.sent.length),0);
+  await page.close();await pass('cancelling during a slow onchain SVG read prevents download and restores the token controls');
+ }
+ {
+  const {page,state}=await fixture(390,{svgOverride:gifLiveSvg,supply:2,startPath:'/ganjaghoulballs/#token/1'});let downloads=0;page.on('download',()=>downloads++);
+  await page.waitForFunction(()=>!document.querySelector('#token-download-gif').disabled);state.artDelay=550;
+  await page.locator('#token-download-gif').click();await page.evaluate(()=>{location.hash='token/2';});
+  await page.waitForFunction(()=>document.querySelector('#token-title').textContent.includes('#2'));
+  await page.waitForTimeout(800);assert.equal(downloads,0);assert.equal(await page.locator('#token-gif-cancel').isVisible(),false);
+  assert.equal(new URL(await page.locator('#token-share-x').getAttribute('href')).searchParams.get('url'),origin+'/ganjaghoulballs/#token/2');
+  assert.doesNotMatch(await page.locator('#token-export-status').textContent(),/GIF download ready/);assert.equal(await page.evaluate(()=>window.sent.length),0);
+  await page.close();await pass('changing token routes cancels stale export and keeps the new token share link');
+ }
+ {
+  const {page,state}=await fixture(390,{svgOverride:gifLiveSvg,startPath:'/ganjaghoulballs/#token/1'});let downloads=0;page.on('download',()=>downloads++);
+  await page.waitForFunction(()=>!document.querySelector('#token-download-gif').disabled);state.svgOverride='<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>';
+  await page.locator('#token-download-gif').click();await page.waitForFunction(()=>document.querySelector('#token-export-status').textContent.includes('GIF export unavailable'));
+  assert.equal(downloads,0);assert.equal(await page.locator('#token-download-gif').isDisabled(),false);assert.equal(await page.locator('#token-gif-cancel').isVisible(),false);
+  assert.equal(await page.evaluate(()=>window.sent.length),0);await page.close();await pass('malformed export SVG produces a visible error and permits an explicit retry without downloading');
+ }
  assert.ok(fs.readFileSync(path.join(ROOT,'site/app.js'),'utf8').includes('ggoo:svg:8453:${lower(cfg.ganjaCollection)}:${cfg.runtimeCodeHashes.ganjaCollection}'),'SVG cache is isolated by Base collection and deployed main code');
  assert.deepEqual(errors,[]);console.log(`PASS ${passed} frontend/mobile scenarios. All wallets, approvals, transfers and RPC writes mocked. No live transaction sent.`);
- fs.writeFileSync(path.join(OUT,'qa-report.json'),JSON.stringify({passed,viewportWidths:[320,360,390,412,768,1440],pageErrors:errors,liveTransactions:0,note:'Mocked EIP-1193 wallet and mocked Base RPC, headless Chromium. No physical mobile wallet was tested.'},null,2));
+ fs.writeFileSync(path.join(OUT,process.env.GGOO_GIF_WIRING_ONLY?'gif-wiring-report.json':'qa-report.json'),JSON.stringify({passed,viewportWidths:process.env.GGOO_GIF_WIRING_ONLY?[320,390]:[320,360,390,412,768,1440],pageErrors:errors,liveTransactions:0,note:'Mocked EIP-1193 wallet and mocked Base RPC, headless Chromium. No physical mobile wallet was tested.'},null,2));
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
