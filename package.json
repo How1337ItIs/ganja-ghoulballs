@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "420 fully onchain animated ERC-721 NFTs; exactly 13 original Ghoulballs permanently locked per mint on Base",
   "scripts": {
-    "build": "node scripts/compile.mjs && node scripts/art-samples.mjs && node scripts/build-site.mjs",
+    "build": "node scripts/compile.mjs && node scripts/art-samples.mjs --export-site && node scripts/build-site.mjs",
     "check": "node scripts/check.mjs",
     "compile": "node scripts/compile.mjs",
     "test:contracts": "node test/contracts.mjs",

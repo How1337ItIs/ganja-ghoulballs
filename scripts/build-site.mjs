@@ -1,4 +1,5 @@
 import { buildDeployUI } from '../deploy-ui/build.mjs';
+import { checkSiteAssets } from './check-site-assets.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {createRequire} from 'node:module';
@@ -18,3 +19,4 @@ fs.copyFileSync(path.join(root,'solc-settings.json'),path.join(root,'dist','cont
 console.log('Built site + immutable contract artifacts');
 
 await buildDeployUI();
+checkSiteAssets(path.join(root,'dist'));
