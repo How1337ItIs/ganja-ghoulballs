@@ -28,8 +28,16 @@ must fail visibly rather than silently export the first frame.
 Bounds: one export per tab, 750,000 SVG characters, 6,000 geometry/animation
 nodes, 160 animations, and 8 MB of encoded output. Only one RGBA frame is held
 at a time; frames yield to the browser so cancel/progress controls remain usable.
-All temporary rasterization blob URLs are revoked in `finally`; the final
-download URL is revoked after a one-minute handoff window.
+All temporary rasterization blob URLs are revoked in `finally`. The token page
+retains the completed GIF behind a persistent **Save GIF** link, so a browser
+that suppresses the automatic download still allows a direct user click without
+re-rendering or another RPC read. The result is cleared when the token view is
+replaced, the route changes, or a new export starts. A result clicked within the
+last second receives the remainder of that one-second download handoff window
+before its URL is revoked. A new export waits for any pending handoff before rendering, so at most one
+completed or retiring result is retained, subject to the 8 MB output cap. Cancellation and errors do not
+expose a save link. The standalone `downloadTokenGif` helper retains its existing
+one-minute URL handoff; the token page uses `createTokenGif` and owns its result.
 
 ## Encoder provenance and reproduction
 

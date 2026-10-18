@@ -2,7 +2,7 @@
 import {Interface, keccak256, getAddress, formatEther} from './vendor/ethers.min.js';
 import {decodeLineage, THEMES, MOTIONS} from './lineage.js';
 import {CREATION_HASH, quantityOf, verifyOriginalArtifact, originalCreationData, rpcAmount, buffered, originalGasLimit, originalFeeCall, assertOriginalTransaction, parseOriginalReceipt} from './original-mint.js';
-import {downloadTokenGif, buildTokenShareUrl} from './gif-export.js';
+import {createTokenGif, buildTokenShareUrl} from './gif-export.js';
 const $ = id => document.getElementById(id);
 // The script URL is authoritative for assets/config, independent of root or subpath hosting.
 const SITE_ROOT = new URL('./', import.meta.url);
@@ -47,7 +47,7 @@ let cfg, provider, account = null, chain = null, generation = 0, live = false, m
 let selected = new Set(), owned = [], verified = null, approved = false, busy = null, scanning = false;
 let originalReady=false, scanGeneration=0, inventoryTask=null;
 let originalHelper=null, originalSupply=null, originalSupplyGeneration=0, originalReview=null;
-let gifExportController=null;
+let gifExportController=null, gifDownload=null, retiringGifDownload=null;
 const originalCards=new Map(), recipeCache=new Map(), recipeRequests=new Map();
 let review = null, pending = null, galleryCursor = null, galleryLoading = false, tokenGeneration = 0;
 let toastTimer, providerBound = null, providerListeners = [], walletEpoch = 0, walletSession = 0, reserve=null, latestMint=null, revealPolling=false, reserveGeneration=0, activeTokenId=null;
@@ -809,9 +809,18 @@ function renderLineage(ids,genes,genome) {
  const grid=document.createElement('div');grid.className='lineage-grid';
  for(const parent of decoded.parents){const card=document.createElement('article');card.className='lineage-parent';const a=document.createElement('a');a.href=`https://basescan.org/nft/${ORIGINAL}/${parent.id}`;a.target='_blank';a.rel='noopener noreferrer';a.textContent='ORIGINAL #'+parent.id+' ↗';card.append(a);paragraph(card,`${parent.count} ball${parent.count===1?'':'s'} · ${THEMES[parent.theme]} · ${MOTIONS[parent.motion]}`);const colors=document.createElement('div');colors.className='lineage-colors';for(const color of parent.colors){const chip=document.createElement('span');chip.style.backgroundColor=color;chip.title=color;chip.setAttribute('aria-label','Parent ball color '+color);colors.append(chip);}card.append(colors);paragraph(card,'Radii '+parent.radii.join(', '));grid.append(card);}details.append(grid);box.append(details);
 }
+function clearGifDownload(){
+ const link=$('token-save-gif');link.hidden=true;link.removeAttribute('href');link.removeAttribute('download');
+ if(!gifDownload)return;
+ const previous=gifDownload;gifDownload=null;
+ // New exports await this handoff, so only one completed/retiring file is retained.
+ const revoke=()=>{URL.revokeObjectURL(previous.url);if(retiringGifDownload===previous)retiringGifDownload=null;};
+ const remaining=Math.max(0,1000-(Date.now()-previous.clickedAt));
+ if(remaining){retiringGifDownload=previous;previous.done=new Promise(resolve=>setTimeout(()=>{revoke();resolve();},remaining));}else revoke();
+}
 async function routeToken(options={}) {
  updateWalletDeeplink();
- gifExportController?.abort();gifExportController=null;$('token-gif-cancel').hidden=true;$('token-download-gif').disabled=true;$('token-share-x').hidden=true;text('token-export-status','');
+ gifExportController?.abort();gifExportController=null;clearGifDownload();$('token-gif-cancel').hidden=true;$('token-download-gif').disabled=true;$('token-share-x').hidden=true;text('token-export-status','');
  const match=location.hash.match(/^#token\/(\d+)$/),current=++tokenGeneration,renderMotion=motionGeneration;
  $('token-page').hidden=!match;activeTokenId=null;if(!match)return;
  const id=BigInt(match[1]);text('token-title','GGOO #'+id);text('token-status','Reading immutable onchain provenance…');$('token-facts').replaceChildren();$('token-ingredients').replaceChildren();$('token-traits').replaceChildren();$('token-lineage').replaceChildren();$('token-lineage').hidden=true;$('token-art').removeAttribute('src');delete $('token-art').dataset.tokenId;$('token-basescan').hidden=true;$('token-share').disabled=true;
@@ -901,17 +910,24 @@ $('original-close-review').onclick=()=>{$('original-review-dialog').close();orig
 $('original-review-consent').onchange=()=>{$('original-confirm-review').disabled=!$('original-review-consent').checked;};$('original-confirm-review').onclick=submitOriginalReview;
 $('token-download-gif').onclick=async()=>{
  if(gifExportController||!activeTokenId||revealStates.get(activeTokenId)!==true)return;
+ clearGifDownload();
  const id=activeTokenId,version=tokenGeneration,controller=new AbortController();gifExportController=controller;$('token-download-gif').disabled=true;$('token-gif-cancel').hidden=false;
  const current=()=>gifExportController===controller&&tokenGeneration===version&&activeTokenId===id;
  try{
+  if(retiringGifDownload){text('token-export-status','Finishing the previous GIF download handoff…');await retiringGifDownload.done;if(!current())return;if(controller.signal.aborted){text('token-export-status','GIF export cancelled.');return;}}
   text('token-export-status','Reading this revealed token’s animated SVG from Base…');
   const svg=await call(cfg.ganjaCollection,'svg',[id]);
   if(!current())return;if(controller.signal.aborted){text('token-export-status','GIF export cancelled.');return;}
-  await downloadTokenGif({svg,tokenId:id,revealed:true,signal:controller.signal,onProgress:({completed,total})=>{if(current())text('token-export-status',`Creating GIF locally: ${completed} / ${total} frames. You can cancel at any time.`);}});
-  if(current())text('token-export-status','GIF download ready: a 6-second animated preview; the loop restarts. X opens a draft. Attach this downloaded GIF yourself.');
+  const result=await createTokenGif({svg,tokenId:id,revealed:true,signal:controller.signal,onProgress:({completed,total})=>{if(current())text('token-export-status',`Creating GIF locally: ${completed} / ${total} frames. You can cancel at any time.`);}});
+  if(!current()||controller.signal.aborted)return;
+  gifDownload={url:URL.createObjectURL(result.blob),clickedAt:0};
+  const save=$('token-save-gif');save.href=gifDownload.url;save.download=result.filename;save.hidden=false;
+  text('token-export-status','GIF download ready: a 6-second animated preview; the loop restarts. Use SAVE GIF if the download did not start. X opens a draft. Attach this downloaded GIF yourself.');
+  try{save.click();}catch{/* The persistent Save GIF link remains available for a user click. */}
  }catch(e){if(current())text('token-export-status',controller.signal.aborted?'GIF export cancelled.':`GIF export unavailable: ${humanError(e)}`);}
  finally{if(current()){gifExportController=null;$('token-gif-cancel').hidden=true;$('token-download-gif').disabled=false;}}
 };
+$('token-save-gif').onclick=()=>{if(gifDownload)gifDownload.clickedAt=Date.now();};
 $('token-gif-cancel').onclick=()=>gifExportController?.abort();
 $('gallery-more').onclick=loadGallery;window.addEventListener('hashchange',routeToken);
 $('token-share').onclick=async()=>{try{if(navigator.share)await navigator.share({title:$('token-title').textContent+' · Ganja Ghoulballs',url:location.href});else{await navigator.clipboard.writeText(location.href);notify('Provenance link copied.');}}catch(e){if(e.name!=='AbortError')notify('Copy this page address to share its provenance.');}};

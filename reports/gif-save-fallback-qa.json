@@ -1,0 +1,23 @@
+{
+  "passed": 7,
+  "viewportWidths": [
+    320,
+    390
+  ],
+  "pageErrors": [],
+  "liveTransactions": 0,
+  "note": "Mocked EIP-1193 wallet and mocked Base RPC, headless Chromium. No physical mobile wallet was tested.",
+  "previousCandidate": "25fe0e70e94c37e0baa4cdf24f0709fc21665a76",
+  "build": "node scripts/build-site.mjs",
+  "test": "GGOO_GIF_WIRING_ONLY=1 node test/frontend/mobile-wallet.mjs",
+  "checks": [
+    "Actual automatic download leaves a persistent, fetchable completed GIF at 320px; X keeps the nested token URL.",
+    "Suppressed automatic download followed by manual Save GIF downloads GIF89a without another SVG RPC or render at 390px.",
+    "Pending reveal exposes no downloadable file.",
+    "Cancellation during slow SVG read exposes no downloadable file and restores controls.",
+    "Token navigation cancels stale work and leaves the new token share URL.",
+    "Malformed SVG gives a visible error and retry, with no downloadable file.",
+    "Consecutive exports release prior URLs, preserve click handoff, and clean the completed file on token navigation at 320px."
+  ],
+  "scope": "Only GIF save controls, resource lifecycle, documentation, focused tests and release evidence changed. Prior 107-case GGOO and 79-case originals validations remain recorded; financial code and contracts were not changed or rerun."
+}

@@ -110,6 +110,19 @@ async function expectPreviewMode(page,still){
  await page.waitForFunction(still=>[...document.querySelectorAll('.goo-picture img, .study-card img')].every(img=>img.complete&&img.naturalWidth>0&&(img.currentSrc.endsWith('-still.svg')===still)),still);
 }
 async function expectChainImageMode(page,selector,mode){await page.waitForFunction(({selector,mode})=>[...document.querySelectorAll(selector)].length>0&&[...document.querySelectorAll(selector)].every(img=>decodeURIComponent(img.getAttribute('src')||'').includes('data-mode="'+mode+'"')),{selector,mode});}
+async function suppressAutomaticGifDownload(page){
+ await page.evaluate(()=>{
+  window.gifAutoDownloadAttempts=0;window.gifCreatedUrls=[];window.gifRevokedUrls=[];
+  const click=HTMLAnchorElement.prototype.click,create=URL.createObjectURL.bind(URL),revoke=URL.revokeObjectURL.bind(URL);
+  HTMLAnchorElement.prototype.click=function(){if(this.id==='token-save-gif'){window.gifAutoDownloadAttempts++;return;}return click.call(this);};
+  URL.createObjectURL=function(blob){const url=create(blob);window.gifCreatedUrls.push(url);return url;};
+  URL.revokeObjectURL=function(url){window.gifRevokedUrls.push(url);return revoke(url);};
+ });
+}
+async function expectNoSavedGif(page){
+ assert.equal(await page.locator('#token-save-gif').isVisible(),false);
+ assert.equal(await page.locator('#token-save-gif').getAttribute('href'),null);
+}
 
 try{
  if(!process.env.GGOO_GIF_WIRING_ONLY){
@@ -396,9 +409,9 @@ try{
  }
  }
  // Optional focused invocation: GGOO_GIF_WIRING_ONLY=1. The normal suite keeps
- // every prior assertion and adds these six checks against the built app.
+ // every prior assertion and adds these seven checks against the built app.
  {
-  const {page}=await fixture(320,{svgOverride:gifLiveSvg,startPath:'/ganjaghoulballs/#token/1'});
+  const {page,state}=await fixture(320,{svgOverride:gifLiveSvg,startPath:'/ganjaghoulballs/#token/1'});
   await page.waitForFunction(()=>!document.querySelector('#token-download-gif').disabled);
   assert.equal(await page.locator('#token-share-x').isVisible(),true);
   const intent=new URL(await page.locator('#token-share-x').getAttribute('href'));
@@ -406,23 +419,52 @@ try{
   assert.equal(intent.searchParams.get('url'),origin+'/ganjaghoulballs/#token/1');assert.match(intent.searchParams.get('text'),/#1/);
   assert.match(await page.locator('#token-export-status').textContent(),/6-second.*loop restarts/);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
-  assert.equal(await page.evaluate(()=>window.sent.length),0);await page.close();await pass('GIF controls enable for revealed token and X draft preserves the nested token URL at 320px');
+  const automaticDownload=page.waitForEvent('download');await page.locator('#token-download-gif').click();const automatic=await automaticDownload;
+  assert.equal(automatic.suggestedFilename(),'ggoo-1-animated-preview.gif');
+  const automaticPath=path.join(OUT,'token-page-auto-token-1.gif');await automatic.saveAs(automaticPath);
+  assert.equal(fs.readFileSync(automaticPath).subarray(0,6).toString(),'GIF89a');
+  assert.equal(await page.locator('#token-save-gif').isVisible(),true);
+  const savedHref=await page.locator('#token-save-gif').getAttribute('href');assert.match(savedHref,/^blob:/);
+  assert.equal(await page.evaluate(async url=>new TextDecoder().decode((await (await fetch(url)).arrayBuffer()).slice(0,6)),savedHref),'GIF89a','successful automatic download retains a usable manual file');
+  const readsBeforeHandoff=state.abiCalls.filter(name=>name==='svg').length;
+  const handoff=await page.evaluate(async url=>{
+   document.querySelector('#token-save-gif').click();document.querySelector('#token-download-gif').click();
+   await new Promise(resolve=>setTimeout(resolve,200));
+   return {header:new TextDecoder().decode((await (await fetch(url)).arrayBuffer()).slice(0,6)),status:document.querySelector('#token-export-status').textContent,saveHidden:document.querySelector('#token-save-gif').hidden,href:document.querySelector('#token-save-gif').getAttribute('href')};
+  },savedHref);
+  assert.equal(handoff.header,'GIF89a','starting another export preserves the full prior download handoff');
+  assert.match(handoff.status,/handoff/);assert.equal(handoff.saveHidden,true);assert.equal(handoff.href,null);
+  assert.equal(state.abiCalls.filter(name=>name==='svg').length,readsBeforeHandoff,'new export waits before its SVG read while the old download is handed off');
+  await page.waitForFunction(url=>!document.querySelector('#token-save-gif').hidden&&document.querySelector('#token-save-gif').href!==url&&!document.querySelector('#token-download-gif').disabled,savedHref);
+  assert.equal(await page.evaluate(async url=>{try{await fetch(url);return false;}catch{return true;}},savedHref),true,'prior URL is revoked after handoff');
+  assert.equal(await page.evaluate(()=>window.sent.length),0);await page.close();await pass('revealed controls preserve nested X link, automatic download keeps a usable Save GIF, and immediate re-export honors the handoff at 320px');
  }
  {
-  const {page}=await fixture(390,{svgOverride:gifLiveSvg,startPath:'/ganjaghoulballs/#token/1'});
+  const {page,state}=await fixture(390,{svgOverride:gifLiveSvg,startPath:'/ganjaghoulballs/#token/1'});let downloads=0;page.on('download',()=>downloads++);
   await page.waitForFunction(()=>!document.querySelector('#token-download-gif').disabled);
-  const downloaded=page.waitForEvent('download');await page.locator('#token-download-gif').click();
-  const download=await downloaded;assert.equal(download.suggestedFilename(),'ggoo-1-animated-preview.gif');
+  await expectNoSavedGif(page);await suppressAutomaticGifDownload(page);await page.locator('#token-download-gif').click();
+  await page.waitForFunction(()=>!document.querySelector('#token-save-gif').hidden&&!document.querySelector('#token-download-gif').disabled);
+  assert.equal(downloads,0,'suppressed automatic download must leave a manual fallback');
+  assert.equal(await page.evaluate(()=>window.gifAutoDownloadAttempts),1);
+  const save=page.locator('#token-save-gif'),href=await save.getAttribute('href');assert.match(href,/^blob:/);assert.match(await save.textContent(),/SAVE GIF/i);
+  assert.equal(await save.getAttribute('download'),'ggoo-1-animated-preview.gif');
+  const rpcBefore=state.abiCalls.filter(name=>name==='svg').length,urlsBefore=await page.evaluate(()=>window.gifCreatedUrls.length);
+  const downloaded=page.waitForEvent('download');await save.click();const download=await downloaded;
+  assert.equal(download.suggestedFilename(),'ggoo-1-animated-preview.gif');
   const destination=path.join(OUT,'token-page-live-token-1.gif');await download.saveAs(destination);
   assert.equal(fs.readFileSync(destination).subarray(0,6).toString(),'GIF89a');
-  await page.waitForFunction(()=>document.querySelector('#token-export-status').textContent.includes('GIF download ready'));
-  assert.match(await page.locator('#token-export-status').textContent(),/Attach this downloaded GIF yourself/);
-  assert.equal(await page.evaluate(()=>window.sent.length),0);await page.close();await pass('actual token-page download button saves a GIF89a file from the revealed live SVG without a wallet request');
+  assert.equal(state.abiCalls.filter(name=>name==='svg').length,rpcBefore,'manual Save GIF must not fetch the SVG again');
+  assert.equal(await page.evaluate(()=>window.gifCreatedUrls.length),urlsBefore,'manual Save GIF must reuse the completed file without rerendering');
+  assert.equal(await save.getAttribute('href'),href,'manual save remains available');assert.equal(await save.isVisible(),true);
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+  await page.locator('.token-export').screenshot({path:path.join(OUT,'gif-save-fallback-390.png')});
+  assert.equal(await page.evaluate(()=>window.sent.length),0);await page.close();await pass('manual Save GIF downloads the completed GIF89a after automatic download suppression without rerendering or RPC');
  }
  {
   const {page}=await fixture(390,{revealed:false,startPath:'/ganjaghoulballs/#token/1'});
   await page.waitForFunction(()=>document.querySelector('#token-status').textContent.includes('AWAITING RANDOMNESS'));
   assert.equal(await page.locator('#token-download-gif').isDisabled(),true);assert.equal(await page.locator('#token-share-x').isVisible(),false);
+  await expectNoSavedGif(page);
   assert.match(await page.locator('#token-export-status').textContent(),/reveal|pending/i);
   assert.equal(await page.evaluate(()=>window.sent.length),0);await page.close();await pass('pending token cannot download a GIF or expose a revealed-art X share action');
  }
@@ -432,6 +474,7 @@ try{
   await page.locator('#token-download-gif').click();await page.locator('#token-gif-cancel').click();
   await page.waitForFunction(()=>!document.querySelector('#token-download-gif').disabled);await page.waitForTimeout(150);
   assert.equal(downloads,0);assert.equal(await page.locator('#token-gif-cancel').isVisible(),false);assert.equal(await page.evaluate(()=>window.sent.length),0);
+  await expectNoSavedGif(page);
   await page.close();await pass('cancelling during a slow onchain SVG read prevents download and restores the token controls');
  }
  {
@@ -440,6 +483,7 @@ try{
   await page.locator('#token-download-gif').click();await page.evaluate(()=>{location.hash='token/2';});
   await page.waitForFunction(()=>document.querySelector('#token-title').textContent.includes('#2'));
   await page.waitForTimeout(800);assert.equal(downloads,0);assert.equal(await page.locator('#token-gif-cancel').isVisible(),false);
+  await expectNoSavedGif(page);
   assert.equal(new URL(await page.locator('#token-share-x').getAttribute('href')).searchParams.get('url'),origin+'/ganjaghoulballs/#token/2');
   assert.doesNotMatch(await page.locator('#token-export-status').textContent(),/GIF download ready/);assert.equal(await page.evaluate(()=>window.sent.length),0);
   await page.close();await pass('changing token routes cancels stale export and keeps the new token share link');
@@ -449,7 +493,27 @@ try{
   await page.waitForFunction(()=>!document.querySelector('#token-download-gif').disabled);state.svgOverride='<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>';
   await page.locator('#token-download-gif').click();await page.waitForFunction(()=>document.querySelector('#token-export-status').textContent.includes('GIF export unavailable'));
   assert.equal(downloads,0);assert.equal(await page.locator('#token-download-gif').isDisabled(),false);assert.equal(await page.locator('#token-gif-cancel').isVisible(),false);
+  await expectNoSavedGif(page);
   assert.equal(await page.evaluate(()=>window.sent.length),0);await page.close();await pass('malformed export SVG produces a visible error and permits an explicit retry without downloading');
+ }
+ {
+  const {page}=await fixture(320,{svgOverride:gifLiveSvg,supply:2,startPath:'/ganjaghoulballs/#token/1'});
+  await page.waitForFunction(()=>!document.querySelector('#token-download-gif').disabled);await suppressAutomaticGifDownload(page);
+  await page.locator('#token-download-gif').click();await page.waitForFunction(()=>!document.querySelector('#token-save-gif').hidden&&!document.querySelector('#token-download-gif').disabled);
+  const first=await page.locator('#token-save-gif').getAttribute('href');assert.match(first,/^blob:/);
+  assert.equal(await page.evaluate(url=>window.gifRevokedUrls.includes(url),first),false,'completed file stays alive for a user gesture');
+  await page.locator('#token-download-gif').click();
+  await page.waitForFunction(url=>window.gifRevokedUrls.includes(url),first);await expectNoSavedGif(page);
+  await page.waitForFunction(url=>!document.querySelector('#token-save-gif').hidden&&document.querySelector('#token-save-gif').href!==url&&!document.querySelector('#token-download-gif').disabled,first);
+  const second=await page.locator('#token-save-gif').getAttribute('href');assert.notEqual(second,first);
+  assert.equal(await page.evaluate(()=>window.gifAutoDownloadAttempts),2);assert.equal(await page.evaluate(url=>window.gifRevokedUrls.includes(url),second),false);
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+  await page.locator('.token-export').screenshot({path:path.join(OUT,'gif-save-fallback-320.png')});
+  const manualDownload=page.waitForEvent('download');await page.locator('#token-save-gif').click();await manualDownload;
+  await page.evaluate(()=>{location.hash='token/2';});await page.waitForFunction(()=>document.querySelector('#token-title').textContent.includes('#2'));
+  await expectNoSavedGif(page);await page.waitForFunction(url=>window.gifRevokedUrls.includes(url),second,{timeout:2000});
+  assert.equal(await page.evaluate(url=>window.gifRevokedUrls.includes(url),second),true,'route change revokes the previous token GIF after its bounded download handoff');
+  assert.equal(await page.evaluate(()=>window.sent.length),0);await page.close();await pass('consecutive exports replace and revoke the prior GIF, and token navigation clears the saved file at 320px');
  }
  assert.ok(fs.readFileSync(path.join(ROOT,'site/app.js'),'utf8').includes('ggoo:svg:8453:${lower(cfg.ganjaCollection)}:${cfg.runtimeCodeHashes.ganjaCollection}'),'SVG cache is isolated by Base collection and deployed main code');
  assert.deepEqual(errors,[]);console.log(`PASS ${passed} frontend/mobile scenarios. All wallets, approvals, transfers and RPC writes mocked. No live transaction sent.`);

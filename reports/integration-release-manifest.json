@@ -3,13 +3,13 @@
   "files": [
     {
       "path": "ganjaghoulballs/app.js",
-      "bytes": 96666,
-      "sha256": "73d82eaba3c5706212e166a0add0a2580bc86bae5eff973ed9c69e105084c151"
+      "bytes": 98069,
+      "sha256": "f61871c976f5b4f1c41a89a43bd8db3057fbfd7ccfd86b08c6627f797f91ff1c"
     },
     {
       "path": "ganjaghoulballs/index.html",
-      "bytes": 22433,
-      "sha256": "6f5b94dedc0e4d9c1fea03ad972b85c69e57016b4e2706d29f6f7132c90a858d"
+      "bytes": 22509,
+      "sha256": "f40455e115ac856f3ed6d7562419f2fc79d0377799a22d0bc5385ea3abcd36fd"
     },
     {
       "path": "ganjaghoulballs/style.css",
