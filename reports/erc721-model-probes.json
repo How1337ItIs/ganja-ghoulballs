@@ -1,0 +1,25 @@
+{
+  "compilerSettingsSha256": "c90421359ec8eb643a01b820c72d11d4edd3973fba14cfce986532068db2f3c6",
+  "scope": "Independent automated local security probes, not a formal audit; no chain RPC, wallet, signing, or live NFTs used",
+  "generatedAt": "2026-10-18T04:37:38.385Z",
+  "compiler": "0.8.30+commit.73712a01.Emscripten.clang",
+  "sourceSha256": {
+    "contracts/GanjaGhoulballs.sol": "f19920a6b7919e3ed5ee27c8d2cf42b6480be56a961676f344f270967a0bca52",
+    "contracts/GooGenetics.sol": "dd4b855c123392248214fb3c048d4e186e1db06d7ccdcc7444d9d521fa7aef90",
+    "contracts/GooGraveyard.sol": "6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae",
+    "contracts/GooRenderer.sol": "09e0f93d90ad2bd03f2acddd92e06b11ed00de0d27f3699cd1b4318ade5fb41c"
+  },
+  "assertions": 2900,
+  "checks": [
+    "Final-transfer revert, silent no-op, and late theft of an earlier ingredient all roll back every deposit",
+    "Mint rejects 1 wei and allows repeated successful redemptions by the same wallet",
+    "Source operator authorization does not let an operator sacrifice another owner’s NFTs",
+    "120 deterministic model-based transfer rounds: unauthorized attempts revert; owner/token-approved/operator paths, self-transfer, both safe overloads, balances, approval clearing, supply and provenance hold"
+  ],
+  "runtimeBytes": {
+    "GanjaGhoulballs": 15308,
+    "GooGraveyard": 524,
+    "GooRenderer": 23802,
+    "GooBackdrop": 7634
+  }
+}

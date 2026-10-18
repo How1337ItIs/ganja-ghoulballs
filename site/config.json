@@ -6,10 +6,22 @@
   "graveyard": null,
   "renderer": null,
   "deploymentStatus": "awaiting-contract-deployment",
-  "runtimeCodeHashes": {"ganjaCollection": null, "graveyard": null, "renderer": null},
+  "runtimeCodeHashes": {
+    "ganjaCollection": null,
+    "graveyard": null,
+    "renderer": null,
+    "backdrop": null,
+    "vrfWrapper": "0x469c7e3d9661f7d7e41033d44b6198bcfdc4a501b0a9466a395f7842f02a2a8f"
+  },
   "originalGenesisBlock": 52724924,
   "maxSupply": 420,
   "sacrificeCount": 13,
-  "rpcUrls": ["https://mainnet.base.org", "https://base.gateway.tenderly.co"],
-  "important": "Writes remain disabled until status is deployed-verified, all Base addresses and actual deployed runtime keccak256 hashes are recorded, and the browser verifies contract code and immutable wiring. Never use compiler template hashes for live contracts."
+  "rpcUrls": [
+    "https://mainnet.base.org",
+    "https://base.gateway.tenderly.co"
+  ],
+  "important": "Writes remain disabled until status is deployed-verified, all Base addresses and actual deployed runtime keccak256 hashes are recorded, and the browser verifies contract code and immutable wiring. Never use compiler template hashes for live contracts.",
+  "backdrop": null,
+  "vrfWrapper": "0xb0407dbe851f8318bd31404a49e658143c982f23",
+  "maxRequestPrice": null
 }

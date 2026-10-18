@@ -11,7 +11,7 @@ fs.mkdirSync(path.join(root,'dist','vendor'),{recursive:true});
 fs.copyFileSync(path.join(ethersRoot,'dist','ethers.min.js'),path.join(root,'dist','vendor','ethers.min.js'));
 fs.copyFileSync(path.join(ethersRoot,'LICENSE.md'),path.join(root,'dist','vendor','ETHERS-LICENSE.md'));
 fs.mkdirSync(path.join(root,'dist','contracts'),{recursive:true});
-for (const f of ['GanjaGhoulballs.json','GooRenderer.json','GooGraveyard.json','standard-input.json','build-manifest.json']) {
+for (const f of ['GanjaGhoulballs.json','GooRenderer.json','GooBackdrop.json','GooGraveyard.json','standard-input.json','build-manifest.json']) {
  fs.copyFileSync(path.join(root,'artifacts',f),path.join(root,'dist','contracts',f));
 }
 fs.copyFileSync(path.join(root,'solc-settings.json'),path.join(root,'dist','contracts','solc-settings.json'));

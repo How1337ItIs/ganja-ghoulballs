@@ -9,7 +9,8 @@ import {environment,deploy,call} from '../test/evm.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const paths=fs.readdirSync(path.join(root,'contracts')).filter(n=>n.endsWith('.sol')).sort().map(n=>'contracts/'+n);
 const sources=Object.fromEntries(paths.map(p=>[p,{content:fs.readFileSync(path.join(root,p),'utf8')}]));
-const input=JSON.parse(fs.readFileSync(path.join(root,'solc-settings.json')));
+const compilerSettingsBytes=fs.readFileSync(path.join(root,'solc-settings.json'));
+const input=JSON.parse(compilerSettingsBytes);
 input.sources={...sources,'ReviewBase64.sol':{content:`// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 import {GooBase64} from "contracts/GanjaGhoulballs.sol";
@@ -43,6 +44,6 @@ for(const value of [0,255,128,61])for(const size of [1,2,3,31,32,33,64,65]){
  const b=Buffer.alloc(size,value);const r=await call(vm,harness,'encodeDirty',['0x'+b.toString('hex')],{isStatic:true});
  assert(r.ok);assert.equal(r.value[0],b.toString('base64'));calls++;
 }
-const report={scope:'Independent optimized Base64 oracle comparison, local EVM only',generatedAt:new Date().toISOString(),compiler:solc.version(),sourceSha256:crypto.createHash('sha256').update(sources['contracts/GanjaGhoulballs.sol'].content).digest('hex'),passedCalls:calls,sizes,patterns:'Deterministic binary bytes plus repeated 0x00/0xff/0x80/0x3d; normal and intentionally dirty trailing allocation',oracle:'Node.js Buffer.toString(base64)',maxExecutionGas:maxGas.toString()};
+const report={compilerSettingsSha256:crypto.createHash('sha256').update(compilerSettingsBytes).digest('hex'),scope:'Independent optimized Base64 oracle comparison, local EVM only',generatedAt:new Date().toISOString(),compiler:solc.version(),sourceSha256:crypto.createHash('sha256').update(sources['contracts/GanjaGhoulballs.sol'].content).digest('hex'),passedCalls:calls,sizes,patterns:'Deterministic binary bytes plus repeated 0x00/0xff/0x80/0x3d; normal and intentionally dirty trailing allocation',oracle:'Node.js Buffer.toString(base64)',maxExecutionGas:maxGas.toString()};
 fs.writeFileSync(path.join(root,'reports/base64-probes.json'),JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({...report,sizes:`0..256 plus ${sizes.slice(257).join(', ')}`},null,2));

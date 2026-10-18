@@ -1,8 +1,9 @@
 {
+  "compilerSettingsSha256": "c90421359ec8eb643a01b820c72d11d4edd3973fba14cfce986532068db2f3c6",
   "scope": "Independent optimized Base64 oracle comparison, local EVM only",
-  "generatedAt": "2026-10-18T01:19:48.332Z",
+  "generatedAt": "2026-10-18T04:38:09.287Z",
   "compiler": "0.8.30+commit.73712a01.Emscripten.clang",
-  "sourceSha256": "626c4bd259b14da38ea0f02012f075231e553c995a4dd46455c34577c50ea192",
+  "sourceSha256": "f19920a6b7919e3ed5ee27c8d2cf42b6480be56a961676f344f270967a0bca52",
   "passedCalls": 570,
   "sizes": [
     0,
@@ -277,5 +278,5 @@
   ],
   "patterns": "Deterministic binary bytes plus repeated 0x00/0xff/0x80/0x3d; normal and intentionally dirty trailing allocation",
   "oracle": "Node.js Buffer.toString(base64)",
-  "maxExecutionGas": "3219515"
+  "maxExecutionGas": "3219611"
 }

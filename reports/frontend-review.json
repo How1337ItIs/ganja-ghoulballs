@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-10-18T04:32:36.422Z",
+  "pass": true,
+  "independentBrowserScenarios": 67,
+  "actualEVMLinageFixture": "passed",
+  "sourceSha256": {
+    "site/app.js": "3047e988d13dd9f949df71c30fb76ff652bfc3ee95064ce13f145ce20ce29208",
+    "site/lineage.js": "93104dff989671b974e0860773ca44af0f60b0d428ffdc870034ec51ef66569d",
+    "site/index.html": "ec9fd04b05661f7efbc0a71f8bcfee21c4c707e81f821fd0f5ab745f4401a934",
+    "site/style.css": "459c74f263398259cd8192af51c7b279c4ea22c463339b64dd2a7c58b065f0f1",
+    "site/config.json": "a4d135e18fa689a5a646da50fd4771194ab5c759015741cb03813d73d3edd1a8",
+    "test/frontend/mobile-wallet.mjs": "728b8780559a57a59e503ad009ffa8e32632391feb2fd050a70a2ff619bdbdf2",
+    "test/frontend/lineage.mjs": "b299e608980a4bee2ff2b05f8c8e44773825869b4da1ac347f19b8cc188cef6a"
+  },
+  "checks": [
+    "Pinned five runtime identities and immutable wiring",
+    "Wrapper configured/enabled/coordinator, cap and reserve gates before approval and mint",
+    "Explicit positive gasPrice shared by oracle estimate, simulation, wallet estimate and send",
+    "Separate collection-wide approval and exact13 permanent-lock consent",
+    "Zero-value Base-chain mint from connected owner",
+    "Durable pre-send intent, no uncertain automatic retries",
+    "Receipt recipient and exact provenance verification",
+    "Pending mint receipt distinct from oracle reveal",
+    "Read-only reveal polling without replacement request",
+    "Pending SVG never persisted; delayed cocoon cannot overwrite final art",
+    "Full uint256 parent/genome decoding and named dominance/donor lineage",
+    "Original minter separated from current owner; exact decimal birth block"
+  ],
+  "limitations": [
+    "Mocked EIP1193 wallet and Base RPC in local headless Chromium",
+    "No physical wallet or live transaction",
+    "Reorg/finality and dishonest RPC behavior are not proven away"
+  ],
+  "independentRunAppSha256": "91c1ade317d61fcd24c2b8a0309d648f8f25ec04a9fc890f0d042d12d5e0a05d",
+  "finalCopyDiffReview": "Final app diff independently reviewed: exactly five visible text strings, no transaction or reveal logic changes; HTML copy retains mint-not-open, irreversible custody and permanent pending oracle warnings.",
+  "finalCopyRegression": {
+    "scenarios": 67,
+    "runBy": "frontend implementer",
+    "completed": "2026-10-18T04:32:07Z",
+    "result": "passed, plus actual local EVM lineage fixture and static checks"
+  }
+}

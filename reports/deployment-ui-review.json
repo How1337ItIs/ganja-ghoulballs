@@ -1,0 +1,33 @@
+{
+  "generatedAt": "2026-10-18T04:37:12.811Z",
+  "pass": true,
+  "independentTestCommand": "npm run test:deploy",
+  "testedAt": "2026-10-18T04:37:12.812Z",
+  "scope": "Independent source review and local mocked wallet/RPC tests; no wallet signature or external write",
+  "sourceSha256": {
+    "deploy-ui/deploy.js": "ca029c30781d5cc6c085194539a865d6f2b6ed26867f09ee1435b3246b8a7f9a",
+    "deploy-ui/lib.mjs": "707562965ee62b3c2cfdef5d3e2455fdc0dbc1c61a8a768b8d27ab7fbc4872c6",
+    "deploy-ui/build.mjs": "9cc9f3288a61f11043bb95c79ab516c44c41ca507c82fd1866ff84bf2fd6bd76",
+    "deploy-ui/test.mjs": "b10e3a0b75656727d8fa3c873896914875f8fc991a6325394ad2cd821ebd8019",
+    "deploy-ui/index.html": "311d6b3f30fcda9012dde73be897c8bcfb1a46351dbf7c00f99aef5bbc831124",
+    "deploy-ui/oracle-config.json": "130dea2704a9971c955d65c55d15313207c49d28250075034d0f8a8ece028cef"
+  },
+  "checks": [
+    "Full artifact, ABI and immutable-reference hashes; full initcode including all 96 argument bytes and every runtime size limit",
+    "Original, parent renderer and VRF wrapper exact runtime length and Keccak pins at simulation and immediately before send",
+    "Live wrapper configured, enabled, immutable expected coordinator and explicit-gas-price quote within cap",
+    "Four-contract receipt runtimes, CREATE addresses and immutable wiring, Base chain, 420 supply, 13 parents, callback gas and word count",
+    "Fresh account, chain and latest=pending nonce after all asynchronous reads",
+    "Exact persistent intent read-back and conflicting-intent recheck before wallet send; no automatic uncertain retries",
+    "Read-only constructor simulation allowed while unapproved; sending separately requires exact release approval, funding and acknowledgment",
+    "Zero-value creation with accurate L2 execution versus Base L1/operator and wallet final fee wording",
+    "Oracle donation only an exact user-entered unsigned simulated handoff after verified receipt; no funding send handler",
+    "Receipt export includes strict fresh wrapper identity, address and decimal fee cap"
+  ],
+  "limitations": [
+    "Mocked local wallet/RPC only",
+    "No live final constructor simulation, actual receipt, physical wallet or funding transaction",
+    "Release approval remains false; cap and funding amount require separate user decisions"
+  ],
+  "testedRendererSourceSha256": "09e0f93d90ad2bd03f2acddd92e06b11ed00de0d27f3699cd1b4318ade5fb41c"
+}

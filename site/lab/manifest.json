@@ -1,7 +1,9 @@
 {
   "status": "SYNTHETIC POST-REVEAL DEVELOPMENT FIXTURES; NO LIVE OFFSPRING PREDICTION",
-  "rendererSourceSha256": "eabf73e2e41970727142b7c3553b33ca905b67a78365cbaf4cf93d1769bb4ec5",
-  "rendererRuntimeBytes": 24196,
+  "rendererSourceSha256": "09e0f93d90ad2bd03f2acddd92e06b11ed00de0d27f3699cd1b4318ade5fb41c",
+  "rendererSourceKeccak256": "0xddb4e8fd05d58f7c3c0b79e7d3ba60fd8e5fc6ce6b9b0c7736d23a9fa476a9b5",
+  "compilerSettingsSha256": "c90421359ec8eb643a01b820c72d11d4edd3973fba14cfce986532068db2f3c6",
+  "rendererRuntimeBytes": 23802,
   "selected": [
     {
       "id": 17,
@@ -45,11 +47,10 @@
         "Silhouette": "Melted Jaw",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 8087,
-      "executionGas": 475735
+      "svgBytes": 7617,
+      "executionGas": 357413
     },
     {
       "id": 61,
@@ -93,11 +94,10 @@
         "Silhouette": "Split Cranium",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 9554,
-      "executionGas": 488896
+      "svgBytes": 9084,
+      "executionGas": 370876
     },
     {
       "id": 5,
@@ -141,11 +141,10 @@
         "Silhouette": "Hand Rolled",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 9296,
-      "executionGas": 486079
+      "svgBytes": 8826,
+      "executionGas": 368353
     },
     {
       "id": 41,
@@ -189,11 +188,10 @@
         "Silhouette": "Hand Rolled",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 9020,
-      "executionGas": 487847
+      "svgBytes": 8551,
+      "executionGas": 369521
     },
     {
       "id": 18,
@@ -237,11 +235,10 @@
         "Silhouette": "Hand Rolled",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 12953,
-      "executionGas": 642129
+      "svgBytes": 12483,
+      "executionGas": 518296
     },
     {
       "id": 22,
@@ -285,11 +282,10 @@
         "Silhouette": "Split Cranium",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 13159,
-      "executionGas": 646313
+      "svgBytes": 12689,
+      "executionGas": 522304
     },
     {
       "id": 26,
@@ -333,11 +329,10 @@
         "Silhouette": "Melted Jaw",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 14438,
-      "executionGas": 664151
+      "svgBytes": 13968,
+      "executionGas": 540424
     },
     {
       "id": 30,
@@ -381,11 +376,10 @@
         "Silhouette": "Split Cranium",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 12265,
-      "executionGas": 628154
+      "svgBytes": 11795,
+      "executionGas": 504550
     },
     {
       "id": 35,
@@ -429,11 +423,10 @@
         "Silhouette": "Melted Jaw",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 21989,
-      "executionGas": 1056393
+      "svgBytes": 21531,
+      "executionGas": 920303
     },
     {
       "id": 39,
@@ -477,11 +470,10 @@
         "Silhouette": "Melted Jaw",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 21900,
-      "executionGas": 1055027
+      "svgBytes": 21442,
+      "executionGas": 918611
     },
     {
       "id": 43,
@@ -525,11 +517,10 @@
         "Silhouette": "Split Cranium",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 20993,
-      "executionGas": 1032881
+      "svgBytes": 20535,
+      "executionGas": 896024
     },
     {
       "id": 47,
@@ -573,11 +564,10 @@
         "Silhouette": "Hand Rolled",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 20935,
-      "executionGas": 1030452
+      "svgBytes": 20477,
+      "executionGas": 894214
     },
     {
       "id": 52,
@@ -621,11 +611,10 @@
         "Silhouette": "Melted Jaw",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 29452,
-      "executionGas": 1565331
+      "svgBytes": 28982,
+      "executionGas": 1414177
     },
     {
       "id": 56,
@@ -669,11 +658,10 @@
         "Silhouette": "Split Cranium",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 28375,
-      "executionGas": 1526397
+      "svgBytes": 27905,
+      "executionGas": 1375377
     },
     {
       "id": 60,
@@ -717,11 +705,10 @@
         "Silhouette": "Split Cranium",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 29437,
-      "executionGas": 1555935
+      "svgBytes": 28967,
+      "executionGas": 1405953
     },
     {
       "id": 64,
@@ -765,11 +752,10 @@
         "Silhouette": "Hand Rolled",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 28635,
-      "executionGas": 1533736
+      "svgBytes": 28165,
+      "executionGas": 1382462
     }
   ],
   "lineage": [
@@ -802,11 +788,10 @@
         "Silhouette": "Split Cranium",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 20864,
-      "executionGas": 1031315
+      "svgBytes": 20394,
+      "executionGas": 894082
     },
     {
       "id": 2,
@@ -837,11 +822,10 @@
         "Silhouette": "Melted Jaw",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 21953,
-      "executionGas": 1052444
+      "svgBytes": 21483,
+      "executionGas": 916302
     },
     {
       "id": 3,
@@ -872,11 +856,10 @@
         "Silhouette": "Split Cranium",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 21599,
-      "executionGas": 1050857
+      "svgBytes": 21129,
+      "executionGas": 914070
     },
     {
       "id": 4,
@@ -907,11 +890,10 @@
         "Silhouette": "Split Cranium",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "Yes",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 21951,
-      "executionGas": 1057556
+      "svgBytes": 21481,
+      "executionGas": 920994
     },
     {
       "id": 5,
@@ -942,11 +924,10 @@
         "Silhouette": "Split Cranium",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 9562,
-      "executionGas": 488257
+      "svgBytes": 9092,
+      "executionGas": 370517
     },
     {
       "id": 6,
@@ -977,11 +958,10 @@
         "Silhouette": "Split Cranium",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 13590,
-      "executionGas": 650391
+      "svgBytes": 13120,
+      "executionGas": 526337
     },
     {
       "id": 7,
@@ -1012,11 +992,10 @@
         "Silhouette": "Split Cranium",
         "Eyes": "Spectral Acid",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 28653,
-      "executionGas": 1528696
+      "svgBytes": 28183,
+      "executionGas": 1377847
     },
     {
       "id": 8,
@@ -1047,13 +1026,12 @@
         "Silhouette": "Melted Jaw",
         "Eyes": "Bloodshot Ember",
         "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+        "Golden Veins": "No"
       },
-      "svgBytes": 9313,
-      "executionGas": 485994
+      "svgBytes": 8843,
+      "executionGas": 368356
     }
   ],
-  "maxSvgExecutionGas": 1565331,
-  "maxSvgBytes": 29452
+  "maxSvgExecutionGas": 1414177,
+  "maxSvgBytes": 28982
 }

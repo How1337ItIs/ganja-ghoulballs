@@ -1,0 +1,55 @@
+{
+  "pass": true,
+  "timestamp": "2026-10-18T04:40:54.866Z",
+  "compiler": "0.8.30+commit.73712a01.Emscripten.clang",
+  "compilerSettingsSha256": "c90421359ec8eb643a01b820c72d11d4edd3973fba14cfce986532068db2f3c6",
+  "priorSourceSha256": {
+    "contracts/GanjaGhoulballs.sol": "f19920a6b7919e3ed5ee27c8d2cf42b6480be56a961676f344f270967a0bca52",
+    "contracts/GooGenetics.sol": "dd4b855c123392248214fb3c048d4e186e1db06d7ccdcc7444d9d521fa7aef90",
+    "contracts/GooGraveyard.sol": "6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae",
+    "contracts/GooRenderer.sol": "dca9c7366826fc138fa844ffde3c68815070fb237837bbe017bc837cd9e95cf4"
+  },
+  "currentSourceSha256": {
+    "contracts/GanjaGhoulballs.sol": "f19920a6b7919e3ed5ee27c8d2cf42b6480be56a961676f344f270967a0bca52",
+    "contracts/GooGenetics.sol": "dd4b855c123392248214fb3c048d4e186e1db06d7ccdcc7444d9d521fa7aef90",
+    "contracts/GooGraveyard.sol": "6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae",
+    "contracts/GooRenderer.sol": "09e0f93d90ad2bd03f2acddd92e06b11ed00de0d27f3699cd1b4318ade5fb41c"
+  },
+  "changedSources": [
+    "contracts/GooRenderer.sol"
+  ],
+  "contracts": {
+    "GanjaGhoulballs": {
+      "executableRuntimeBytes": 15255,
+      "priorExecutableSha256": "8b3cbdb639fd32e49fd1dd7d9d11f6bbb2b8cb4a4b72f79ee10dcfd9b29e2491",
+      "currentExecutableSha256": "8b3cbdb639fd32e49fd1dd7d9d11f6bbb2b8cb4a4b72f79ee10dcfd9b29e2491",
+      "immutableReferencesIdentical": true,
+      "abiIdentical": true,
+      "storageLayoutIdentical": true,
+      "priorMetadataSha256": "3c22c04c023ff69fef64ca5ce95c8abd64e327a3e6ddd698d7b316235cfc4752",
+      "currentMetadataSha256": "7ed15a30e49f870f1fe6f4e39d2a801b7c1c48cfb197b301d18e8cb5231bfe6d"
+    },
+    "GooGraveyard": {
+      "executableRuntimeBytes": 471,
+      "priorExecutableSha256": "132d06dce3f599c96373223af3b8448d0ce4627c2fe09c568191f8e1d14c99a3",
+      "currentExecutableSha256": "132d06dce3f599c96373223af3b8448d0ce4627c2fe09c568191f8e1d14c99a3",
+      "immutableReferencesIdentical": true,
+      "abiIdentical": true,
+      "storageLayoutIdentical": true,
+      "priorMetadataSha256": "f15df48b65165c8ff4a031e9d0061ddb2cc570add6b8dd4007ae82da7ab2590e",
+      "currentMetadataSha256": "f15df48b65165c8ff4a031e9d0061ddb2cc570add6b8dd4007ae82da7ab2590e"
+    },
+    "GooBackdrop": {
+      "executableRuntimeBytes": 7581,
+      "priorExecutableSha256": "df45ebe93beb22f265943f2eb222a6ef66bd756b8781eed9b9d7355cda39298c",
+      "currentExecutableSha256": "df45ebe93beb22f265943f2eb222a6ef66bd756b8781eed9b9d7355cda39298c",
+      "immutableReferencesIdentical": true,
+      "abiIdentical": true,
+      "storageLayoutIdentical": true,
+      "priorMetadataSha256": "fd0a4fafc81d791d81ec790c35d2f8a41fdc66da2479bae8f1afb826572c474f",
+      "currentMetadataSha256": "167cdb6ae02222157e0551699677af2debde6dcb0be410aa993aef8d9c0d4223"
+    }
+  },
+  "rendererABIIdentical": true,
+  "scope": "The renderer changed only through removal of its marketplace Art Version trait and a separately reviewed numerical Float-layout clipping correction. The collection, vault and backdrop executable runtime bytes are identical after removing only a validated canonical Solidity CBOR trailer. Immutable references, ABI and storage layouts are identical; no executable bytes or immutable ranges were masked or discarded. Renderer attribute/layout code and embedded creation code changed and are covered by fresh boundary, source-runtime, gas, art-equivalence and metadata tests. Prior full420 evidence retains its original source hashes."
+}

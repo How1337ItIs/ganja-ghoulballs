@@ -1,0 +1,6 @@
+{
+  "maxRequestPriceWei": "10000000000000",
+  "selectionStatus": "proposed-unapproved",
+  "initialReserveWei": null,
+  "note": "Proposed immutable 0.00001 ETH ceiling per Chainlink VRF request. This is not a protocol mint fee or an authorization to fund the reserve. Initial funding remains a separate explicit user choice and wallet action."
+}

@@ -15,7 +15,7 @@ export const address = createAddressFromString;
 export function artifact(name) { const a = JSON.parse(fs.readFileSync(path.join(root, 'artifacts', name + '.json'))); a.iface = new Interface(a.abi); return a; }
 export function compileMocks() {
   const content = fs.readFileSync(path.join(root, 'test/MockOriginalGhoulballs.sol'), 'utf8');
-  const output = JSON.parse(solc.compile(JSON.stringify({language:'Solidity', sources:{'Mock.sol':{content}},settings:{optimizer:{enabled:true,runs:200},evmVersion:'cancun',outputSelection:{'*':{'*':['abi','evm.bytecode.object','evm.deployedBytecode.object']}}}})));
+  const output = JSON.parse(solc.compile(JSON.stringify({language:'Solidity', sources:{'Mock.sol':{content},'GooGenetics.sol':{content:fs.readFileSync(path.join(root,'contracts/GooGenetics.sol'),'utf8')}},settings:{...JSON.parse(fs.readFileSync(path.join(root,'solc-settings.json'))).settings,outputSelection:{'*':{'*':['abi','evm.bytecode.object','evm.deployedBytecode.object']}}}})));
   for (const e of output.errors || []) if(e.severity === 'error') throw Error(e.formattedMessage);
   return Object.fromEntries(Object.entries(output.contracts['Mock.sol']).map(([name,c])=>[name,{abi:c.abi,bytecode:'0x'+c.evm.bytecode.object,deployedBytecode:'0x'+c.evm.deployedBytecode.object,iface:new Interface(c.abi)}]));
 }

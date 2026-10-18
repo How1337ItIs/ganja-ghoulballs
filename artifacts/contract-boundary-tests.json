@@ -1,0 +1,51 @@
+{
+  "fullSupplyExecuted": false,
+  "compilerSettingsSha256": "c90421359ec8eb643a01b820c72d11d4edd3973fba14cfce986532068db2f3c6",
+  "sourceSha256": {
+    "contracts/GanjaGhoulballs.sol": "f19920a6b7919e3ed5ee27c8d2cf42b6480be56a961676f344f270967a0bca52",
+    "contracts/GooGenetics.sol": "dd4b855c123392248214fb3c048d4e186e1db06d7ccdcc7444d9d521fa7aef90",
+    "contracts/GooGraveyard.sol": "6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae",
+    "contracts/GooRenderer.sol": "09e0f93d90ad2bd03f2acddd92e06b11ed00de0d27f3699cd1b4318ade5fb41c"
+  },
+  "timestamp": "2026-10-18T04:35:23.907Z",
+  "compiler": "0.8.30+commit.73712a01.Emscripten.clang",
+  "passed": 22,
+  "tests": [
+    "immutable constructor wiring, 420 cap, 13 ingredients and ERC165",
+    "nonexistent tokens and zero-address balances revert",
+    "approval required for all ingredients before any custody changes",
+    "atomic mint with 13 per-token approvals, exact provenance and event",
+    "same wallet can mint again with fresh originals; global approval",
+    "fixed array rejects 12/14-item function selectors and truncated calldata",
+    "zero, 6668, maxuint and duplicates are rejected atomically",
+    "wrong owner, nonexistent source and revoked approvals are rejected",
+    "mint ETH rejected; separate reserve donations accepted without transferring NFTs",
+    "13th transfer failure rolls back every earlier original and all mint state",
+    "source returning success without custody is rejected and rolled back",
+    "late malicious source theft of an earlier deposit is detected",
+    "source transfer callback cannot reenter mint",
+    "vault rejects direct safe deposits, non-source callers, and wrong operators",
+    "raw transfers to vault are irretrievable and do not mint or credit provenance",
+    "mint recipient revert and wrong selector roll back 13 originals",
+    "ERC721 authorized transfers, approval clearing and invalid recipient rollback",
+    "VRF pending, one-shot authenticated reveal and immutable genetic lineage",
+    "oracle quote, cap, request failure, reentry and recipient failure are atomic",
+    "seed, SVG, traits and metadata remain identical across callers and later block timestamps",
+    "constructor pins chain, exact Base source/renderer/wrapper code and immutable price cap",
+    "deterministic fuzz: 100 invalid permutations, range and ownership cases preserve state"
+  ],
+  "gas": {
+    "profile": "EthereumJS Cancun, chain IDs 31337/8453/84532. Execution gas only; excludes transaction intrinsic gas and Base L1 data fee.",
+    "deploymentExecution": "9601753",
+    "firstMintPerTokenApproval": "1441980",
+    "secondMintGlobalApproval": "1312499",
+    "callbackColdFirstWrite": "49893",
+    "tokenURI": "8765063"
+  },
+  "limits": [
+    "In-memory Cancun execution, not a public-chain deployment or live Base fork.",
+    "Execution gas excludes transaction intrinsic costs and Base L1 data fee.",
+    "Mock source cannot establish live original bytecode equivalence.",
+    "Security testing is not an independent professional audit."
+  ]
+}

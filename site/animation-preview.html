@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0b1012">
-<meta name="description" content="Actual native SVG playback from the Ganja Ghoulballs Solidity renderer. Predeployment art specimens with no wallet connection required.">
+<meta name="description" content="Living Ganja Ghoulballs artwork. Native SVG animation, illustrated with art samples. No wallet connection required.">
 <title>Living goo · Ganja Ghoulballs</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#0b1012;color:#e3dfbd;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}main{max-width:1040px;margin:auto;padding:28px 24px 32px}header{margin:0 0 22px}a{color:#b6cc72;text-decoration-thickness:1px;text-underline-offset:4px}.eyebrow{font-size:11px;letter-spacing:.16em;color:#b6cc72;text-transform:uppercase}h1{font-size:clamp(26px,5vw,42px);letter-spacing:-.05em;line-height:1.1;margin:12px 0}p{font-size:13px;line-height:1.65;max-width:760px;color:#b4b5a0}section{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}figure{margin:0;border:1px solid #354139;background:#131b19;min-width:0}picture,img{display:block;width:100%;height:auto;aspect-ratio:1;image-rendering:pixelated}figcaption{padding:12px 14px;font-size:12px;line-height:1.5;border-top:1px solid #354139}figcaption strong{display:block;color:#e3dfbd}figcaption span{color:#9da98d;font-size:11px}footer{margin-top:20px;display:flex;justify-content:space-between;gap:20px;align-items:baseline}footer p{font-size:11px;max-width:680px;margin:0}footer a{font-size:12px;white-space:nowrap}.motion-note{display:none}@media(prefers-reduced-motion:reduce){.motion-note{display:block}}@media(max-width:560px){main{padding:20px 12px}section{gap:10px}figcaption{padding:10px 9px;font-size:11px}figcaption span{font-size:10px}footer{display:block}footer a{display:inline-block;margin-top:15px}}
+*{box-sizing:border-box}body{margin:0;background:#0b1012;color:#e3dfbd;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}main{max-width:1040px;margin:auto;padding:28px 24px 32px}header{margin:0 0 22px}a{color:#b6cc72;text-decoration-thickness:1px;text-underline-offset:4px}.eyebrow{font-size:11px;letter-spacing:.16em;color:#b6cc72;text-transform:uppercase}h1{font-size:clamp(26px,5vw,42px);letter-spacing:-.05em;line-height:1.1;margin:12px 0}p{font-size:13px;line-height:1.65;max-width:760px;color:#b4b5a0}section{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}figure{margin:0;border:1px solid #354139;background:#131b19;min-width:0}picture,img{display:block;width:100%;height:auto;aspect-ratio:1;image-rendering:pixelated}figcaption{padding:12px 14px;font-size:12px;line-height:1.5;border-top:1px solid #354139}figcaption strong{display:block;color:#e3dfbd}figcaption span{color:#9da98d;font-size:11px}footer{margin-top:20px;display:flex;justify-content:space-between;gap:20px;align-items:baseline}footer p{font-size:11px;max-width:680px;margin:0}footer a{font-size:12px;white-space:nowrap}.controls{display:flex;gap:8px;margin:16px 0}button{font:600 12px ui-monospace,monospace;background:#b6cc72;border:1px solid #72834c;color:#11170e;padding:9px 13px;cursor:pointer}button:disabled{opacity:.5;cursor:default}button:focus-visible{outline:3px solid #e6c779;outline-offset:3px}@media(max-width:560px){main{padding:20px 12px}section{gap:10px}figcaption{padding:10px 9px;font-size:11px}figcaption span{font-size:10px}footer{display:block}footer a{display:inline-block;margin-top:15px}}
 </style>
 </head>
 <body>
@@ -15,22 +15,25 @@
 <header>
 <div class="eyebrow">Ganja Ghoulballs · Native SVG</div>
 <h1>The goo is alive.</h1>
-<p>Slow drips. Heavy blinks. Curling smoke. Glowing embers. These are the actual animated SVGs produced by the frozen Solidity renderer, playing directly in your browser.</p>
-<p class="motion-note">Your device has reduced motion enabled, so this page is showing the static renderer versions.</p>
+<p>Crossing figure-eights. Elliptical orbits. Bouncing ricochets. Spinning goo and curling smoke. Every twist, drip and curl is drawn and animated in native SVG.</p>
+<p>Illustrative artwork, not minted NFTs. Each GGOO inherits traits from 13 originals and reveals automatically after Chainlink randomness arrives.</p><div class="controls"><button id="play-motion" type="button">Play motion</button><button id="pause-motion" type="button">Pause motion</button></div><p id="motion-note" hidden>Motion is paused. Choose Play to animate.</p>
 </header>
-<section aria-label="Four native renderer specimens">
-<figure><picture><source media="(prefers-reduced-motion: reduce)" srcset="./assets/goo-preview-9-still.svg"><img src="./assets/goo-preview-9.svg" width="512" height="512" alt="Ashen mint ghoul with bloodshot eyes and a smoking spliff inside a pixel crypt"></picture><figcaption><strong>Ashen Mint · Crypt Hotbox</strong><span>Fixture 009 / blink, smoke, ember, living drip</span></figcaption></figure>
-<figure><picture><source media="(prefers-reduced-motion: reduce)" srcset="./assets/goo-preview-2-still.svg"><img src="./assets/goo-preview-2.svg" width="512" height="512" alt="Chocolate oat ghoul wearing a red bandana, with a crooked spliff and slow resin drips"></picture><figcaption><strong>Chocolate Oat · Lot Bandana</strong><span>Fixture 002 / slow float and crooked spliff</span></figcaption></figure>
-<figure><picture><source media="(prefers-reduced-motion: reduce)" srcset="./assets/goo-preview-20-still.svg"><img src="./assets/goo-preview-20.svg" width="512" height="512" alt="Chocolate ghoul in a moonlit forest with a flickering skull candle"></picture><figcaption><strong>Chocolate Oat · Skull Candle</strong><span>Fixture 020 / candle glow and smoke</span></figcaption></figure>
-<figure><picture><source media="(prefers-reduced-motion: reduce)" srcset="./assets/goo-preview-27-still.svg"><img src="./assets/goo-preview-27.svg" width="512" height="512" alt="Six purple hash ghouls floating and blinking in a haunted basement"></picture><figcaption><strong>Purple Hash · Six-Ghoul Sesh</strong><span>Fixture 027 / independent native motion cycles</span></figcaption></figure>
+<section aria-label="Four Ganja Ghoulballs art samples">
+<figure><img src="./assets/goo-preview-17.svg" data-animated="./assets/goo-preview-17.svg" data-still="./assets/goo-preview-17-still.svg" width="512" height="512" alt="Illustrative Midnight · Orbit ghoul artwork"><figcaption><strong>Midnight · Orbit</strong><span>Elliptical travel and independent spin</span></figcaption></figure>
+<figure><img src="./assets/goo-preview-61.svg" data-animated="./assets/goo-preview-61.svg" data-still="./assets/goo-preview-61-still.svg" width="512" height="512" alt="Illustrative Sunset · Figure Eight ghoul artwork"><figcaption><strong>Sunset · Figure Eight</strong><span>Crossing lobes, spin and two ember-anchored smoke wisps</span></figcaption></figure>
+<figure><img src="./assets/goo-preview-5.svg" data-animated="./assets/goo-preview-5.svg" data-still="./assets/goo-preview-5-still.svg" width="512" height="512" alt="Illustrative Lagoon · Ricochet ghoul artwork"><figcaption><strong>Lagoon · Ricochet</strong><span>Bouncing travel and wobbly squish</span></figcaption></figure>
+<figure><img src="./assets/goo-preview-41.svg" data-animated="./assets/goo-preview-41.svg" data-still="./assets/goo-preview-41-still.svg" width="512" height="512" alt="Illustrative Ultraviolet · Float ghoul artwork"><figcaption><strong>Ultraviolet · Float</strong><span>Vertical bob, chewing jaw and curling smoke</span></figcaption></figure>
 </section>
-<footer><p>Predeployment renderer specimens, not minted NFTs. Motion is native SVG SMIL. No video, canvas animation, JavaScript or external art is used by these specimens.</p><a id="back-to-collection" href="./">Back to Ganja Ghoulballs</a></footer>
+<footer><p>Minting permanently locks 13 originals. Only 420 GGOOs; 0 ETH protocol mint fee plus Base gas. Chainlink VRF provides the initial randomness. After reveal, artwork and metadata live entirely onchain, with no external image server. Minting is not open yet.</p><a id="back-to-collection" href="./">Back to Ganja Ghoulballs</a></footer>
 </main>
 <script>
-// Navigation only. All artwork motion is native SVG, without JavaScript.
+// UI playback selection and navigation only. Artwork motion is native SVG SMIL.
 const back = new URL('./', location.href);
 back.search = location.search;
 document.getElementById('back-to-collection').href = back.href;
+const play=document.getElementById('play-motion'),pause=document.getElementById('pause-motion');
+function setMotion(playing){for(const img of document.querySelectorAll('img[data-animated]'))img.src=playing?img.dataset.animated:img.dataset.still;play.disabled=playing;pause.disabled=!playing;document.getElementById('motion-note').hidden=playing;}
+play.addEventListener('click',()=>{sessionStorage.setItem('gooPreviewMotion','playing');setMotion(true)});pause.addEventListener('click',()=>{sessionStorage.setItem('gooPreviewMotion','paused');setMotion(false)});setMotion(sessionStorage.getItem('gooPreviewMotion')!=='paused');
 </script>
 </body>
 </html>

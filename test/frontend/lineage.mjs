@@ -1,0 +1,18 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {decodeLineage,MOTIONS,THEMES} from '../../site/lineage.js';
+const fixture=JSON.parse(fs.readFileSync(new URL('./fixtures/lineage-v3.json',import.meta.url)));
+const decoded=decodeLineage(fixture.originalIds,fixture.parentGenes,fixture.genome);
+assert.equal(decoded.parents.length,13);
+assert.deepEqual(decoded.parents.map(p=>p.word),fixture.parentGenes);
+assert.equal(decoded.word,fixture.genome);
+assert.equal(decoded.count,4);assert.equal(decoded.inheritedCount,4);
+assert.equal(MOTIONS[decoded.inheritedMotion],'Float');assert.equal(MOTIONS[decoded.motion],'Orbit');
+assert.equal(THEMES[decoded.theme],'Ultraviolet');assert.equal(decoded.radius,8);assert.equal(decoded.mutations,2);
+assert.deepEqual([decoded.bodyDonor.id,decoded.accentDonor.id,decoded.skyDonor.id],['8','7','9']);
+assert.deepEqual(decoded.loci.map(l=>[l.a.id,l.b.id]),[['10','13'],['13','5'],['3','13']]);
+assert.deepEqual([decoded.body,decoded.accent,decoded.sky],['#5557db','#df514b','#76547a']);
+assert.ok(fixture.parentGenes.every(g=>BigInt(g)>BigInt(Number.MAX_SAFE_INTEGER)));
+assert.throws(()=>decodeLineage(fixture.originalIds,fixture.parentGenes,BigInt(fixture.genome)^(1n<<104n)));
+assert.throws(()=>decodeLineage(fixture.originalIds,fixture.parentGenes,BigInt(fixture.genome)|(13n<<160n)));
+console.log('PASS actual EVM v3 lineage fixture: 13 exact chromosomes, named loci, donor IDs, bounded motion mutation and RGB24 values');

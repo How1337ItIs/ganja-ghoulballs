@@ -1,486 +1,443 @@
 {
-  "timestamp": "2026-10-18T01:33:20.883Z",
+  "compilerSettingsSha256": "c90421359ec8eb643a01b820c72d11d4edd3973fba14cfce986532068db2f3c6",
+  "timestamp": "2026-10-18T04:40:42.056Z",
   "status": "passed",
   "scope": "Local in-memory mock mint and decoded data-URI dependency crawl; no live GGOO token or external-checker GGOO score claimed",
   "sourceSha256": {
-    "contracts/GanjaGhoulballs.sol": "626c4bd259b14da38ea0f02012f075231e553c995a4dd46455c34577c50ea192",
+    "contracts/GanjaGhoulballs.sol": "f19920a6b7919e3ed5ee27c8d2cf42b6480be56a961676f344f270967a0bca52",
+    "contracts/GooGenetics.sol": "dd4b855c123392248214fb3c048d4e186e1db06d7ccdcc7444d9d521fa7aef90",
     "contracts/GooGraveyard.sol": "6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae",
-    "contracts/GooRenderer.sol": "92037149681b52dfe671ac5b01ab602c5106e872bdfa165265b5ec3579062aa8"
+    "contracts/GooRenderer.sol": "09e0f93d90ad2bd03f2acddd92e06b11ed00de0d27f3699cd1b4318ade5fb41c"
   },
   "mintedMetadataSamples": 39,
+  "pendingMetadataSamples": 39,
   "stillSVGSamples": 39,
-  "additionalRendererFixtureSVGs": 32,
-  "examinedElements": 24726,
-  "examinedAttributes": 83443,
+  "additionalRendererFixtureSVGs": 48,
+  "fixtureFiles": [
+    "goo-17.svg",
+    "goo-17-still.svg",
+    "goo-61.svg",
+    "goo-61-still.svg",
+    "goo-5.svg",
+    "goo-5-still.svg",
+    "goo-41.svg",
+    "goo-41-still.svg",
+    "goo-18.svg",
+    "goo-18-still.svg",
+    "goo-22.svg",
+    "goo-22-still.svg",
+    "goo-26.svg",
+    "goo-26-still.svg",
+    "goo-30.svg",
+    "goo-30-still.svg",
+    "goo-35.svg",
+    "goo-35-still.svg",
+    "goo-39.svg",
+    "goo-39-still.svg",
+    "goo-43.svg",
+    "goo-43-still.svg",
+    "goo-47.svg",
+    "goo-47-still.svg",
+    "goo-52.svg",
+    "goo-52-still.svg",
+    "goo-56.svg",
+    "goo-56-still.svg",
+    "goo-60.svg",
+    "goo-60-still.svg",
+    "goo-64.svg",
+    "goo-64-still.svg",
+    "lineage-1.svg",
+    "lineage-1-still.svg",
+    "lineage-2.svg",
+    "lineage-2-still.svg",
+    "lineage-3.svg",
+    "lineage-3-still.svg",
+    "lineage-4.svg",
+    "lineage-4-still.svg",
+    "lineage-5.svg",
+    "lineage-5-still.svg",
+    "lineage-6.svg",
+    "lineage-6-still.svg",
+    "lineage-7.svg",
+    "lineage-7-still.svg",
+    "lineage-8.svg",
+    "lineage-8-still.svg"
+  ],
+  "excludedHistoricalFixtureSVGs": [
+    "goo-1-still.svg",
+    "goo-1.svg",
+    "goo-13-still.svg",
+    "goo-13.svg",
+    "goo-9-still.svg",
+    "goo-9.svg"
+  ],
+  "currentFixtureByteEqualityChecked": true,
+  "examinedElements": 36122,
+  "examinedAttributes": 118674,
   "negativeTests": 14,
+  "decodedBirthmarks": 165,
+  "birthVisualEdgeCases": 16,
   "externalDependenciesFound": 0,
   "scriptOrFontDependenciesFound": 0,
   "metadataUnchangedAfterTransfer": true,
   "immutableOriginalVaultRendererAndChain": true,
-  "rendererFunctionsAllPure": true,
+  "rendererAndBackdropNoMutators": true,
+  "immutableRendererBackdrop": true,
+  "metadataIndependentOfOriginalAfterMint": true,
+  "metadataIndependentOfOracleAfterReveal": true,
+  "metadataStableAfterLocalSourceAndOracleCodeRemoval": true,
   "noProxyOrDestructionPathInSource": true,
   "samples": [
     {
       "tokenId": 1,
-      "seed": "31874545153849664221465830842128599811966340045563132040648799356963030904192",
-      "target": {
-        "balls": 1
-      },
-      "metadataKeccak256": "0xa1623a45cabc35e790295cf87bbd1f0696755cf4d98a815fc30ac026c39c6287",
-      "svgKeccak256": "0x1318bb4235a64893e34a42f22bc226bfb9e01fb89ff157f9fa5f9fa4eb718132",
-      "nativeAnimationElements": 5
+      "seed": "97169079061745010773050246363423621228891316181609685583791654439027295453774",
+      "entropy": "0",
+      "requestId": "1",
+      "metadataKeccak256": "0x4b6a62699338685b374bde2d3f69256df35e5359510d1abdeef7b5b38ba2220b",
+      "svgKeccak256": "0xd74348050303bd91252a2ba971e8ba2b5cdddccc1b38d0e137b4907cc5689290",
+      "nativeAnimationElements": 38
     },
     {
       "tokenId": 2,
-      "seed": "86448131309844270809025211139912789740107241640802592745604956439234482841585",
-      "target": {
-        "balls": 2
-      },
-      "metadataKeccak256": "0x1440927cc0b9606cd8f62e40f188588739a9c334ec57fdd791df118330047faa",
-      "svgKeccak256": "0x2ff2fd78ff3be43d319a72ffaabd5f3dd743de9559bab8597715665ab4e7cf48",
-      "nativeAnimationElements": 9
+      "seed": "12340540600838619668796686190752910919455111848111628567887311689439777523819",
+      "entropy": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+      "requestId": "2",
+      "metadataKeccak256": "0x48d60c9ba42c1dc1515ecf2a893126432d9d7c7aeeca8b733c4be41553fcb6f4",
+      "svgKeccak256": "0xe7f60fb0b82de06a7a0e4ad69a0dfb1110826a1052894e4b6b81d112aa9c08be",
+      "nativeAnimationElements": 14
     },
     {
       "tokenId": 3,
-      "seed": "76808707651185890917481683250193639965256691754554765777359814254783615588479",
-      "target": {
-        "balls": 4
-      },
-      "metadataKeccak256": "0x985a08d1d6b530677221835c9270878bce2018d30455b5a7b5eda495b83bfcce",
-      "svgKeccak256": "0x0b0757714ef395b3adc4d34fb0989282ec7112b72f77f210ac301fc0e36111a0",
-      "nativeAnimationElements": 18
+      "seed": "56308383562480741764457411310268713429745383523650559691081984131765430734471",
+      "entropy": "27599362237371738438460331165860800668839795701921177064428175571179187672385",
+      "requestId": "3",
+      "metadataKeccak256": "0xb7e85e24cb76ff59b40ffb8670c1a4685f2443b23db34e686cd10c248382ebfe",
+      "svgKeccak256": "0x813b29928f89fa688058edfde9412072bd7d9f0668843a6ba32044c2869a9872",
+      "nativeAnimationElements": 27
     },
     {
       "tokenId": 4,
-      "seed": "24031968680327510786063548433124240967786234823204910162046172411083508532447",
-      "target": {
-        "balls": 6,
-        "scene": 0,
-        "hat": 0
-      },
-      "metadataKeccak256": "0x85fbd76c357edb35ec79cac1d1a14e6dfd38194ae4f44d728e96b56f1f73b394",
-      "svgKeccak256": "0x8962406adadd04731140e43bf4b676ca7e6dad55571277daa05edecb87f7fd72",
-      "nativeAnimationElements": 22
+      "seed": "33930738584746791545973599065823171405207034566673403979682060933511203113243",
+      "entropy": "66509591528549238057086444395201804492756758338095517300913080150147637505855",
+      "requestId": "4",
+      "metadataKeccak256": "0x94bce18b5648b87c2cdfbc379a88316a00b115168146c516a24df2ae1c4251e8",
+      "svgKeccak256": "0x63b66f814a420f6f8407c33b095538ddc0a43621f5af2e52fef2f9b799602464",
+      "nativeAnimationElements": 54
     },
     {
       "tokenId": 5,
-      "seed": "26536562664520857955288926056333177828517909183283231819412463687557399040986",
-      "target": {
-        "balls": 6,
-        "scene": 0,
-        "hat": 1
-      },
-      "metadataKeccak256": "0x4a513b098898f1d2624df0981b59d0453bff3d95783c9a1a0db8f6cfb0748d28",
-      "svgKeccak256": "0xb108443d0afdef3728e72ffdb936c8fe9b502290673bc84b5463a3b396f5e306",
-      "nativeAnimationElements": 20
+      "seed": "33949118482705740967175029226947719028447755295794588516661778832351277861618",
+      "entropy": "59063273575773039127149926154129307344234671700587108620092295079185648591897",
+      "requestId": "5",
+      "metadataKeccak256": "0x065ac26c3e54caa26cf8475dff9c065d6862cc36e6abfcf52393742ac7779b4f",
+      "svgKeccak256": "0xb1b9a4c24f65b1fbe72b662d7764f88caefba4e321d8076a16d68b3ef6a8b51d",
+      "nativeAnimationElements": 23
     },
     {
       "tokenId": 6,
-      "seed": "26134511295803648854042724140685529878941502206750573417866624769288319051361",
-      "target": {
-        "balls": 6,
-        "scene": 0,
-        "hat": 2
-      },
-      "metadataKeccak256": "0x81bd9941841bd423edc10d2ac7e4ed55c8cef73ecba2cb97cf29050a54d4fefd",
-      "svgKeccak256": "0x836f3d997058f3336662cfbf7c3cb8b69911d64348bd014f237f4b4e217eb99d",
-      "nativeAnimationElements": 22
+      "seed": "78710207118379699693549179410143380953254912310567891059105345620444252579795",
+      "entropy": "57095460903014321958585820656123046587894596372405255588020109165742496082304",
+      "requestId": "6",
+      "metadataKeccak256": "0x2b41520cadc709b28d67fcee67ec74b6095aeac7c4816ff53e8678a5f52d30b1",
+      "svgKeccak256": "0xa1a971ddf00eb1a95a516dcb3439091f86dc6b367eacdac7d5049afc84e5ebbf",
+      "nativeAnimationElements": 27
     },
     {
       "tokenId": 7,
-      "seed": "32513158078725385273489038433371098590586731160627518819366061368847960777922",
-      "target": {
-        "balls": 6,
-        "scene": 0,
-        "hat": 3
-      },
-      "metadataKeccak256": "0x14091b231c329ee7d5fc9640f93e62d91cde97ece7b01a8895ac432fee9a02e6",
-      "svgKeccak256": "0xd9719055449ff0e3724ad535e744845f63a3b8215ef4aa98b7c0a68b501db605",
-      "nativeAnimationElements": 22
+      "seed": "79153788217657030449480134224828764022974673943441608567993587233043685335301",
+      "entropy": "47185605663264250314353582978615038495769159350658327715776979960113145108462",
+      "requestId": "7",
+      "metadataKeccak256": "0xad0d5683dfc4341b0733599df0a87246333ab8c98815c8160b729de97776588b",
+      "svgKeccak256": "0x9541a0422a990fefd4695b63199fbe5c68b2759309a5cd30a1715bc55ecf2c8b",
+      "nativeAnimationElements": 54
     },
     {
       "tokenId": 8,
-      "seed": "80319388466798248574899230372187095100079599244604903778500122235315613133793",
-      "target": {
-        "balls": 6,
-        "scene": 0,
-        "hat": 4
-      },
-      "metadataKeccak256": "0xf4b736405260fcb1c91e8048c9e33d1bc49f484ed541ba2ece91f562b4ebcc5a",
-      "svgKeccak256": "0xa84c694d06e6dd407f3f6bcd5c4c9a72b6d34161f9bffbabb2757cc21b004d0a",
-      "nativeAnimationElements": 22
+      "seed": "70062635228678919512549582620826831193252425089191170047726228477916390987146",
+      "entropy": "59816831473935181183112065394950239551527229934768182567034354436666188434074",
+      "requestId": "8",
+      "metadataKeccak256": "0xcdd38905e75e9d5e41a50415ce0e2d75d07e4dfc8b2ca261eed989285ace459e",
+      "svgKeccak256": "0x8842c90db85e0c354e2e7374f1499e1b4098d611c3cc5e7582efbf8984193b2a",
+      "nativeAnimationElements": 38
     },
     {
       "tokenId": 9,
-      "seed": "16325944957006483419626251962077679543053862461148635442645315284665356559539",
-      "target": {
-        "balls": 6,
-        "scene": 0,
-        "hat": 5
-      },
-      "metadataKeccak256": "0x9f9a258452459b11f7518fb3c88c71bb2192db7ab343e16dd83626cbf3138cba",
-      "svgKeccak256": "0xfc5bd82aab516b671bbc818dffd5c9be601b34243bbb37c0cc0e8add0a35581d",
-      "nativeAnimationElements": 21
+      "seed": "56371214969546207683642951242227485910669474724017197717371387686963226283653",
+      "entropy": "52725929716480594315104798383846202667089888173068557673371561712694103669266",
+      "requestId": "9",
+      "metadataKeccak256": "0x2995c80f6137d754964ef444be4f15b5c39f0336eefbd01d3b549c40ef8b031a",
+      "svgKeccak256": "0x8dde2037ee02bece04f13d0ce54ad49b461da795c137f7300331f92da6d54c0b",
+      "nativeAnimationElements": 40
     },
     {
       "tokenId": 10,
-      "seed": "103446738416131760928117851354997545367703614522735600513891912111443402338373",
-      "target": {
-        "balls": 6,
-        "scene": 1,
-        "hat": 0
-      },
-      "metadataKeccak256": "0x153a2f21d4d49bb5730a6757bb957478aa45d9e9ced3f9e4b900f96bc6d55fa3",
-      "svgKeccak256": "0x66018bf252bcb774100672640459b117bfb43aeddf6623d9cb6a423519573462",
-      "nativeAnimationElements": 20
+      "seed": "13398260140318675313273581432822810838923765913754368425668448908744077203585",
+      "entropy": "34884264706963605625705816975274116330950249657655990311621602989771609940580",
+      "requestId": "10",
+      "metadataKeccak256": "0x9b004f6178625475c1bde3cde70788c617d38a995fa60f932f23a21ccd49bf67",
+      "svgKeccak256": "0x21bf2afb5113013c9f45fd00c51c8813d75d43111694d8fdb3d183f6db163faa",
+      "nativeAnimationElements": 14
     },
     {
       "tokenId": 11,
-      "seed": "5770933157607095330096385133336034138952835943827970678980732618497783681067",
-      "target": {
-        "balls": 6,
-        "scene": 1,
-        "hat": 1
-      },
-      "metadataKeccak256": "0xbf687374138cb2dcdcecace8a20a38b620f9dc847b8817b35bb3e170be6c882b",
-      "svgKeccak256": "0x1055399d0e973b51c013316abba2d3c26c077494df0d26b8abcfd76dc0b94904",
-      "nativeAnimationElements": 20
+      "seed": "76592809202228044099266635467124527903490523422124365073200755132744947355609",
+      "entropy": "1649153083761172192294345846111243101944049486295786991881900205334212832456",
+      "requestId": "11",
+      "metadataKeccak256": "0xf4d2b4c5e95e826a8d63fd89bba049bafe17905a08960b48a3630192ffc7ef4e",
+      "svgKeccak256": "0xce49ca7331f323d00e83cb96682583ffd5900d4ed2172a56a0232b84e83eb617",
+      "nativeAnimationElements": 55
     },
     {
       "tokenId": 12,
-      "seed": "29245275120347372034371894907712821683823691045741121889605140711871490908966",
-      "target": {
-        "balls": 6,
-        "scene": 1,
-        "hat": 2
-      },
-      "metadataKeccak256": "0xd1b00f137ee816abbae48c1430aa71fc1d32cf7e2c20d207a62973c52955ee3a",
-      "svgKeccak256": "0xf5e3bec20d487642476f48af9ba558a543c7e939f1f0344065d66af26860baeb",
-      "nativeAnimationElements": 22
+      "seed": "102974021376520244587070585974450356623132411521018853709287712507796358006547",
+      "entropy": "101072990441645069072513612075389353252081918122952187554012782356415751022562",
+      "requestId": "12",
+      "metadataKeccak256": "0x6716fb51f634378e42e98fe1e6c81600998adc5e6bb22a62d0686c23e5d5a128",
+      "svgKeccak256": "0x470eb4301395e38e1717395b6ebc202814b64e02745ebf74a68ff9d0fdad710e",
+      "nativeAnimationElements": 27
     },
     {
       "tokenId": 13,
-      "seed": "84777433608968446744514148724627796528807179999818318549958052829143788119035",
-      "target": {
-        "balls": 6,
-        "scene": 1,
-        "hat": 3
-      },
-      "metadataKeccak256": "0xa4c973ea6920de04bc938b96a57e59de8e8b3e59f30d4a19dd9c7540ffdca0b1",
-      "svgKeccak256": "0xf60fce5b99b85f8abe447a12b4295bfb3be4d84187a7b08e591e80d621af4d3e",
-      "nativeAnimationElements": 21
+      "seed": "100123933136070598670787295423946857983870109670513512683056807327494468648629",
+      "entropy": "68929030529227864901962441301484551694049779015676949211764915729837701329313",
+      "requestId": "13",
+      "metadataKeccak256": "0xc9df9b75c70a7ceb66273f396b8880edb3eed8e8f059e6840e561b4822177a76",
+      "svgKeccak256": "0xfbfa8f3b48fef10db3296fddf6f9b7f11bfda7578bc6ce621e429e24327b0eb4",
+      "nativeAnimationElements": 28
     },
     {
       "tokenId": 14,
-      "seed": "34921766634183723574704041169642489506711796652929026896369793512810330144991",
-      "target": {
-        "balls": 6,
-        "scene": 1,
-        "hat": 4
-      },
-      "metadataKeccak256": "0x8875199532fc91bfa8b81d0c217b2e58aa3e59e04f4fb86d3f771b5cb50db88b",
-      "svgKeccak256": "0xc49e9a2e004bdc683db19fd8811cacb73a1de304406c5989aefe28f823572802",
-      "nativeAnimationElements": 21
+      "seed": "79511847564630077287665004963608663119194835411333798690444081937069709045640",
+      "entropy": "10069233750453126098090845095883266210915618887534958149092852718557492781511",
+      "requestId": "14",
+      "metadataKeccak256": "0x802c8d13aa7b5c4623a140cee60488b4142c1dc71ba4addcaa10adbbc14bb4d2",
+      "svgKeccak256": "0x995ddb55256698bad935f1d76926adab54f5b909527285b2caff9f8bbad6f20d",
+      "nativeAnimationElements": 39
     },
     {
       "tokenId": 15,
-      "seed": "85833734305780951887314991315047724561136157363432984552126762880716599549174",
-      "target": {
-        "balls": 6,
-        "scene": 1,
-        "hat": 5
-      },
-      "metadataKeccak256": "0x0d74c8d7a4206c50a6b82769075a7f43420b1537d8a53b3e4b4b246dc8ae7724",
-      "svgKeccak256": "0xe2b2fcf048af76dd0903b0633066de4164d750aac3b9e4ea28f53de0a671c91a",
-      "nativeAnimationElements": 21
+      "seed": "32940821452347153980555452131493171123204771088666092440090834629793141193938",
+      "entropy": "43983502342310842673799370678053352502017449319579033075148416649734831477111",
+      "requestId": "15",
+      "metadataKeccak256": "0xb721145eade594f09422057ce4e2f2953b6a15a6a60b80a1902411f3af8f3d8a",
+      "svgKeccak256": "0xdf5e4b2c9f640a8307a12395c8e3395fa88523279cd8112e736bf4ca66529e66",
+      "nativeAnimationElements": 43
     },
     {
       "tokenId": 16,
-      "seed": "5071726536403779835204891012970180964643786198445289181572698540660857851445",
-      "target": {
-        "balls": 6,
-        "scene": 2,
-        "hat": 0
-      },
-      "metadataKeccak256": "0xf4eab022b63cfdd6d2dedf462ea7d7a208af4cd27c72e36119b461ed72223ed6",
-      "svgKeccak256": "0x6488b0919fdc1ef836350c52865d9ac4c67d6f50ec00a488ef62837767d8bb8b",
-      "nativeAnimationElements": 21
+      "seed": "44732224905560347386224692684947274114357821906833859667422215120492758822536",
+      "entropy": "95473863961081236694614645564430957398378076324466950964602674701408794296886",
+      "requestId": "16",
+      "metadataKeccak256": "0xab396c1ecd494d84a2ab2c945c27f68d66f4bb100fbf24b2ed11d6219e4af6f0",
+      "svgKeccak256": "0x2b0a657d13bd2089e2d40961c403361bd4cf11686e477cf4f0a626c0f5fe4993",
+      "nativeAnimationElements": 27
     },
     {
       "tokenId": 17,
-      "seed": "82163241413556374319774923015401196946391129319536513030974067920340054328529",
-      "target": {
-        "balls": 6,
-        "scene": 2,
-        "hat": 1
-      },
-      "metadataKeccak256": "0xffab84231df47f1c0d192398ac0966ddf92798829f8c89dfb3abcd0c0fbae203",
-      "svgKeccak256": "0x8ca3d9dc857e85f4ffdc53e21b1c0150a1fc385db9faa2ae462c7d1a0207956b",
-      "nativeAnimationElements": 20
+      "seed": "98713587183081700741848056042043066191680454904119089145233083279886305733766",
+      "entropy": "45424709977981977338203688820915987774644267797333102311490272678270220479851",
+      "requestId": "17",
+      "metadataKeccak256": "0x0f2f98cda66a694c7298089dae2d03ec97a820913a3a4ad921a4f57c01064a89",
+      "svgKeccak256": "0x5f1e4c4bde1f578071fcb443b928419f96041c6f803c0a1a229add5dc0b1dfd7",
+      "nativeAnimationElements": 43
     },
     {
       "tokenId": 18,
-      "seed": "50000442301815235113039489145575062314271792642281764549678178055533827937693",
-      "target": {
-        "balls": 6,
-        "scene": 2,
-        "hat": 2
-      },
-      "metadataKeccak256": "0x1e8810d38281015a0e50f8b4ccc30b3f9a677b5aa62d77ce62e13bee4647bc06",
-      "svgKeccak256": "0xa25db2a70bcebddeff6656e99e6cc69dc98244c5f50dd94f154330027d3b93ec",
-      "nativeAnimationElements": 22
+      "seed": "43808215465413430192966042886438247503162767298235522479669566793924367234321",
+      "entropy": "24233171032629363541842998299592052399047742302865708357881323368954850395998",
+      "requestId": "18",
+      "metadataKeccak256": "0x10689ab9d36d97eaa300591479acbbc184924878c571c33873fe2314541a3032",
+      "svgKeccak256": "0xa4310353c1e28dc54b21280419ac802170e87ec5e09eac4eab76a585de39716a",
+      "nativeAnimationElements": 43
     },
     {
       "tokenId": 19,
-      "seed": "2322934348785871311757818192561692828052442781042170669883116739277393136863",
-      "target": {
-        "balls": 6,
-        "scene": 2,
-        "hat": 3
-      },
-      "metadataKeccak256": "0x7d89d8a333ecf118ba8ff6c42ba043da316c2af4550072e73fa3cb77e3191d7d",
-      "svgKeccak256": "0x32aab34763ae2398f7cd0051fb0eafc3b02bd755b99fc245d171809e8b5c98ac",
-      "nativeAnimationElements": 23
+      "seed": "49395120453586021112921100859994103985061763725400207638532749396002617184330",
+      "entropy": "61720393232076392440567855427459950081811136739932443213188408559506846873806",
+      "requestId": "19",
+      "metadataKeccak256": "0xa0715dbe06accd442a35003e95415958adea13756468d62e80fe9b0111423d6b",
+      "svgKeccak256": "0x2a26965a584ea88a26513b3c3ef3859275b3826e86ec13a7b9e75be0c2994184",
+      "nativeAnimationElements": 28
     },
     {
       "tokenId": 20,
-      "seed": "98982947952452154169215585283972888303541634997874816825701801740400513919376",
-      "target": {
-        "balls": 6,
-        "scene": 2,
-        "hat": 4
-      },
-      "metadataKeccak256": "0xbfe3083a7874f35bde15754be5e79194e7b347926b65f2352dc75f040a4ca3f9",
-      "svgKeccak256": "0x0db677157084b5b4e2b2dc05f17c2f52558ad3733cfa71d93f588abd63a67c13",
-      "nativeAnimationElements": 21
+      "seed": "42532803321008891335596773710044626705277972828392625067866075787125720931211",
+      "entropy": "106908090709143291796617872996086869079322823194980922720881247005431158622369",
+      "requestId": "20",
+      "metadataKeccak256": "0x07df6b78670f9450c6f110a98feefac0b97bb8f245a45eb5df99cafc551e7d3a",
+      "svgKeccak256": "0x492eab58f256c92af41e766d26c42b6ee6fd6cc37e680b3c74a91512dc517507",
+      "nativeAnimationElements": 60
     },
     {
       "tokenId": 21,
-      "seed": "37319486608826638726944062458596854235567649798248081955450312629939944058102",
-      "target": {
-        "balls": 6,
-        "scene": 2,
-        "hat": 5
-      },
-      "metadataKeccak256": "0x28b469e10649d91a3cd470724c61b3169721f6f445052f84cfbf28b21f547067",
-      "svgKeccak256": "0x11ea759ff72622417196be6d25e85f1f81e4b1aa167884fcdb1cf239753b1527",
-      "nativeAnimationElements": 21
+      "seed": "59725897928446192485743913955309468893902958946494098928791914181184841004524",
+      "entropy": "17549364584938000349184752603280193391420719250370659974918205776396668357357",
+      "requestId": "21",
+      "metadataKeccak256": "0x1984822a6f53f20ebd32f557ed0a491e2afcd85473c247718c3514f8f3cb0f03",
+      "svgKeccak256": "0x00442bc9c4fe35133e7ceb14faf7bbfb28601627860cdf379893d799e70dd353",
+      "nativeAnimationElements": 23
     },
     {
       "tokenId": 22,
-      "seed": "105701028798427932006161127929323544742577414274875720774401526805160205810556",
-      "target": {
-        "balls": 6,
-        "scene": 3,
-        "hat": 0
-      },
-      "metadataKeccak256": "0x10721b3426eb8863a765f2fc72965c1377cd547bd78f4c22054e818d2d23fb24",
-      "svgKeccak256": "0x57c14bcd72b5dde86bbd82abe16dfbe5e70caf9d2295fa27bd305b67581463ff",
-      "nativeAnimationElements": 22
+      "seed": "41304629950260515368960339342532008829091958171625622029846625601383712265479",
+      "entropy": "82429235280316596208795471831238696574831952580826018714950556701550830369302",
+      "requestId": "22",
+      "metadataKeccak256": "0x84c096556a72e0d3204c738d8e993e6940c5758ef99b6d691486318451de10c6",
+      "svgKeccak256": "0x60e68e72126fbab2817aa8157d6d7cdfc78ac67812a85f0b51655bae694b70b3",
+      "nativeAnimationElements": 60
     },
     {
       "tokenId": 23,
-      "seed": "102574236995309793775343358174740308290540629071333174661708151238277382442895",
-      "target": {
-        "balls": 6,
-        "scene": 3,
-        "hat": 1
-      },
-      "metadataKeccak256": "0x5da1f993411bb34a772666abd1ba0e85b48d13842944b2d81c8482625315db6c",
-      "svgKeccak256": "0x8a912ef07d9a3465b5d093867a894c201de8d595f763fbbd5945d16c6ef677b6",
-      "nativeAnimationElements": 23
+      "seed": "5292053097296627524287710517424940271389371338034339121863760121741213383022",
+      "entropy": "26135455252404313390339336587324247661074877601862288696481059019554050184901",
+      "requestId": "23",
+      "metadataKeccak256": "0xe5bbd8732bd855ab376e195e6a9260cd0535795384f16a880281f34b1954f0a8",
+      "svgKeccak256": "0x36f1dfc71342b9e415e30bfad770a8a6f3d456fc307c99baf805410f6f5d6301",
+      "nativeAnimationElements": 54
     },
     {
       "tokenId": 24,
-      "seed": "16866362409616218990741828864153850157522949677891294629093136439284019306850",
-      "target": {
-        "balls": 6,
-        "scene": 3,
-        "hat": 2
-      },
-      "metadataKeccak256": "0x34055c2103bdd9583441bfcbb3b64d34c3bb656f3a4c982828342623df2bbeef",
-      "svgKeccak256": "0x4b2500aa21b3df090d411ac3ed4a8af2836112fd470a348b7a5909c261a07b15",
-      "nativeAnimationElements": 20
+      "seed": "83609066892016634962864105010730197536221097520501288055108169940420511331409",
+      "entropy": "36023491547725747297915479106727847062708092140795930954504877072746313345757",
+      "requestId": "24",
+      "metadataKeccak256": "0xbaea1771f20ee10aa3f60617a0bfa7c404d62a0523a5564605c6a808bc9579f7",
+      "svgKeccak256": "0xd027cbf415e5836db003fd1c28ef802df97d2fed97e3af7268edd59255a9ca65",
+      "nativeAnimationElements": 59
     },
     {
       "tokenId": 25,
-      "seed": "63359569158977916219983943001552013185255393209542182639159105171100502803636",
-      "target": {
-        "balls": 6,
-        "scene": 3,
-        "hat": 3
-      },
-      "metadataKeccak256": "0x56781a2ab65b257a7f480eeda0cfd5e9337e2f43e4cf717843466f0ce50ddd91",
-      "svgKeccak256": "0xadf575c7c25b8c450102a057da6e1d6818b4a359167f7f55b82e6531b3fae135",
-      "nativeAnimationElements": 22
+      "seed": "81346516624667597000507165849438195802427357526473565052384963554238972481025",
+      "entropy": "13771766801505284788218155245839305819293029626614956103967450175835102291850",
+      "requestId": "25",
+      "metadataKeccak256": "0x83873f05d6f4641bcb83f8235dc98189d6eb52c708de9f32ca5430ae519b4ee8",
+      "svgKeccak256": "0x3a9b65cd54b112168a63940480867c9b185b54c63d624e847326e02a3300af46",
+      "nativeAnimationElements": 14
     },
     {
       "tokenId": 26,
-      "seed": "59119406949502072352551856988146375536869545103545993222462623895093101879275",
-      "target": {
-        "balls": 6,
-        "scene": 3,
-        "hat": 4
-      },
-      "metadataKeccak256": "0xbafac64b9028d0cd449917862b94ad5571113f4299e879d5df02fbec43b6c82b",
-      "svgKeccak256": "0x9d988417e784ac7223d20e85fd02fdeae4ef9c20a63a7bee5a885bf7ceb255c2",
-      "nativeAnimationElements": 22
+      "seed": "10563919537499629634937552126105504099293842605997475806534620189192629253014",
+      "entropy": "45142759942390097544460158588362519576570719500373948606244531431938903880927",
+      "requestId": "26",
+      "metadataKeccak256": "0xfe44529f5ebc0c99f7624fc34ba5759946f0dc4f91ac4144b6fc3dc5222d6dd9",
+      "svgKeccak256": "0x3c1d8c173a2f920633735064ccd7e864017610b818fd354fc95f9404cfee4973",
+      "nativeAnimationElements": 43
     },
     {
       "tokenId": 27,
-      "seed": "61291457692521088877003761871329720427687954174401382893947370214472452317559",
-      "target": {
-        "balls": 6,
-        "scene": 3,
-        "hat": 5
-      },
-      "metadataKeccak256": "0x5190210dea8c335f8b4da06a8df83d2c35bc2cc1af553821b93168e3b8da20cb",
-      "svgKeccak256": "0x55541e2832800261fdec27c4dd7d951b928861a004cc8b7b8bfb0b9c24f480d8",
-      "nativeAnimationElements": 21
+      "seed": "74793403437496731964338632582378841111000586046045601932440728639956706048547",
+      "entropy": "3627749528410366689385970490583456742816298718172225278853624550003396400205",
+      "requestId": "27",
+      "metadataKeccak256": "0xc1b4d463d37699d05bb154697fcb3cc70e0c746dc933ad275df5c5b48a02d0b7",
+      "svgKeccak256": "0xd5652dc357dc6802153f69f9c29904a4c6568111ab37f562d62c8b5ee6e7bc1e",
+      "nativeAnimationElements": 54
     },
     {
       "tokenId": 28,
-      "seed": "98677635486101233759132492762375819895372004657342002635742874123089574165616",
-      "target": {
-        "balls": 6,
-        "scene": 4,
-        "hat": 0
-      },
-      "metadataKeccak256": "0x02e293aefd07980d1418f51fe8a3a83115de97f02e68d097e93f8729dbd05cba",
-      "svgKeccak256": "0xe64250f59a6fb81a7cd597ec7c3cc3bae9bf316b5bf1a3d7fdeb1fbdfbe366a3",
-      "nativeAnimationElements": 20
+      "seed": "97698833688522837123284192048807712792392503893968597076286989474462338915280",
+      "entropy": "58978255225210018055407520865487598116768156814500527555240846517216319393222",
+      "requestId": "28",
+      "metadataKeccak256": "0xdb5e5aad0cfa888bf8bcb34211715783f9ac20f2726898ca27832e12834a139f",
+      "svgKeccak256": "0x67e72c1f4766447348e84ce473109d0634d2b5390d17772f376ae1f6eb787312",
+      "nativeAnimationElements": 14
     },
     {
       "tokenId": 29,
-      "seed": "62588995359065368042822198556027067638021023960458912549218335791099878354627",
-      "target": {
-        "balls": 6,
-        "scene": 4,
-        "hat": 1
-      },
-      "metadataKeccak256": "0xc3750cd505e6ce1695d8f093a8514765f04fbc5091421686861d285f1f163666",
-      "svgKeccak256": "0x1421554e53342caf1def3dd61027d8168781a8ff41a509930d908a8354ee016f",
-      "nativeAnimationElements": 22
+      "seed": "12544460682123388281644694864320889916157061263724388719472175902696911046238",
+      "entropy": "22756355883087708324739784290831473262101903019173798114205906134416445810106",
+      "requestId": "29",
+      "metadataKeccak256": "0xcf09ddc8e74f2a9d984787df6e9c9103d850de71c746d0c30e1236d258b4148f",
+      "svgKeccak256": "0x371dd7f402a54350771947dad61f78525fd05456c342a4837f0aa91ed4fa270e",
+      "nativeAnimationElements": 38
     },
     {
       "tokenId": 30,
-      "seed": "79543946452262075180285645078254519160108654850479821292184722467485912531585",
-      "target": {
-        "balls": 6,
-        "scene": 4,
-        "hat": 2
-      },
-      "metadataKeccak256": "0xb570bde6dc467d254f154a0439d3846db0c807159bdfc83bde5fe2b27a287644",
-      "svgKeccak256": "0xfb1eb414266739ce5c8e32edc5a3a37e3796dae16d0fa33c9edd2ce5558b1296",
-      "nativeAnimationElements": 22
+      "seed": "96276415315236410026482451877132282148004905817889808632487552910565660904846",
+      "entropy": "30819613546566863965594851049248601014830383966759322891755539292705973228260",
+      "requestId": "30",
+      "metadataKeccak256": "0xf5647f62311265e82f3fb1122839f0ed6970f15b2f7a93175f1bd27fcda0780c",
+      "svgKeccak256": "0x226667444fc2fb5dd1460cf6309ede1ffd41094bd11109668131fcea98afb0d4",
+      "nativeAnimationElements": 59
     },
     {
       "tokenId": 31,
-      "seed": "109574722636087290526272106963706910152913890363356439586869774049973683438387",
-      "target": {
-        "balls": 6,
-        "scene": 4,
-        "hat": 3
-      },
-      "metadataKeccak256": "0x355d4551cd83d06bcab12425bdf0c5ef253b539839d52001b6af1d5b9e3f1fba",
-      "svgKeccak256": "0x591a3f1af2b5bf472c2990e99ee8898784340cd673cae422aa9babb7cf544266",
-      "nativeAnimationElements": 21
+      "seed": "24582539779515863255980009435987120386619776626341558721372086211665071455504",
+      "entropy": "15658639370678123099605596287351753719500220585993629572111156673906993033272",
+      "requestId": "31",
+      "metadataKeccak256": "0x780fe5eb72c9af1f55addf7f5a31f222807e0078cbb9dffa187e5a7b4dfe074f",
+      "svgKeccak256": "0x2060f45f8ccd6830f09976e2bfec0c96d47f6d68ea88c29a229a1b8051d62014",
+      "nativeAnimationElements": 43
     },
     {
       "tokenId": 32,
-      "seed": "38424351587777752421697182446827806417008547150218531311719982056827329523474",
-      "target": {
-        "balls": 6,
-        "scene": 4,
-        "hat": 4
-      },
-      "metadataKeccak256": "0xa49cdb21cb09db77d8f5c1fc15402355c65de5201d25556d81d92806687c489e",
-      "svgKeccak256": "0xdf0cd96826c356b87ab2504531762c24c7a9c2075b39d7451b12960affb48705",
-      "nativeAnimationElements": 23
+      "seed": "52838285432769640909635017466525237926030684793157969560994408807061393916687",
+      "entropy": "22011871053607995794556989568381254782848847328325408878062787135328949198886",
+      "requestId": "32",
+      "metadataKeccak256": "0xc33cb9717935987839330ed89575ab8676846998f2a481f8d7d8297cd579f4d2",
+      "svgKeccak256": "0x440624c3a03be1092343c5cb3a2ff0928b065c9fa964f58e7a1d94fc1fc7ba33",
+      "nativeAnimationElements": 14
     },
     {
       "tokenId": 33,
-      "seed": "65188804997969701149536933269789338762615036754764572652019306061284482743855",
-      "target": {
-        "balls": 6,
-        "scene": 4,
-        "hat": 5
-      },
-      "metadataKeccak256": "0xd0698f4703881c54499cdd04c48ca2be75fcc32de93d06a44b2d9c2082274225",
-      "svgKeccak256": "0x043c8773688e834ee614f4f088c251143bdf3ad8b4d1fe264ba32c5f7b3e47aa",
-      "nativeAnimationElements": 24
+      "seed": "19642055271504737634328570859305408160198874359434481632821330246527266567213",
+      "entropy": "72072204586775516392644222307104539404561953577764572340954778105792598839968",
+      "requestId": "33",
+      "metadataKeccak256": "0x82b100ee1fbe2267b4ee2addac089112a9787adc6591a18cc5739a59342ba387",
+      "svgKeccak256": "0x3bc2ac7e3d253c6339a1441ebb33cb00d27bc79329441da86bfddef070d9ca93",
+      "nativeAnimationElements": 38
     },
     {
       "tokenId": 34,
-      "seed": "9483968490513278006838220438768552238760884171965386635809866050991794600152",
-      "target": {
-        "balls": 6,
-        "scene": 5,
-        "hat": 0
-      },
-      "metadataKeccak256": "0x7afad00cb12abee53181f12fe1c3eea806412f94e1f8b59715732da00ad18fb0",
-      "svgKeccak256": "0x14f6092dad75991ed8d313d9220b5d04ae3c169b11bea6f0650be691279917ea",
-      "nativeAnimationElements": 22
+      "seed": "113118871139530122725955007259077728126363427535425108419432566982907904104062",
+      "entropy": "35046263254760768527341246268150179594585408285781702011196535871081510663950",
+      "requestId": "34",
+      "metadataKeccak256": "0xeff820229592d5976b608b21a148cacc88609a1b1e5908f2444fbc95d0d4efd3",
+      "svgKeccak256": "0x1b3bb8c18c98d0745f973dbce0f10efb504f58fe4fadd01b43734614593761e0",
+      "nativeAnimationElements": 54
     },
     {
       "tokenId": 35,
-      "seed": "15906148167665833352368086366221900892118533514173969072719718147247118119559",
-      "target": {
-        "balls": 6,
-        "scene": 5,
-        "hat": 1
-      },
-      "metadataKeccak256": "0x5c64a6b7765095ad084b861f1ea61fcc22f2b7eb58842697e002043ad758260c",
-      "svgKeccak256": "0xedb05f205bba686e00d56b76c040ef647473c7dda5302adffaff1b44521976b3",
-      "nativeAnimationElements": 23
+      "seed": "74787687367247320115215391209110750074141201049033306059224764142410659101091",
+      "entropy": "46116006120851576271728149897122206292288099226860646831865655036276706009512",
+      "requestId": "35",
+      "metadataKeccak256": "0xc54c80e250740a64ae57f433f8b955b2d69d4928746949465d8c303f680e3227",
+      "svgKeccak256": "0x4a7ddeca91dc85af5bd565cffc989cffb2aea7560300dd6a90a7f93961bfc56f",
+      "nativeAnimationElements": 43
     },
     {
       "tokenId": 36,
-      "seed": "49546305624058337437610730468254339705580633626406056490626915372213255079157",
-      "target": {
-        "balls": 6,
-        "scene": 5,
-        "hat": 2
-      },
-      "metadataKeccak256": "0x501d84d12a03ef854eacfc7db01e2108ea11f7297f5c13e6ed32538df3b90644",
-      "svgKeccak256": "0x1d1703216be31d09d3b36ae4a9c57710f88152f0d14940653dd2f8f782335854",
-      "nativeAnimationElements": 23
+      "seed": "74131545454782045160779094775588960454222821414099919944050230511260802465746",
+      "entropy": "30315470292257492167757933739110039069830060996828872722189053239311993195378",
+      "requestId": "36",
+      "metadataKeccak256": "0x2082c96a25107c4fffc5abd05a005a76b206f3edc697fafd904fe7c0e7331e57",
+      "svgKeccak256": "0x2203c1a7c0f71e68efe53a12e0235057f8732e90ad14177aa007827f277fa5b1",
+      "nativeAnimationElements": 43
     },
     {
       "tokenId": 37,
-      "seed": "52073749363216371016919553272488613025897907205915496585431543045191203643770",
-      "target": {
-        "balls": 6,
-        "scene": 5,
-        "hat": 3
-      },
-      "metadataKeccak256": "0xd8be06e3684a0098dc46a5d0f87a5dec9cb1f8e96605f844bf18abeddefdaae2",
-      "svgKeccak256": "0x8e8ab033e454288daa0f438658e657b128057cf5423d58c358bcaf87fc167c17",
-      "nativeAnimationElements": 22
+      "seed": "20224499739437595018608764559992494044133437052951877389028257958666796437944",
+      "entropy": "78635856164585555467257833035200466734246024143948450529582571059548928532771",
+      "requestId": "37",
+      "metadataKeccak256": "0xa6f0a4fce2db6e30bef2b99a15f8ce378718bd8ceaf919976bd05769833d590f",
+      "svgKeccak256": "0xf08cb7603d3bc9f6acd89a8205f7b5d74249fcf4aba192d37e354faf5fd52b13",
+      "nativeAnimationElements": 14
     },
     {
       "tokenId": 38,
-      "seed": "54032862297985382164548374710194836204436821427535905092052516172298332980275",
-      "target": {
-        "balls": 6,
-        "scene": 5,
-        "hat": 4
-      },
-      "metadataKeccak256": "0x5f4f3f37df8cdde3477e9c24d9fb27f942f7156de45207bfaf7d4e50fb0e7e9d",
-      "svgKeccak256": "0x9b20acd023a56cc68356b953916c427c35ec395ab941bc5a7bc3e1e01c7347c4",
-      "nativeAnimationElements": 24
+      "seed": "21297816454006664585927804644797358179262341024302292138757962276942931197557",
+      "entropy": "33697757959950676037791170345899035815924786278375008341339641939765587698649",
+      "requestId": "38",
+      "metadataKeccak256": "0x4476668c897ef59f6bd6a9868061848b45f2b12edb4c4133c1c4669f22e26f23",
+      "svgKeccak256": "0x6025e4083fcb75138395e4eabbaad42cd408dcdb07ed825ccb87d60dd2e2c260",
+      "nativeAnimationElements": 43
     },
     {
       "tokenId": 39,
-      "seed": "103600066795469117164732110565826980852598381890643983528624498382445272790483",
-      "target": {
-        "balls": 6,
-        "scene": 5,
-        "hat": 5
-      },
-      "metadataKeccak256": "0x21de95562ca0d8927c89bd654a984683ff95c205f35b9ea0762f160c09a05c55",
-      "svgKeccak256": "0x6d477413e81f55e8a64c0a9eab157aaf2481e561b3a16144d29e45147baaeffa",
-      "nativeAnimationElements": 21
+      "seed": "55862487276707065833824356363515825604631988484604748560058956420869780588358",
+      "entropy": "73645144906322554998081837255569992490887886433088317090234782066335271937798",
+      "requestId": "39",
+      "metadataKeccak256": "0xac802b7fd2807a9e962bfb321801dbc12cba88395dd725d0046251f965163d25",
+      "svgKeccak256": "0xed94c0e0ef0692dfacaa08a16ee6bf2f193e238f3229cad0b9d538d1c0a32540",
+      "nativeAnimationElements": 15
     }
   ]
 }

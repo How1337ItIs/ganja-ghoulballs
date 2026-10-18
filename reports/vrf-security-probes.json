@@ -1,0 +1,46 @@
+{
+  "compilerSettingsSha256": "c90421359ec8eb643a01b820c72d11d4edd3973fba14cfce986532068db2f3c6",
+  "compiler": "0.8.30+commit.73712a01.Emscripten.clang",
+  "generatedAt": "2026-10-18T04:37:12.434Z",
+  "pass": true,
+  "scope": "Local in-memory Cancun EVM with deliberately mutable mocks; no real NFT or external transaction",
+  "assertions": 524,
+  "callbackGasWithCallOverhead": "52880",
+  "sourceSha256": {
+    "contracts/GanjaGhoulballs.sol": "f19920a6b7919e3ed5ee27c8d2cf42b6480be56a961676f344f270967a0bca52",
+    "contracts/GooGenetics.sol": "dd4b855c123392248214fb3c048d4e186e1db06d7ccdcc7444d9d521fa7aef90",
+    "contracts/GooGraveyard.sol": "6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae",
+    "contracts/GooRenderer.sol": "09e0f93d90ad2bd03f2acddd92e06b11ed00de0d27f3699cd1b4318ade5fb41c"
+  },
+  "sizes": {
+    "GanjaGhoulballs": {
+      "runtimeBytes": 15308,
+      "creationBytes": 48655
+    },
+    "GooGraveyard": {
+      "runtimeBytes": 524,
+      "creationBytes": 703
+    },
+    "GooRenderer": {
+      "runtimeBytes": 23802,
+      "creationBytes": 31585
+    },
+    "GooBackdrop": {
+      "runtimeBytes": 7634,
+      "creationBytes": 7660
+    }
+  },
+  "checks": [
+    "Atomic rollback:reserve,price,quote,request,invalidID,malformedrecipe,latecustodyfailure,recipient rejection",
+    "Only immutable wrapper may fulfill",
+    "Unknown/malformed/duplicate callbacks cannot reroll",
+    "Zero and maximum entropy",
+    "Cold first write callback capped at100k",
+    "Out-of-order requests",
+    "Pending token transfers preserve future outcome",
+    "Original recipe failure after mint cannot change metadata",
+    "Wrapper/original/receiver reentrancy",
+    "Mint block123 persists through reveal456, read999 and transfers",
+    "No administrative selectors"
+  ]
+}

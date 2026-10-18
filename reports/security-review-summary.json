@@ -1,83 +1,118 @@
 {
-  "reviewDate": "2026-10-18",
-  "status": "complete_local_review_live_Base_gate_open",
+  "reviewDate": "2026-10-18T04:40:54.507Z",
+  "status": "local_code_review_complete_live_production_gates_open",
+  "currentReleaseReviewComplete": true,
   "report": "reports/SECURITY_REVIEW.md",
   "unresolvedExploitFindings": {
     "critical": 0,
     "high": 0,
     "medium": 0
   },
-  "openProductionGates": [
-    "Live Base original eth_getCode matches verified explorer runtime hash/length",
-    "Exact final constructor simulation against live Base original",
-    "Owner-controlled direct wallet deployment approval",
-    "Deployment receipt, three runtime/source verifications and immutable wiring",
-    "Only then enable public mint writes"
-  ],
   "sourceSha256": {
-    "contracts/GanjaGhoulballs.sol": "626c4bd259b14da38ea0f02012f075231e553c995a4dd46455c34577c50ea192",
+    "contracts/GanjaGhoulballs.sol": "f19920a6b7919e3ed5ee27c8d2cf42b6480be56a961676f344f270967a0bca52",
+    "contracts/GooGenetics.sol": "dd4b855c123392248214fb3c048d4e186e1db06d7ccdcc7444d9d521fa7aef90",
     "contracts/GooGraveyard.sol": "6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae",
-    "contracts/GooRenderer.sol": "92037149681b52dfe671ac5b01ab602c5106e872bdfa165265b5ec3579062aa8",
-    "site/app.js": "583e66f42ef862040d45f353a5877fe2ee7fe4c05a4dce26865095c088ebb7a1",
-    "deploy-ui/deploy.js": "2215b3429694249c55e4a98e5bb10b53dd5689351dc168f08167df4a2c2dc134",
-    "deploy-ui/lib.mjs": "23c0b1ed8f0bd7b438e1aaf706bd3eb2e0bab732a2ee76230598da4c3c0a63c1",
-    "deploy-ui/build.mjs": "8f54d7242a3b2079adde5c1cf47d6b526db3f0073364f1126f8b3f2823772a33",
-    "deploy-ui/test.mjs": "d822a3f393436070b9d63ea16c2736af8a98267e7089c8cca909f203487e7add"
+    "contracts/GooRenderer.sol": "09e0f93d90ad2bd03f2acddd92e06b11ed00de0d27f3699cd1b4318ade5fb41c",
+    "site/app.js": "3047e988d13dd9f949df71c30fb76ff652bfc3ee95064ce13f145ce20ce29208",
+    "site/lineage.js": "93104dff989671b974e0860773ca44af0f60b0d428ffdc870034ec51ef66569d",
+    "site/index.html": "ec9fd04b05661f7efbc0a71f8bcfee21c4c707e81f821fd0f5ab745f4401a934",
+    "site/style.css": "459c74f263398259cd8192af51c7b279c4ea22c463339b64dd2a7c58b065f0f1",
+    "site/config.json": "a4d135e18fa689a5a646da50fd4771194ab5c759015741cb03813d73d3edd1a8",
+    "test/frontend/mobile-wallet.mjs": "728b8780559a57a59e503ad009ffa8e32632391feb2fd050a70a2ff619bdbdf2",
+    "test/frontend/lineage.mjs": "b299e608980a4bee2ff2b05f8c8e44773825869b4da1ac347f19b8cc188cef6a",
+    "deploy-ui/deploy.js": "ca029c30781d5cc6c085194539a865d6f2b6ed26867f09ee1435b3246b8a7f9a",
+    "deploy-ui/lib.mjs": "707562965ee62b3c2cfdef5d3e2455fdc0dbc1c61a8a768b8d27ab7fbc4872c6",
+    "deploy-ui/build.mjs": "9cc9f3288a61f11043bb95c79ab516c44c41ca507c82fd1866ff84bf2fd6bd76",
+    "deploy-ui/test.mjs": "b10e3a0b75656727d8fa3c873896914875f8fc991a6325394ad2cd821ebd8019",
+    "deploy-ui/index.html": "311d6b3f30fcda9012dde73be897c8bcfb1a46351dbf7c00f99aef5bbc831124",
+    "deploy-ui/oracle-config.json": "130dea2704a9971c955d65c55d15313207c49d28250075034d0f8a8ece028cef",
+    "solc-settings.json": "c90421359ec8eb643a01b820c72d11d4edd3973fba14cfce986532068db2f3c6"
   },
-  "verified": {
-    "contractTestGroups": 22,
-    "independentSecurityAssertions": 2895,
-    "base64OracleCalls": 570,
-    "independentFrontendScenarios": 27,
-    "coordinatorAggregateFrontendScenarios": 28,
-    "coordinatorAggregateExitCode": 0,
-    "deploymentUITests": "passed on final exact-original-runtime pin, funding, fee-scope and nested-module-path checkpoint",
-    "originalExplorerSource": "Exact Match observed on Basescan 2026-10-18T01:27:00Z; visible source confirms IDs1..6667",
-    "fullyOnchainMetadata": {
-      "status": "passed",
-      "localMintedMetadataSamples": 39,
-      "animatedSVGs": 39,
-      "stillSVGs": 39,
-      "additionalRendererFixtureSVGs": 32,
-      "negativeDependencyTests": 14,
-      "externalDependenciesFound": 0,
-      "scriptOrFontDependenciesFound": 0,
-      "proof": "reports/onchain-metadata-probes.json"
+  "compiler": "0.8.30+commit.73712a01.Emscripten.clang",
+  "compilerSettingsSha256": "c90421359ec8eb643a01b820c72d11d4edd3973fba14cfce986532068db2f3c6",
+  "compilerSettings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 50
     },
-    "originalOnChainChecker": {
-      "score": "5/5 Fully On-Chain",
-      "appliesTo": "Original ghoulballs token1 only, not GGOO",
-      "evidence": "reports/onchainchecker-original-evidence.json"
-    },
-    "originalRuntimePin": "Verified hash and 8,229-byte length enforced before constructor simulation and immediately before wallet send; empty, wrong-length and same-length mutations rejected"
-  },
-  "limitations": [
-    "Automated review, not a professional audit or formal proof",
-    "Local mock EVM, not a Base fork",
-    "No real NFT, wallet approval, signature, deployment, or broadcast",
-    "Gas excludes intrinsic transaction costs and Base L1 data fees"
-  ],
-  "originalRuntimeReference": {
-    "byteLength": 8229,
-    "keccak256": "0x4fe189e2554350c36d652e3573f8bbd0dc3b45c99a4bf799998623339ab3873a",
-    "evidence": "reports/original-basescan-evidence.json"
+    "viaIR": true,
+    "evmVersion": "cancun"
   },
   "reviewedCreation": {
-    "creationBytecodeKeccak256": "0x479fb353fa1c628ae5a97b72a05a7d713c87ecb188cd65fb06ee24243a72bc62",
-    "deploymentDataKeccak256": "0xd222acf40438b5852558fd60093e63b15c0c885cec68fa284fe089c287129662",
-    "deploymentDataBytes": 33456,
-    "originalCollectionArgument": "0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c"
+    "creationBytecodeKeccak256": "0xa499eb02ce18250506d2938be3998041e5eb4af0bea5b27e13e5077503c85b74",
+    "deploymentDataKeccak256": "0xdbd21aeea3ce017adff5866f3903569a84ad5a2d7ee182ddd7dac98261a1a39c",
+    "deploymentDataBytes": 48751,
+    "originalCollectionArgument": "0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c",
+    "wrapperArgument": "0xb0407dbe851f8318bd31404a49e658143c982f23",
+    "maxRequestPriceWei": "10000000000000",
+    "sourceCommit": null
   },
-  "postReviewCoordinatorFrontendCheckpoint": {
-    "previousSiteHash": "bc86466563cce723f61e6eb828e552ea41d0dededb5fe99087904d509c695b84",
-    "currentSiteHash": "583e66f42ef862040d45f353a5877fe2ee7fe4c05a4dce26865095c088ebb7a1",
-    "scope": "Coordinator-reviewed nested-path asset resolution changes; 33 frontend scenarios passed. Historical independent frontend scenario count is unchanged."
-  },
-  "deploymentGateRecheck": {
-    "date": "2026-10-18",
-    "sourceCommit": "dfad40d9ad9c98514ac63c456f111bd1795952fd",
-    "result": "PASS local code-review gate only; all live deployment and user wallet gates retained",
+  "verified": {
+    "artAcceptance": {
+      "genomes": 1000,
+      "thumbnailRasters": 420,
+      "framingCases": 3360,
+      "provenanceCases": 36
+    },
+    "contractTestGroups": 23,
+    "currentHashBoundaryTestGroups": 22,
+    "fullSupplyEvidence": {
+      "report": "artifacts/contract-tests.json",
+      "sourceSha256": {
+        "contracts/GanjaGhoulballs.sol": "f19920a6b7919e3ed5ee27c8d2cf42b6480be56a961676f344f270967a0bca52",
+        "contracts/GooGenetics.sol": "dd4b855c123392248214fb3c048d4e186e1db06d7ccdcc7444d9d521fa7aef90",
+        "contracts/GooGraveyard.sol": "6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae",
+        "contracts/GooRenderer.sol": "dca9c7366826fc138fa844ffde3c68815070fb237837bbe017bc837cd9e95cf4"
+      },
+      "bridge": "artifacts/core-runtime-equivalence.json",
+      "basis": "Exact collection executable runtime, immutable references, ABI and storage layout equality; separately retested renderer changes"
+    },
+    "fullSupplyMints": 420,
+    "lockedOriginalsAtFullSupply": 5460,
+    "independentVRFAssertions": 524,
+    "callbackGasWithCallOverhead": "52880",
+    "independentERC721Assertions": 2900,
+    "independentGeneticsAssertions": 2855,
+    "coreGeneticsAssertions": 22188,
+    "base64OracleCalls": 570,
+    "independentFrontendScenarios": 67,
     "deploymentUITests": "passed",
-    "solidityAndDeployUIHashes": "all matched prior independent review"
-  }
+    "actualOriginalRuntimeLocalIntegration": "passed; fresh local state, not a live Base fork",
+    "fullyOnchainMetadata": {
+      "pending": 39,
+      "revealed": 39,
+      "still": 39,
+      "additionalCurrentFixtures": 48,
+      "negativeDependencyTests": 14,
+      "externalDependenciesFound": 0,
+      "decodedVisualBirthmarks": 165,
+      "full416BitEdgeCases": 16,
+      "stableAfterSourceAndOracleCodeRemoval": true
+    }
+  },
+  "designRisks": [
+    "A valid oracle callback may never arrive; all 13 originals remain locked and the NFT may stay pending permanently.",
+    "Wrapper governance/configuration/coordinator are external trust dependencies. Three confirmations are not a guarantee against chain reorganization.",
+    "Oracle donations and leftovers are nonwithdrawable. An immutable request cap can prevent future mints if prices rise.",
+    "Raw ERC721 transfers to the vault or collection can irreversibly strand NFTs without mint credit.",
+    "Only 401 bytes of initcode and 774 bytes of renderer runtime headroom at this exact checkpoint; any change requires rebuilding and retesting."
+  ],
+  "openProductionGates": [
+    "Record the canonical source commit matching these exact reviewed files and deployment data; do not reuse any prior approval.",
+    "Confirm the immutable request cap separately from any voluntary reserve donation amount.",
+    "Live Base wallet RPC must match original, parent renderer and wrapper code pins and check wrapper configured/enabled/coordinator/current quote.",
+    "Simulate the exact final constructor on live Base, check nonce and all fees/balance, then obtain the user’s own wallet confirmation.",
+    "Verify deployment receipt, all four deployed runtimes and immutable wiring, and publish matching explorer source.",
+    "Any reserve donation requires its own exact amount, recipient and personal wallet approval; leftovers cannot be withdrawn.",
+    "Activate public writes only for verified deployed addresses/runtime hashes with a sufficient current reserve."
+  ],
+  "limitations": [
+    "Independent automated source review and local adversarial tests, not a professional audit or formal proof.",
+    "No live Base fork, public testnet oracle round-trip, real NFT transfer, wallet approval, signature, funding or deployment was performed.",
+    "Actual original/runtime integration used captured verified bytecode with fresh local storage and a mock oracle.",
+    "Gas measurements are local execution, excluding intrinsic/calldata, Base L1 data/operator fees and wallet final totals.",
+    "Mock browser tests do not establish physical-wallet behavior, RPC honesty, hosting integrity or finalized-chain behavior.",
+    "OnChainChecker 5/5 evidence applies only to the original token 1, not an undeployed GGOO."
+  ],
+  "deploymentAuthorization": false
 }

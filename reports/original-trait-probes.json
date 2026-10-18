@@ -1,0 +1,471 @@
+{
+  "generatedAt": "2026-10-18T03:54:48.494Z",
+  "scope": "Local Cancun EVM reproduction, not a new RPC observation or real NFT transaction",
+  "original": "0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c",
+  "renderer": "0x5902E513C974f5d644DDe577b46626a4BF7CEB30",
+  "explorer": "https://basescan.org/address/0x5902E513C974f5d644DDe577b46626a4BF7CEB30#code",
+  "runtimeBytes": 15787,
+  "runtimeKeccak256": "0x39d1a5801e46373b0ec825b695c523d0c50bf2a823db9457ef066f4f2c2d11ad",
+  "fullRuntimeMatches": true,
+  "compiler": "0.8.30+commit.73712a01.Emscripten.clang",
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "viaIR": true,
+    "evmVersion": "cancun",
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.deployedBytecode.object"
+        ]
+      }
+    }
+  },
+  "assertions": 386,
+  "samples": 96,
+  "first13RendererExecutionGas": "312407",
+  "sourceSha256": {
+    "src/GenerativeVideo.sol": "48a975cec3cafae4384a1f3991b56b00c0e80cb99c0ca863b5f20c7a38d21b89",
+    "src/SolVideo.sol": "9fd0bf3ca3685a81919ffa1877a179f59548aefd7bc23a26c02f960513acd394",
+    "src/MpegVideo.sol": "6084b658cbe6a83a2f9fbdc1fdb1e0ad0976b7d3a39ccda7b4f49c9c7e2d718a",
+    "src/Scene.sol": "ff92f0b03c1cc121bed0550ffc4b0a6f81543cc0377821b1a8c8076b230f7630",
+    "src/Vaporwave.sol": "312d6bf6f6faa4dff2d545521290a0efc8de6e5d7d3066bc7673346e85944028"
+  },
+  "parentExamples": [
+    {
+      "parentId": 1,
+      "seed": "13338734483423791181431182956160678948435788210589815885154535562765445935487",
+      "scene": 8,
+      "ballCount": 2,
+      "theme": 0,
+      "motion": 1,
+      "balls": [
+        {
+          "radius": 6,
+          "xPhase": 12,
+          "yPhase": 82,
+          "colour": "0xf4c21f"
+        },
+        {
+          "radius": 5,
+          "xPhase": 83,
+          "yPhase": 36,
+          "colour": "0xf0305a"
+        }
+      ],
+      "executionGas": "21867",
+      "returnBytes": 640
+    },
+    {
+      "parentId": 2,
+      "seed": "49207035983171957122153754073737747092253874373058802321816014825220851579473",
+      "scene": 9,
+      "ballCount": 4,
+      "theme": 0,
+      "motion": 2,
+      "balls": [
+        {
+          "radius": 5,
+          "xPhase": 86,
+          "yPhase": 34,
+          "colour": "0xbdf83d"
+        },
+        {
+          "radius": 5,
+          "xPhase": 45,
+          "yPhase": 58,
+          "colour": "0x45e8cf"
+        },
+        {
+          "radius": 5,
+          "xPhase": 64,
+          "yPhase": 81,
+          "colour": "0xf06347"
+        },
+        {
+          "radius": 7,
+          "xPhase": 52,
+          "yPhase": 3,
+          "colour": "0xb2e445"
+        }
+      ],
+      "executionGas": "25262",
+      "returnBytes": 896
+    },
+    {
+      "parentId": 3,
+      "seed": "73085417097574896147095851089222454197592151294874856807196778914285729598131",
+      "scene": 8,
+      "ballCount": 2,
+      "theme": 2,
+      "motion": 3,
+      "balls": [
+        {
+          "radius": 8,
+          "xPhase": 40,
+          "yPhase": 23,
+          "colour": "0x84e56e"
+        },
+        {
+          "radius": 10,
+          "xPhase": 84,
+          "yPhase": 81,
+          "colour": "0x5521f0"
+        }
+      ],
+      "executionGas": "22064",
+      "returnBytes": 640
+    },
+    {
+      "parentId": 4,
+      "seed": "88375897849256040253365856878714446520126978508494384185395158903582249423177",
+      "scene": 7,
+      "ballCount": 1,
+      "theme": 1,
+      "motion": 0,
+      "balls": [
+        {
+          "radius": 8,
+          "xPhase": 5,
+          "yPhase": 40,
+          "colour": "0xef748f"
+        }
+      ],
+      "executionGas": "20077",
+      "returnBytes": 512
+    },
+    {
+      "parentId": 5,
+      "seed": "95492730875507788046421791953385893119212121600507651349808361709684211037869",
+      "scene": 7,
+      "ballCount": 1,
+      "theme": 3,
+      "motion": 1,
+      "balls": [
+        {
+          "radius": 6,
+          "xPhase": 0,
+          "yPhase": 72,
+          "colour": "0xbfe760"
+        }
+      ],
+      "executionGas": "20207",
+      "returnBytes": 512
+    },
+    {
+      "parentId": 6,
+      "seed": "108674072798012034170567346890072281037717848706115280138737377818195564205570",
+      "scene": 7,
+      "ballCount": 1,
+      "theme": 2,
+      "motion": 0,
+      "balls": [
+        {
+          "radius": 10,
+          "xPhase": 83,
+          "yPhase": 5,
+          "colour": "0xebd03a"
+        }
+      ],
+      "executionGas": "20145",
+      "returnBytes": 512
+    },
+    {
+      "parentId": 7,
+      "seed": "98497081214594306405182256830739606707824006593617250378514328768413255930473",
+      "scene": 8,
+      "ballCount": 2,
+      "theme": 2,
+      "motion": 1,
+      "balls": [
+        {
+          "radius": 9,
+          "xPhase": 78,
+          "yPhase": 19,
+          "colour": "0xd329ea"
+        },
+        {
+          "radius": 5,
+          "xPhase": 63,
+          "yPhase": 25,
+          "colour": "0xe55260"
+        }
+      ],
+      "executionGas": "22009",
+      "returnBytes": 640
+    },
+    {
+      "parentId": 8,
+      "seed": "71034765151380345092766305668849861715381973324642340999156494965130210988610",
+      "scene": 7,
+      "ballCount": 1,
+      "theme": 3,
+      "motion": 0,
+      "balls": [
+        {
+          "radius": 8,
+          "xPhase": 84,
+          "yPhase": 0,
+          "colour": "0x57fa8b"
+        }
+      ],
+      "executionGas": "20183",
+      "returnBytes": 512
+    },
+    {
+      "parentId": 9,
+      "seed": "19417325535609875348587752644240882806344829006577946236073876291802218612046",
+      "scene": 10,
+      "ballCount": 6,
+      "theme": 0,
+      "motion": 0,
+      "balls": [
+        {
+          "radius": 8,
+          "xPhase": 24,
+          "yPhase": 84,
+          "colour": "0x6d23f5"
+        },
+        {
+          "radius": 6,
+          "xPhase": 71,
+          "yPhase": 17,
+          "colour": "0xf6dc35"
+        },
+        {
+          "radius": 10,
+          "xPhase": 7,
+          "yPhase": 16,
+          "colour": "0xe86a98"
+        },
+        {
+          "radius": 6,
+          "xPhase": 71,
+          "yPhase": 48,
+          "colour": "0x6757de"
+        },
+        {
+          "radius": 10,
+          "xPhase": 72,
+          "yPhase": 61,
+          "colour": "0x6aeeaa"
+        },
+        {
+          "radius": 10,
+          "xPhase": 54,
+          "yPhase": 5,
+          "colour": "0x59f2de"
+        }
+      ],
+      "executionGas": "28807",
+      "returnBytes": 1152
+    },
+    {
+      "parentId": 10,
+      "seed": "1173943093440501924974151714079501123545192466566666157807873327274526547971",
+      "scene": 10,
+      "ballCount": 6,
+      "theme": 2,
+      "motion": 2,
+      "balls": [
+        {
+          "radius": 9,
+          "xPhase": 52,
+          "yPhase": 45,
+          "colour": "0xe9ac57"
+        },
+        {
+          "radius": 7,
+          "xPhase": 2,
+          "yPhase": 5,
+          "colour": "0x6ffcfe"
+        },
+        {
+          "radius": 8,
+          "xPhase": 8,
+          "yPhase": 77,
+          "colour": "0x91e51b"
+        },
+        {
+          "radius": 8,
+          "xPhase": 37,
+          "yPhase": 25,
+          "colour": "0xe54eb2"
+        },
+        {
+          "radius": 7,
+          "xPhase": 56,
+          "yPhase": 28,
+          "colour": "0xc175eb"
+        },
+        {
+          "radius": 5,
+          "xPhase": 67,
+          "yPhase": 80,
+          "colour": "0x3859e3"
+        }
+      ],
+      "executionGas": "28848",
+      "returnBytes": 1152
+    },
+    {
+      "parentId": 11,
+      "seed": "86148649911331802067814632347595571740648893236011508661556491816517376224481",
+      "scene": 9,
+      "ballCount": 4,
+      "theme": 0,
+      "motion": 1,
+      "balls": [
+        {
+          "radius": 5,
+          "xPhase": 105,
+          "yPhase": 99,
+          "colour": "0x39dd35"
+        },
+        {
+          "radius": 5,
+          "xPhase": 6,
+          "yPhase": 42,
+          "colour": "0xed4477"
+        },
+        {
+          "radius": 6,
+          "xPhase": 69,
+          "yPhase": 15,
+          "colour": "0x2fb4f6"
+        },
+        {
+          "radius": 6,
+          "xPhase": 70,
+          "yPhase": 89,
+          "colour": "0x6669fb"
+        }
+      ],
+      "executionGas": "25309",
+      "returnBytes": 896
+    },
+    {
+      "parentId": 12,
+      "seed": "36248868529315707045138070269219023324436685272264272628910207003758109294445",
+      "scene": 10,
+      "ballCount": 6,
+      "theme": 3,
+      "motion": 1,
+      "balls": [
+        {
+          "radius": 8,
+          "xPhase": 5,
+          "yPhase": 19,
+          "colour": "0x41ddb4"
+        },
+        {
+          "radius": 9,
+          "xPhase": 71,
+          "yPhase": 57,
+          "colour": "0x9b42e8"
+        },
+        {
+          "radius": 7,
+          "xPhase": 74,
+          "yPhase": 15,
+          "colour": "0x7a6af5"
+        },
+        {
+          "radius": 8,
+          "xPhase": 20,
+          "yPhase": 1,
+          "colour": "0x6cea30"
+        },
+        {
+          "radius": 6,
+          "xPhase": 4,
+          "yPhase": 25,
+          "colour": "0x4ee282"
+        },
+        {
+          "radius": 6,
+          "xPhase": 91,
+          "yPhase": 37,
+          "colour": "0x24eb50"
+        }
+      ],
+      "executionGas": "28856",
+      "returnBytes": 1152
+    },
+    {
+      "parentId": 13,
+      "seed": "7629106062490091758129555518992245334606691418694465597693575950248591946947",
+      "scene": 10,
+      "ballCount": 6,
+      "theme": 3,
+      "motion": 0,
+      "balls": [
+        {
+          "radius": 7,
+          "xPhase": 39,
+          "yPhase": 29,
+          "colour": "0xde6c33"
+        },
+        {
+          "radius": 6,
+          "xPhase": 98,
+          "yPhase": 68,
+          "colour": "0xedd53a"
+        },
+        {
+          "radius": 5,
+          "xPhase": 2,
+          "yPhase": 31,
+          "colour": "0xfac85a"
+        },
+        {
+          "radius": 5,
+          "xPhase": 81,
+          "yPhase": 62,
+          "colour": "0x7a85f3"
+        },
+        {
+          "radius": 9,
+          "xPhase": 62,
+          "yPhase": 69,
+          "colour": "0xe3537d"
+        },
+        {
+          "radius": 5,
+          "xPhase": 6,
+          "yPhase": 9,
+          "colour": "0x746ae9"
+        }
+      ],
+      "executionGas": "28773",
+      "returnBytes": 1152
+    },
+    {
+      "parentId": 6667,
+      "seed": "18652825982090619385488106293565686112871036306966040963020241266542337397925",
+      "scene": 8,
+      "ballCount": 2,
+      "theme": 2,
+      "motion": 1,
+      "balls": [
+        {
+          "radius": 7,
+          "xPhase": 33,
+          "yPhase": 91,
+          "colour": "0x8834dd"
+        },
+        {
+          "radius": 9,
+          "xPhase": 12,
+          "yPhase": 89,
+          "colour": "0x7dea6c"
+        }
+      ],
+      "executionGas": "22030",
+      "returnBytes": 640
+    }
+  ]
+}

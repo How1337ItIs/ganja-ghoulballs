@@ -8,20 +8,22 @@
     "check": "node scripts/check.mjs",
     "compile": "node scripts/compile.mjs",
     "test:contracts": "node test/contracts.mjs",
-    "test": "npm run compile && npm run check && npm run test:contracts && npm run test:gas && npm run test:security && npm run test:report",
+    "test": "npm run compile && npm run check && npm run test:contracts && npm run test:source && npm run test:genetics && npm run test:gas && npm run test:security && npm run test:report",
     "test:gas": "node scripts/gas-profile.mjs",
-    "test:security": "node reports/security-probes.mjs && node reports/base64-probes.mjs",
-    "test:frontend": "node test/frontend/mobile-wallet.mjs",
+    "test:security": "node scripts/art-samples.mjs && node reports/vrf-security-probes.mjs && node reports/erc721-model-probes.mjs && node reports/inheritance-probes.mjs && node reports/base64-probes.mjs && node reports/onchain-metadata-probes.mjs",
+    "test:frontend": "node test/frontend/mobile-wallet.mjs && node test/frontend/lineage.mjs",
     "test:all": "npm test && npm run test:art && npm run test:frontend && npm run test:deploy",
     "test:deploy": "node --experimental-vm-modules deploy-ui/test.mjs",
     "test:report": "node scripts/write-contract-report.mjs",
-    "test:art": "node scripts/art-samples.mjs && node test/art.mjs"
+    "test:art": "node scripts/art-samples.mjs && node test/art-provenance.mjs && node test/art-bounds.mjs && node test/art.mjs",
+    "test:genetics": "node test/genetics.mjs",
+    "test:source": "node test/original-runtime.mjs"
   },
   "dependencies": {
     "solc": "0.8.30"
   },
   "engines": {
-    "node": ">=20"
+    "node": "24.x"
   },
   "type": "module",
   "devDependencies": {

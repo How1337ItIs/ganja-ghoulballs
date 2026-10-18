@@ -3,6 +3,12 @@ pragma solidity ^0.8.24;
 
 import {GooGraveyard} from "./GooGraveyard.sol";
 import {GooRenderer} from "./GooRenderer.sol";
+import {GooGenetics} from "./GooGenetics.sol";
+
+interface IGooVRFWrapper {
+    function calculateRequestPriceNative(uint32 callbackGasLimit, uint32 numWords) external view returns (uint256);
+    function requestRandomWordsInNative(uint32 callbackGasLimit, uint16 requestConfirmations, uint32 numWords, bytes calldata extraArgs) external payable returns (uint256 requestId);
+}
 
 interface IOriginalGhoulballs {
     function ownerOf(uint256 tokenId) external view returns (address);
@@ -25,6 +31,18 @@ contract GanjaGhoulballs {
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
     event GhoulballsSacrificed(address indexed redeemer, uint256 indexed gooId, uint256[13] originalIds);
 
+    event RandomnessRequested(uint256 indexed tokenId, uint256 indexed requestId, uint256 paid);
+    event RandomnessReceived(uint256 indexed tokenId, uint256 indexed requestId);
+    event MetadataUpdate(uint256 tokenId);
+    event ReserveDonated(address indexed donor, uint256 amount);
+
+    error InvalidWrapper();
+    error InvalidPriceCap();
+    error RequestTooExpensive();
+    error ReserveInsufficient();
+    error InvalidRequestId();
+    error OnlyWrapper();
+    error RevealPending();
     error WrongNetworkSource();
     error InvalidOriginal();
     error UnsupportedChain();
@@ -42,11 +60,21 @@ contract GanjaGhoulballs {
 
     string public constant name = "Ganja Ghoulballs";
     string public constant symbol = "GGOO";
-    string public constant ART_VERSION = "GANJA_GHOULBALLS_PIXEL_GOO_V2";
+    string public constant ART_VERSION = "GANJA_GHOULBALLS_INHERITED_GOO_V3";
     uint256 public constant MAX_SUPPLY = 420;
     uint256 public constant SACRIFICE_COUNT = 13;
     address public constant BASE_ORIGINAL = 0xf3654D0ce6CF518F4eFbbe490F4a26483FB0969C;
+    address public constant BASE_WRAPPER = 0xb0407dbe851f8318bd31404A49e658143C982F23;
+    bytes32 private constant BASE_ORIGINAL_CODEHASH = 0x4fe189e2554350c36d652e3573f8bbd0dc3b45c99a4bf799998623339ab3873a;
+    bytes32 private constant BASE_WRAPPER_CODEHASH = 0x469c7e3d9661f7d7e41033d44b6198bcfdc4a501b0a9466a395f7842f02a2a8f;
+    address public constant BASE_PARENT_RENDERER = 0x5902E513C974f5d644DDe577b46626a4BF7CEB30;
+    bytes32 private constant BASE_PARENT_RENDERER_CODEHASH = 0x39d1a5801e46373b0ec825b695c523d0c50bf2a823db9457ef066f4f2c2d11ad;
+    uint32 public constant CALLBACK_GAS_LIMIT = 100000;
+    uint16 public constant REQUEST_CONFIRMATIONS = 3;
+    uint32 public constant NUM_WORDS = 1;
     uint256 public immutable deploymentChainId;
+    IGooVRFWrapper public immutable vrfWrapper;
+    uint256 public immutable maxRequestPrice;
 
     IOriginalGhoulballs public immutable originalCollection;
     GooGraveyard public immutable graveyard;
@@ -55,18 +83,34 @@ contract GanjaGhoulballs {
     uint256 public totalSupply;
     uint256 private _lock = 1;
     mapping(uint256 => uint256) public packedIngredients;
+    mapping(uint256 => uint256) public mintBlockOf;
+    mapping(uint256 => address) public mintedBy;
+    mapping(uint256 => uint256[13]) private _parentGenes;
+    mapping(uint256 => bytes32) public parentDigestOf;
+    mapping(uint256 => uint256) public requestIdOf;
+    mapping(uint256 => uint256) public requestPaid;
+    mapping(uint256 => uint256) public requestToken;
+    mapping(uint256 => uint256) public randomWordOf;
+    mapping(uint256 => bool) public revealed;
     mapping(uint256 => address) private _owners;
     mapping(address => uint256) private _balances;
     mapping(uint256 => address) private _approvals;
     mapping(address => mapping(address => bool)) private _operators;
 
-    constructor(address original_) {
+    constructor(address original_, address wrapper_, uint256 maxRequestPriceWei_) {
         // Production is permanently bound to the original Base collection. The only
         // other supported networks are Base Sepolia and a local development chain.
         if (block.chainid != 8453 && block.chainid != 84532 && block.chainid != 31337) {
             revert UnsupportedChain();
         }
         if (block.chainid == 8453 && original_ != BASE_ORIGINAL) revert WrongNetworkSource();
+        if (block.chainid == 8453 && (original_.codehash != BASE_ORIGINAL_CODEHASH ||
+            BASE_PARENT_RENDERER.codehash != BASE_PARENT_RENDERER_CODEHASH)) revert InvalidOriginal();
+        if (wrapper_.code.length == 0 || (block.chainid == 8453 &&
+            (wrapper_ != BASE_WRAPPER || wrapper_.codehash != BASE_WRAPPER_CODEHASH))) revert InvalidWrapper();
+        if (maxRequestPriceWei_ == 0 || maxRequestPriceWei_ > 0.0001 ether) revert InvalidPriceCap();
+        vrfWrapper = IGooVRFWrapper(wrapper_);
+        maxRequestPrice = maxRequestPriceWei_;
         if (original_ == address(0) || original_.code.length == 0) revert InvalidOriginal();
         try IOriginalGhoulballs(original_).supportsInterface(0x80ac58cd) returns (bool supported) {
             if (!supported) revert InvalidOriginal();
@@ -78,24 +122,27 @@ contract GanjaGhoulballs {
     }
 
     /// @notice All 13 originals are transferred atomically before a GGOO is minted.
-    /// @dev IDs MUST be strictly ascending; once deposited, originals are permanently inaccessible.
-    function mint(uint256[13] calldata originalIds) external returns (uint256 tokenId) {
+    /// @dev Any input order is canonicalized. Originals and genetics are committed
+    /// before the paid VRF request. A failure anywhere rolls back the entire mint.
+    function mint(uint256[13] calldata selectedIds) external returns (uint256 tokenId) {
         if (_lock != 1) revert Reentered();
         _lock = 2;
         if (totalSupply >= MAX_SUPPLY) revert SoldOut();
+        uint256 price = quoteRandomness();
+        if (price > maxRequestPrice) revert RequestTooExpensive();
+        if (address(this).balance < price) revert ReserveInsufficient();
+        uint256[13] memory originalIds = GooGenetics.canonicalize(selectedIds);
         bool approvedForAll = originalCollection.isApprovedForAll(msg.sender, address(this));
-        uint256 previous;
         uint256 packed;
         for (uint256 i; i < 13; ++i) {
             uint256 id = originalIds[i];
-            if (id == 0 || id > 6667 || id <= previous) revert WrongIngredientOrder();
             if (originalCollection.ownerOf(id) != msg.sender) revert NotIngredientOwner(id);
             if (!approvedForAll && originalCollection.getApproved(id) != address(this)) {
                 revert IngredientNotApproved(id);
             }
             packed |= id << (i * 16);
-            previous = id;
         }
+        (uint256[13] memory genes, bytes32 digest) = GooGenetics.snapshot(address(originalCollection), deploymentChainId, originalIds);
         for (uint256 i; i < 13; ++i) {
             originalCollection.safeTransferFrom(msg.sender, address(graveyard), originalIds[i]);
         }
@@ -109,6 +156,21 @@ contract GanjaGhoulballs {
         }
         tokenId = ++totalSupply;
         packedIngredients[tokenId] = packed;
+        mintBlockOf[tokenId] = block.number;
+        mintedBy[tokenId] = msg.sender;
+        _parentGenes[tokenId] = genes;
+        parentDigestOf[tokenId] = digest;
+        // Native direct funding matches Chainlink's official wrapper ABI. The
+        // wrapper is an external service; no admin, retries, or entropy fallback.
+        uint256 requestId = vrfWrapper.requestRandomWordsInNative{value: price}(
+            CALLBACK_GAS_LIMIT, REQUEST_CONFIRMATIONS, NUM_WORDS,
+            abi.encodeWithSelector(bytes4(keccak256("VRF ExtraArgsV1")), true)
+        );
+        if (requestId == 0 || requestToken[requestId] != 0) revert InvalidRequestId();
+        requestToken[requestId] = tokenId;
+        requestIdOf[tokenId] = requestId;
+        requestPaid[tokenId] = price;
+        emit RandomnessRequested(tokenId, requestId, price);
         _owners[tokenId] = msg.sender;
         _balances[msg.sender]++;
         emit Transfer(address(0), msg.sender, tokenId);
@@ -123,37 +185,91 @@ contract GanjaGhoulballs {
         for (uint256 i; i < 13; ++i) ids[i] = (packed >> (i * 16)) & 0xffff;
     }
 
+    /// @notice Anyone may sponsor future requests. Donations and leftovers cannot be withdrawn.
+    receive() external payable { emit ReserveDonated(msg.sender, msg.value); }
+
+    function quoteRandomness() public view returns (uint256) {
+        return vrfWrapper.calculateRequestPriceNative(CALLBACK_GAS_LIMIT, NUM_WORDS);
+    }
+
+    /// @dev Constant-work callback: no art, recombination, receiver, or external call.
+    /// Unknown, duplicate, or malformed callbacks are ignored, never rerolled.
+    function rawFulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) external {
+        if (msg.sender != address(vrfWrapper)) revert OnlyWrapper();
+        uint256 tokenId = requestToken[requestId];
+        if (tokenId == 0 || revealed[tokenId] || randomWords.length != 1) return;
+        randomWordOf[tokenId] = randomWords[0];
+        revealed[tokenId] = true;
+        emit RandomnessReceived(tokenId, requestId);
+        emit MetadataUpdate(tokenId);
+    }
+
+    function parentGenesOf(uint256 tokenId) external view returns (uint256[13] memory) {
+        ownerOf(tokenId); return _parentGenes[tokenId];
+    }
+
+    function lineageOf(uint256 tokenId) external view returns (uint256[13] memory ids, uint256[13] memory genes, bytes32 digest) {
+        ownerOf(tokenId);
+        uint256 packed = packedIngredients[tokenId];
+        for (uint256 i; i < 13; ++i) ids[i] = (packed >> (i * 16)) & 0xffff;
+        return (ids, _parentGenes[tokenId], parentDigestOf[tokenId]);
+    }
+
     function seedOf(uint256 tokenId) public view returns (uint256) {
         ownerOf(tokenId);
-        return uint256(keccak256(abi.encode("GANJA_GHOULBALLS_PIXEL_GOO_V2", deploymentChainId, address(this), tokenId, packedIngredients[tokenId])));
+        if (!revealed[tokenId]) revert RevealPending();
+        return GooGenetics.seed(parentDigestOf[tokenId], randomWordOf[tokenId]);
+    }
+
+    function genomeOf(uint256 tokenId) public view returns (uint256) {
+        return GooGenetics.combine(_parentGenes[tokenId], seedOf(tokenId));
     }
 
     function svg(uint256 tokenId) public view returns (string memory) {
-        return renderer.svg(seedOf(tokenId), tokenId, true);
+        ownerOf(tokenId);
+        if (!revealed[tokenId]) return renderer.pendingSvg(tokenId, mintBlockOf[tokenId], mintedBy[tokenId]);
+        return renderer.svg(seedOf(tokenId), genomeOf(tokenId), tokenId, mintBlockOf[tokenId], mintedBy[tokenId], true);
     }
 
     function svgStill(uint256 tokenId) external view returns (string memory) {
-        return renderer.svg(seedOf(tokenId), tokenId, false);
+        ownerOf(tokenId);
+        if (!revealed[tokenId]) return renderer.pendingSvg(tokenId, mintBlockOf[tokenId], mintedBy[tokenId]);
+        return renderer.svg(seedOf(tokenId), genomeOf(tokenId), tokenId, mintBlockOf[tokenId], mintedBy[tokenId], false);
     }
 
-    function traitsOf(uint256 tokenId) external view returns (string memory) {
-        return renderer.attributes(seedOf(tokenId));
+    function traitsOf(uint256 tokenId) public view returns (string memory) {
+        ownerOf(tokenId);
+        if (!revealed[tokenId]) return '[{"trait_type":"Reveal","value":"Pending Chainlink VRF"}]';
+        return renderer.attributes(seedOf(tokenId), genomeOf(tokenId));
     }
 
     function tokenURI(uint256 tokenId) external view returns (string memory) {
-        uint256 seed = seedOf(tokenId);
-        string memory image = string.concat("data:image/svg+xml;base64,", GooBase64.encode(bytes(renderer.svg(seed, tokenId, true))));
+        string memory image = string.concat("data:image/svg+xml;base64,", GooBase64.encode(bytes(svg(tokenId))));
         string memory json = string.concat(
             '{"name":"Ganja Ghoulballs #', GooNumbers.toString(tokenId),
-            '","description":"One of 420 fully onchain animated goo ghosts. Summoned by permanently locking 13 original Ghoulballs on Base. They cannot be recovered. Unaffiliated with the original project.",',
-            '"image":"', image, '","attributes":', renderer.attributes(seed),
+            '\","description":"Onchain goo ghost inheriting DNA-inspired traits from 13 permanently locked Ghoulballs, with one-shot Chainlink VRF recombination. Artistic genetics. Unaffiliated.",',
+            '"image":"', image, '","attributes":', traitsOf(tokenId),
             ',"properties":{"sacrifice":"13 original Ghoulballs irrevocably locked in immutable GooGraveyard","graveyard":"',
             GooNumbers.toHexAddress(address(graveyard)),
             '","original_collection":"', GooNumbers.toHexAddress(address(originalCollection)),
             '","chain_id":', GooNumbers.toString(deploymentChainId),
-            ',"original_ids":', _ingredientsJSON(tokenId), '}}' 
+            ',"mint_block":"', GooNumbers.toString(mintBlockOf[tokenId]), '"',
+            ',"minted_by":"', GooNumbers.toHexAddress(mintedBy[tokenId]), '"',
+            ',"revealed":', revealed[tokenId] ? "true" : "false",
+            ',"request_id":"', GooNumbers.toString(requestIdOf[tokenId]),
+            '","genome":"', GooNumbers.toString(revealed[tokenId] ? genomeOf(tokenId) : 0),
+            '","parent_genes":', _parentGenesJSON(tokenId),
+            ',"original_ids":', _ingredientsJSON(tokenId), '}}'
         );
         return string.concat("data:application/json;base64,", GooBase64.encode(bytes(json)));
+    }
+
+    function _parentGenesJSON(uint256 tokenId) private view returns (string memory result) {
+        result = "[";
+        for (uint256 i; i < 13; ++i) {
+            result = string.concat(result, i == 0 ? "" : ",", '\"', GooNumbers.toString(_parentGenes[tokenId][i]), '\"');
+        }
+        return string.concat(result, "]");
     }
 
     function _ingredientsJSON(uint256 tokenId) private view returns (string memory result) {
@@ -230,7 +346,7 @@ contract GanjaGhoulballs {
     }
 
     function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
-        return interfaceId == 0x01ffc9a7 || interfaceId == 0x80ac58cd || interfaceId == 0x5b5e139f;
+        return interfaceId == 0x01ffc9a7 || interfaceId == 0x80ac58cd || interfaceId == 0x5b5e139f || interfaceId == 0x49064906;
     }
 }
 
@@ -238,6 +354,8 @@ library GooNumbers {
     bytes16 private constant HEX = "0123456789abcdef";
 
     function toString(uint256 x) internal pure returns (string memory) {
+        unchecked { // A uint256 has at most78 decimal digits; both loops strictly decrease.
+
         if (x == 0) return "0";
         uint256 n = x;
         uint256 len;
@@ -245,7 +363,8 @@ library GooNumbers {
         bytes memory str = new bytes(len);
         while (x != 0) { str[--len] = bytes1(uint8(48 + x % 10)); x /= 10; }
         return string(str);
-    }
+            }
+}
 
     function toHexAddress(address a) internal pure returns (string memory) {
         bytes memory s = new bytes(42);
@@ -268,15 +387,17 @@ library GooBase64 {
         if (data.length == 0) return "";
         bytes memory table = TABLE;
         bytes memory output = new bytes(4 * ((data.length + 2) / 3));
-        assembly {
+        assembly ("memory-safe") {
             let length := mload(data)
             let tablePtr := add(table, 1)
             let resultPtr := add(output, 32)
             for { let i := 0 } lt(i, length) { i := add(i, 3) } {
-                let n := mload(add(add(data, i), 3))
+                let n := 0
                 switch sub(length, i)
-                case 1 { n := and(n, 0xff0000) }
-                case 2 { n := and(n, 0xffff00) }
+                // Load ending exactly at the final input byte, never past it.
+                case 1 { n := shl(16, and(mload(add(data, length)), 0xff)) }
+                case 2 { n := shl(8, and(mload(add(data, length)), 0xffff)) }
+                default { n := mload(add(add(data, i), 3)) }
                 mstore8(resultPtr, mload(add(tablePtr, and(shr(18, n), 63))))
                 mstore8(add(resultPtr, 1), mload(add(tablePtr, and(shr(12, n), 63))))
                 mstore8(add(resultPtr, 2), mload(add(tablePtr, and(shr(6, n), 63))))

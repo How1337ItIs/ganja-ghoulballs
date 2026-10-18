@@ -1,11 +1,14 @@
 /* GGOO production client. No write is possible until Base code, wiring and economics verify. */
-import {Interface, keccak256, getAddress} from './vendor/ethers.min.js';
+import {Interface, keccak256, getAddress, formatEther} from './vendor/ethers.min.js';
+import {decodeLineage, THEMES, MOTIONS} from './lineage.js';
 const $ = id => document.getElementById(id);
 // The script URL is authoritative for assets/config, independent of root or subpath hosting.
 const SITE_ROOT = new URL('./', import.meta.url);
 const siteURL = (relative, preserveQuery = false) => { const url = new URL(relative, SITE_ROOT); if(preserveQuery)url.search=location.search; return url.href; };
 const ORIGINAL = '0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c';
 const BASE = '0x2105', COUNT = 13, CAP = 420;
+const COORDINATOR='0xd5d517abe5cf79b7e95ec98db0f0277788aff634';
+const WRAPPER='0xb0407dbe851f8318bd31404a49e658143c982f23', WRAPPER_HASH='0x469c7e3d9661f7d7e41033d44b6198bcfdc4a501b0a9466a395f7842f02a2a8f';
 const ABI = new Interface([
  'function totalSupply() view returns(uint256)', 'function MAX_SUPPLY() view returns(uint256)',
  'function SACRIFICE_COUNT() view returns(uint256)', 'function deploymentChainId() view returns(uint256)',
@@ -17,10 +20,20 @@ const ABI = new Interface([
  'function svg(uint256) view returns(string)', 'function svgStill(uint256) view returns(string)',
  'function ingredientsOf(uint256) view returns(uint256[13])', 'function seedOf(uint256) view returns(uint256)',
  'function traitsOf(uint256) view returns(string)',
+ 'function backdrop() view returns(address)', 'function vrfWrapper() view returns(address)',
+ 'function maxRequestPrice() view returns(uint256)', 'function quoteRandomness() view returns(uint256)',
+ 'function CALLBACK_GAS_LIMIT() view returns(uint32)', 'function REQUEST_CONFIRMATIONS() view returns(uint16)', 'function NUM_WORDS() view returns(uint32)',
+ 'function estimateRequestPriceNative(uint32,uint32,uint256) view returns(uint256)',
+ 'function s_configured() view returns(bool)', 'function s_disabled() view returns(bool)', 'function s_vrfCoordinator() view returns(address)',
+ 'function mintBlockOf(uint256) view returns(uint256)', 'function mintedBy(uint256) view returns(address)',
+ 'function ART_VERSION() view returns(string)', 'function revealed(uint256) view returns(bool)',
+ 'function requestIdOf(uint256) view returns(uint256)', 'function requestPaid(uint256) view returns(uint256)',
+ 'function parentGenesOf(uint256) view returns(uint256[13])', 'function parentDigestOf(uint256) view returns(bytes32)', 'function genomeOf(uint256) view returns(uint256)',
  'event Transfer(address indexed from,address indexed to,uint256 indexed tokenId)',
  'event GhoulballsSacrificed(address indexed redeemer,uint256 indexed gooId,uint256[13] originalIds)',
  'error SoldOut()', 'error NotIngredientOwner(uint256)', 'error WrongIngredientOrder()',
  'error Reentered()', 'error NonReceiver()', 'error ZeroAddress()', 'error IngredientNotApproved(uint256)',
+ 'error ReserveInsufficient()', 'error RequestTooExpensive()', 'error RevealPending()', 'error InvalidParentRecipe(uint256)', 'error InvalidParentSet()',
  'error IngredientNotLocked(uint256)', 'error NonexistentToken()', 'error NotAuthorized()', 'error WrongFrom()'
 ]);
 const TRANSFER = ABI.getEvent('Transfer').topicHash;
@@ -29,7 +42,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 let cfg, provider, account = null, chain = null, generation = 0, live = false, minted = null;
 let selected = new Set(), owned = [], verified = null, approved = false, busy = null, scanning = false;
 let review = null, pending = null, galleryCursor = null, galleryLoading = false, tokenGeneration = 0;
-let toastTimer, providerBound = false;
+let toastTimer, providerBound = false, reserve=null, latestMint=null, revealPolling=false, reserveGeneration=0, activeTokenId=null;
+const revealStates=new Map(), pendingReveals=new Set();
 const checkedRpc = new Set();
 const lower = a => typeof a === 'string' ? a.toLowerCase() : '';
 const validAddress = a => /^0x[0-9a-f]{40}$/i.test(a || '') && lower(a) !== ZERO;
@@ -53,6 +67,10 @@ function humanError(e) {
  if(typeof data === 'string') { try { const decoded = ABI.parseError(data); if(decoded) msg=decoded.name; } catch {} }
  if (/SoldOut/i.test(msg)) return 'All 420 Ganja Ghoulballs have been summoned.';
  if (/NotIngredientOwner/i.test(msg)) return 'One of the 13 originals has changed owner. Refresh and verify your selection again.';
+ if (/ReserveInsufficient/i.test(msg)) return 'The publisher-funded randomness reserve is too low. Mint is paused; no originals move in a reverted transaction. You do not pay an extra mint fee.';
+ if (/RequestTooExpensive/i.test(msg)) return 'The oracle quote exceeds the immutable request cap. Wait for a lower quote. A reverted mint cannot lock your originals.';
+ if (/RevealPending/i.test(msg)) return 'This GGOO is minted and awaiting Chainlink randomness. The originals are already permanently locked. No second transaction is required.';
+ if (/InvalidParentRecipe|InvalidParentSet/i.test(msg)) return 'The original collection returned an unsupported parent recipe. Mint cannot proceed.';
  if (/WrongIngredientOrder/i.test(msg)) return 'Choose exactly 13 distinct original IDs, from 1 to 6667.';
  if (/insufficient funds/i.test(msg)) return 'Your wallet needs enough Base ETH for network gas. The protocol mint fee is 0 ETH.';
  return String(msg).slice(0,280);
@@ -99,9 +117,10 @@ async function call(address, method, args=[], block='latest') {
 async function verifyDeployment() {
  if(cfg.chainId!==8453 || lower(cfg.originalCollection)!==ORIGINAL || cfg.maxSupply!==CAP || cfg.sacrificeCount!==COUNT) throw Error('Configuration does not match the required Base collection and 13-for-1 economics.');
  if(cfg.deploymentStatus!=='deployed-verified') return false;
- const names=['ganjaCollection','graveyard','renderer'];
+ if(lower(cfg.vrfWrapper)!==WRAPPER || lower(cfg.runtimeCodeHashes?.vrfWrapper)!==WRAPPER_HASH || typeof cfg.maxRequestPrice!=='string' || !/^[1-9]\d*$/.test(cfg.maxRequestPrice) || BigInt(cfg.maxRequestPrice)>100000000000000n)throw Error('The pinned oracle wrapper or immutable request-price cap is invalid.');
+ const names=['ganjaCollection','graveyard','renderer','backdrop','vrfWrapper'];
  if(!names.every(n=>validAddress(cfg[n]) && hashPattern.test(cfg.runtimeCodeHashes?.[n]))) throw Error('Verified deployment addresses or runtime code hashes are missing.');
- if(new Set(names.map(n=>lower(cfg[n]))).size!==3) throw Error('Contract addresses must be distinct.');
+ if(new Set(names.map(n=>lower(cfg[n]))).size!==5) throw Error('Contract addresses must be distinct.');
  for(const name of names) {
   const code=await rpc('eth_getCode',[cfg[name],'latest']);
   if(!/^0x[0-9a-f]+$/i.test(code) || code.length<4 || lower(keccak256(code))!==lower(cfg.runtimeCodeHashes[name])) throw Error(`Deployed ${name} code does not match the verified runtime hash.`);
@@ -110,7 +129,11 @@ async function verifyDeployment() {
   [cfg.ganjaCollection,'MAX_SUPPLY',CAP], [cfg.ganjaCollection,'SACRIFICE_COUNT',COUNT],
   [cfg.ganjaCollection,'deploymentChainId',8453], [cfg.ganjaCollection,'originalCollection',ORIGINAL],
   [cfg.ganjaCollection,'graveyard',cfg.graveyard], [cfg.ganjaCollection,'renderer',cfg.renderer],
-  [cfg.graveyard,'originalCollection',ORIGINAL], [cfg.graveyard,'redeemer',cfg.ganjaCollection]
+  [cfg.graveyard,'originalCollection',ORIGINAL], [cfg.graveyard,'redeemer',cfg.ganjaCollection],
+  [cfg.renderer,'backdrop',cfg.backdrop], [cfg.ganjaCollection,'vrfWrapper',WRAPPER],
+  [cfg.ganjaCollection,'maxRequestPrice',cfg.maxRequestPrice], [cfg.ganjaCollection,'CALLBACK_GAS_LIMIT',100000],
+  [cfg.ganjaCollection,'REQUEST_CONFIRMATIONS',3], [cfg.ganjaCollection,'NUM_WORDS',1],
+  [cfg.ganjaCollection,'ART_VERSION','GANJA_GHOULBALLS_INHERITED_GOO_V3']
  ];
  for(const [address,fn,expected] of checks) { const value=await call(address,fn); if(lower(String(value))!==lower(String(expected))) throw Error(`Contract ${fn} does not match its published configuration.`); }
  return true;
@@ -139,9 +162,9 @@ function render() {
  const needApproval=verificationCurrent() && !approved;
  $('approval-note').hidden=!verificationCurrent();
  text('approval-note',approved?'Approval checked: the GGOO contract may transfer all 13 selected originals. Review the irreversible mint next.':'Approval is a separate transaction. Collection-wide approval allows the GGOO contract to transfer ANY original Ghoulball in this wallet, including future originals, until revoked. It is not limited to the 13 selected here. Approval alone does not lock or mint anything.');
- $('approve-button').hidden=!needApproval; $('approve-button').disabled=!writable();
- $('main-mint-button').disabled=!(writable() && verificationCurrent() && selected.size===COUNT && approved && $('consent').checked);
- const label=!live?'AWAITING MAINNET CONTRACT':pending?'TRANSACTION PENDING':busy?'CHECKING YOUR WALLET…':minted===null?'SUPPLY UNAVAILABLE · MINT PAUSED':minted>=CAP?'ALL 420 SUMMONED':!connected?'CONNECT WALLET TO START':chain!==BASE?'SWITCH YOUR WALLET TO BASE':!verificationCurrent()?'VERIFY YOUR 13 ORIGINALS':!approved?'APPROVE BEFORE SUMMONING':!$('consent').checked?'ACKNOWLEDGE PERMANENT LOCK':'REVIEW 13 → 1 SUMMON';
+ $('approve-button').hidden=!needApproval; $('approve-button').disabled=!writable()||!reserve?.ready;
+ $('main-mint-button').disabled=!(writable() && reserve?.ready && verificationCurrent() && selected.size===COUNT && approved && $('consent').checked);
+ const label=!live?'MINTING NOT OPEN':pending?'TRANSACTION PENDING':busy?'CHECKING YOUR WALLET…':minted===null?'SUPPLY UNAVAILABLE · MINT PAUSED':minted>=CAP?'ALL 420 SUMMONED':!reserve?.ready?'ORACLE RESERVE · MINT PAUSED':!connected?'CONNECT WALLET TO START':chain!==BASE?'SWITCH YOUR WALLET TO BASE':!verificationCurrent()?'VERIFY YOUR 13 ORIGINALS':!approved?'APPROVE BEFORE SUMMONING':!$('consent').checked?'ACKNOWLEDGE PERMANENT LOCK':'REVIEW 13 → 1 SUMMON';
  $('main-mint-button').querySelector('span').textContent=label;
  for(const [id,active] of [['step-connect',!connected||chain!==BASE],['step-select',connected&&!verificationCurrent()],['step-approve',needApproval],['step-redeem',verificationCurrent()&&approved]]) $(id).classList.toggle('active',!!active);
 }
@@ -150,6 +173,17 @@ function updateSupply(value) {
  $('mint-progress-bar').style.width=value===null?'0%':`${100*value/CAP}%`; render();
 }
 async function supplyRead() { const n=await call(cfg.ganjaCollection,'totalSupply'); if(n<0n || n>420n) throw Error('Onchain supply is out of bounds.'); return Number(n); }
+async function refreshReserve() {
+ if(!live)return;const current=++reserveGeneration;let budget=null,message;
+ try {const gasPriceHex=await rpc('eth_gasPrice');if(!/^0x[0-9a-f]+$/i.test(gasPriceHex)||BigInt(gasPriceHex)<=0n)throw Error('Current Base gas price is unavailable.');const gasPrice=BigInt(gasPriceHex);
+  const [quote,balanceHex,configured,disabled,coordinator]=await Promise.all([call(WRAPPER,'estimateRequestPriceNative',[100000,1,gasPrice]),rpc('eth_getBalance',[cfg.ganjaCollection,'latest']),call(WRAPPER,'s_configured'),call(WRAPPER,'s_disabled'),call(WRAPPER,'s_vrfCoordinator')]);
+  if(configured!==true||disabled!==false||lower(coordinator)!==COORDINATOR)throw Error('Oracle provider is unavailable or its coordinator changed. Review is required before any approval or mint.');
+  if(typeof quote!=='bigint'||quote<=0n||!/^0x[0-9a-f]+$/i.test(balanceHex))throw Error('Invalid oracle reserve response.');
+  const balance=BigInt(balanceHex),cap=BigInt(cfg.maxRequestPrice);budget={quote,balance,cap,gasPrice,ready:quote<=cap&&balance>=quote};
+  message=budget.ready?'Randomness is publisher-funded. 0 ETH protocol mint fee; your wallet pays network gas only.':quote>cap?'Oracle quote exceeds the immutable cap. Mint is paused until the quote falls.':'Publisher randomness reserve needs funding. Mint is paused; do not send an extra mint fee.';
+ }catch(e){message='Oracle reserve could not be verified. Mint is paused. '+humanError(e);}
+ if(current===reserveGeneration){reserve=budget;text('oracle-reserve',message);render();}return budget;
+}
 async function refreshSupply() {
  if(!live)return;
  try {const previous=minted;updateSupply(await supplyRead());if(previous!==null&&minted>previous)resetGallery();if(minted===CAP)status('ALL 420 SUMMONED. The collection is sold out.');}
@@ -206,7 +240,7 @@ function parseIds(value) {
  const ids=parts.map(s=>BigInt(s).toString());
  if(ids.some(s=>BigInt(s)<1n||BigInt(s)>6667n))throw Error('Original token IDs must be between 1 and 6667.');
  if(new Set(ids).size!==ids.length)throw Error('Duplicate original IDs found. Choose 13 distinct NFTs.');
- if(ids.length>COUNT)throw Error('More than 13 IDs entered. Remove the extras; no IDs have been selected.');
+ if(ids.length>COUNT)throw Error('Too many IDs entered. Choose exactly 13; no IDs have been selected.');
  return ids.sort((a,b)=>BigInt(a)<BigInt(b)?-1:1);
 }
 function applyManual() {
@@ -231,7 +265,7 @@ async function checkApproval(snap) {
 async function verifyIds() {
  if(!writable()||selected.size!==COUNT)return;
  const snap=snapshot();busy='verify';render();status('Verifying all 13 original owners and approvals on Base…');
- try {await checkOwnership(snap);const isApproved=await checkApproval(snap);if(!same(snap))throw Error('Wallet or selection changed. Verify the current selection again.');verified=snap;approved=isApproved;feedback('All 13 originals belong to the displayed wallet. '+(approved?'Approval is active.':'Review the separate collection-wide approval first.'));status('Ownership verified. Your displayed wallet receives the new GGOO.');}
+ try {await checkOwnership(snap);const isApproved=await checkApproval(snap);await refreshReserve();if(!same(snap))throw Error('Wallet or selection changed. Verify the current selection again.');verified=snap;approved=isApproved;feedback('All 13 originals belong to the displayed wallet. '+(approved?'Approval is active.':'Review the separate collection-wide approval first.'));status('Ownership verified. Your displayed wallet receives the new GGOO.');}
  catch(e){verified=null;approved=false;feedback(humanError(e),true);}
  finally{busy=null;render();}
 }
@@ -261,17 +295,24 @@ async function scanInventory() {
  finally{scanning=false;$('scan-progress').hidden=true;render();}
 }
 function paragraph(parent,value,className='') {const p=document.createElement('p');p.textContent=value;if(className)p.className=className;parent.append(p);}
-function openReview(kind) {
- if(!writable()||!verificationCurrent()||(kind==='mint'&&(!approved||!$('consent').checked)))return;
- review={...snapshot(),kind};const box=$('review-copy');box.replaceChildren();
+async function openReview(kind) {
+ if(!writable()||!verificationCurrent()||!reserve?.ready||(kind==='mint'&&(!approved||!$('consent').checked)))return;
+ const expected=snapshot();$('review-consent').checked=false;busy='review';render();let budget;
+ try{budget=await refreshReserve();if(!same(expected)||!verificationCurrent())throw Error('Wallet or selection changed. Verify originals again.');}
+ catch(e){status(humanError(e),true);return;}finally{busy=null;render();}
+ if(!budget?.ready){status(!budget?'Oracle reserve could not be verified.':humanError(Error(budget.quote>budget.cap?'RequestTooExpensive':'ReserveInsufficient')),true);return;}
+ review={...expected,kind};const box=$('review-copy');box.replaceChildren();
  text('review-title',kind==='mint'?'13 originals. Forever.':'Collection-wide approval');
  paragraph(box,'Wallet / GGOO recipient: '+getAddress(review.account));
  paragraph(box,'Network: Base mainnet (8453). Protocol fee: 0 ETH. Your wallet will show the network gas cost.');
  if(kind==='mint') {
   paragraph(box,'PERMANENT LOCK: '+review.ids.map(id=>'#'+id).join(', '),'critical');
-  paragraph(box,'These 13 original NFTs will be transferred into the immutable GooGraveyard at '+getAddress(cfg.graveyard)+'. They cannot be withdrawn, traded or recovered. The original ERC-721 supply does not decrease. One GGOO will be minted atomically to the wallet above.');
+  paragraph(box,'These 13 original NFTs will be transferred into the immutable GooGraveyard at '+getAddress(cfg.graveyard)+'. They cannot be withdrawn, traded or recovered. The original ERC-721 supply does not decrease. One pending GGOO will be minted atomically to the wallet above. The originals are locked immediately, even while its final artwork is awaiting randomness.');
+  paragraph(box,'REVEAL RISK: Chainlink supplies randomness after minting. The final appearance is a surprise. There is no cancellation, reroll or second transaction. If the oracle never delivers, the NFT can remain unrevealed permanently; its originals still cannot be recovered.','critical');
+  paragraph(box,'The oracle budget is checked at a fresh Base gas price, used consistently for simulation and the wallet request. Editing network fees in your wallet can change the oracle quote; the contract’s immutable cap and reserve check remain the final protection.');
+  paragraph(box,'The publisher-funded reserve pays for randomness. If its balance is too low, the quote exceeds the cap, or the oracle request fails, the entire mint reverts before any permanent lock takes effect.');
   paragraph(box,'Mint contract: '+getAddress(cfg.ganjaCollection)+'. If any transfer or mint fails, the entire transaction reverts. Gas can still be charged.');
-  text('review-consent-label','I authorize permanently locking these exact 13 originals and minting one GGOO to the recipient above.');
+  text('review-consent-label','I authorize permanently locking these exact 13 originals and minting one pending GGOO to the recipient above, accepting that oracle failure can leave it unrevealed permanently.');
  } else {
   paragraph(box,'Spender: '+getAddress(cfg.ganjaCollection),'critical');
   paragraph(box,'The approval is setApprovalForAll on the original collection '+getAddress(ORIGINAL)+'. It grants this GGOO contract permission over ALL originals held by this wallet, including future originals. It is not limited to the selected 13. The contract only accepts a mint initiated by the owner.');
@@ -291,9 +332,10 @@ async function preflight(snap, kind) {
  const total=await supplyRead();updateSupply(total);if(total>=CAP)throw Error('SoldOut');
  await checkOwnership(snap);await assertWallet(snap);
  if(kind==='mint'&&!(await checkApproval(snap)))throw Error('Approval is no longer active. Verify originals again.');
+ const budget=await refreshReserve();if(!budget)throw Error('Oracle reserve could not be verified.');if(budget.quote>budget.cap)throw Error('RequestTooExpensive');if(!budget.ready)throw Error('ReserveInsufficient');await assertWallet(snap);return budget;
 }
 function resultLink(hash,kind,recipient,tokenId) {
- const box=$('transaction-result');box.hidden=false;box.replaceChildren();
+ const box=$('transaction-result');box.hidden=false;box.replaceChildren();box.dataset.txHash=hash;
  paragraph(box,`${kind==='mint'?'Mint':'Approval'} transaction for wallet ${getAddress(recipient)}.`);
  const a=document.createElement('a');a.href=`https://basescan.org/tx/${hash}`;a.target='_blank';a.rel='noopener noreferrer';a.textContent='VIEW TRANSACTION ON BASESCAN ↗';box.append(a);
  if(tokenId) {const b=document.createElement('a');b.href='#token/'+tokenId;b.textContent='VIEW GGOO #'+tokenId+' & ITS 13 ORIGINALS ↗';box.append(document.createElement('br'),b);}
@@ -322,8 +364,8 @@ async function submitReview() {
  let hash=null;
  try {
   status('Rechecking the exact wallet, deployment, supply and all 13 original owners before opening your wallet…');
-  await preflight(snap,snap.kind);
-  const tx={chainId:BASE,from:snap.account,to:snap.kind==='mint'?cfg.ganjaCollection:ORIGINAL,data:ABI.encodeFunctionData(snap.kind==='mint'?'mint':'setApprovalForAll',snap.kind==='mint'?[snap.ids]:[cfg.ganjaCollection,true]),value:'0x0'};
+  const budget=await preflight(snap,snap.kind);
+  const tx={chainId:BASE,gasPrice:'0x'+budget.gasPrice.toString(16),from:snap.account,to:snap.kind==='mint'?cfg.ganjaCollection:ORIGINAL,data:ABI.encodeFunctionData(snap.kind==='mint'?'mint':'setApprovalForAll',snap.kind==='mint'?[snap.ids]:[cfg.ganjaCollection,true]),value:'0x0'};
   // Simulate the actual transaction from its pinned sender. No transfer occurs in eth_call.
   await rpc('eth_call',[tx,'latest']);await assertWallet(snap);
   const estimate=BigInt(await provider.request({method:'eth_estimateGas',params:[tx]}));
@@ -343,7 +385,7 @@ async function submitReview() {
   }
   status(humanError(e),true);feedback(hash?'A transaction may still be pending. Inspect its Basescan receipt before taking another action.':'If your wallet showed a submitted transaction, inspect its history before retrying. No originals move in a reverted transaction.',true);
   verified=null;approved=false;$('consent').checked=false;
- } finally {busy=null;render();}
+ } finally {busy=null;render();pollReveals();}
 }
 function parseMintReceipt(receipt, saved) {
  let transfer=null, provenance=null;
@@ -369,8 +411,9 @@ async function trackPending() {
     let tokenId;
     try {tokenId=parseMintReceipt(receipt,saved);}catch(e){saved.needsReview=true;cacheSet(pendingKey(),saved);live=false;status(humanError(e),true);return;}
     resultLink(saved.hash,saved.kind,saved.recipient,tokenId);
-    pending=null;cacheDelete(pendingKey());invalidate(true);status(`IT LIVES. GGOO #${tokenId} was minted to ${getAddress(saved.recipient)}. The 13 originals are permanently locked.`);notify('GGOO #'+tokenId+' summoned. Receipt and provenance are ready.');
-    await refreshSupply();await refreshWallet();resetGallery();
+    pending=null;cacheDelete(pendingKey());invalidate(true);latestMint={tokenId,recipient:saved.recipient,hash:saved.hash};pendingReveals.add(tokenId);status(`MINT CONFIRMED. GGOO #${tokenId} was minted to ${getAddress(saved.recipient)}. Its 13 originals are permanently locked now. Awaiting Chainlink randomness; no second transaction is needed.`);notify('GGOO #'+tokenId+' minted. Originals locked; awaiting reveal.');
+    paragraph($('transaction-result'),'AWAITING RANDOMNESS. Originals are permanently locked already. This page checks the reveal read-only; no further signature is required.');
+    await refreshSupply();await refreshReserve();await refreshWallet();resetGallery();pollReveals();
    } else {
     pending=null;cacheDelete(pendingKey());invalidate();status('Collection-wide approval confirmed. Verify your 13 originals again, then review a separate permanent-lock mint.');feedback('Approval did not lock or transfer any originals.');
    }
@@ -393,15 +436,45 @@ function cacheSvg(key,svg) {
   localStorage.setItem(key,JSON.stringify(svg));
  } catch {} // Artwork caching is optional; never let it affect an onchain read.
 }
+async function readReveal(id) {
+ id=String(id);if(revealStates.get(id)===true)return true;
+ const value=await call(cfg.ganjaCollection,'revealed',[id]);if(typeof value!=='boolean')throw Error('Invalid onchain reveal state.');
+ // A completed reveal is immutable; an older concurrent read cannot downgrade it.
+ if(revealStates.get(id)===true)return true;
+ revealStates.set(id,value);if(value)pendingReveals.delete(id);else pendingReveals.add(id);return value;
+}
 async function tokenSvg(id,still=!animationsPlaying()) {
- const key=`ggoo:svg:8453:${lower(cfg.ganjaCollection)}:${cfg.runtimeCodeHashes.ganjaCollection}:${cfg.runtimeCodeHashes.renderer}:${id}:${still?'still':'animated'}`;
- let svg=svgMemory.get(key)||cacheGet(key);
- if(!svg) {svg=await call(cfg.ganjaCollection,still?'svgStill':'svg',[id]);if(typeof svg!=='string'||svg.length>750000||!/^\s*<svg\b/.test(svg)||!svg.trim().endsWith('</svg>'))throw Error('Invalid onchain SVG response.');svgMemory.set(key,svg);if(svgMemory.size>36)svgMemory.delete(svgMemory.keys().next().value);cacheSvg(key,svg);}
- return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+ const revealed=await readReveal(id);
+ const key=`ggoo:svg:8453:${lower(cfg.ganjaCollection)}:${cfg.runtimeCodeHashes.ganjaCollection}:${cfg.runtimeCodeHashes.renderer}:v3:${id}:${still?'still':'animated'}`;
+ let svg=revealed?(svgMemory.get(key)||cacheGet(key)):null;
+ if(!svg) {svg=await call(cfg.ganjaCollection,still?'svgStill':'svg',[id]);if(typeof svg!=='string'||svg.length>750000||!/^\s*<svg\b/.test(svg)||!svg.trim().endsWith('</svg>'))throw Error('Invalid onchain SVG response.');
+  // Pending artwork changes after the callback. Never cache a cocoon as immutable final art.
+  if(revealed){svgMemory.set(key,svg);if(svgMemory.size>36)svgMemory.delete(svgMemory.keys().next().value);cacheSvg(key,svg);}
+ }
+ if(!revealed&&revealStates.get(String(id))===true)return tokenSvg(id,still);
+ return {src:'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg),revealed};
+}
+function updateImageReveal(img,id) {
+ const revealed=revealStates.get(String(id))===true;img.dataset.revealed=String(revealed);
+ img.alt=`GGOO #${id}: ${revealed?'revealed native onchain SVG':'pending onchain cocoon; originals permanently locked'}`;
+ const badge=img.closest('article')?.querySelector('.reveal-badge');if(badge)badge.textContent=revealed?'REVEALED ↗':'AWAITING RANDOMNESS';
+}
+async function pollReveals() {
+ if(!live||document.hidden||revealPolling)return;revealPolling=true;
+ try {
+  const displayed=new Set([...document.querySelectorAll('.gallery-art[data-token-id], #token-art[data-token-id]')].map(img=>img.dataset.tokenId));if(latestMint)displayed.add(latestMint.tokenId);if(activeTokenId)displayed.add(activeTokenId);
+  const ids=[...new Set([...pendingReveals,...(latestMint?[latestMint.tokenId]:[])])].filter(id=>displayed.has(id));let refreshedToken=false;
+  await mapLimit(ids,3,async id=>{try{if(!(await readReveal(id)))return;
+   for(const img of document.querySelectorAll('.gallery-art[data-token-id], #token-art[data-token-id]'))if(img.dataset.tokenId===id){updateImageReveal(img,id);queueImage(id,img);}
+   if(location.hash==='#token/'+id)refreshedToken=true;
+   if(latestMint?.tokenId===id&&!busy&&!pending){const minted=latestMint;latestMint=null;if($('transaction-result').dataset.txHash===minted.hash){status(`REVEALED. GGOO #${id} was minted to ${getAddress(minted.recipient)}. Its final art and inherited lineage are now available. The 13 originals remain permanently locked.`);resultLink(minted.hash,'mint',minted.recipient,id);paragraph($('transaction-result'),'REVEALED ON BASE. Final art and inherited lineage are ready. No additional transaction was sent.');}else notify('GGOO #'+id+' has revealed. Its provenance page now shows final art and lineage.');}
+  }catch{/* Keep pending and retry read-only. Never request another randomness outcome. */}});
+  if(refreshedToken)await routeToken({scroll:false});
+ }finally{revealPolling=false;}
 }
 let imageQueue=[],imageActive=0;
 function queueImage(id,img) {imageQueue.push({id,img,version:motionGeneration,still:!animationsPlaying()});pumpImages();}
-function pumpImages() {while(imageActive<3&&imageQueue.length){const {id,img,version,still}=imageQueue.shift();imageActive++;tokenSvg(id,still).then(src=>{if(img.isConnected&&version===motionGeneration&&img.dataset.tokenId===String(id)){img.src=src;img.dataset.rendered='true';img.dataset.motion=still?'paused':'playing';}}).catch(e=>{if(version!==motionGeneration)return;img.alt=`GGOO #${id}: SVG unavailable. Open provenance to retry.`;img.closest('article')?.setAttribute('title',humanError(e));}).finally(()=>{imageActive--;pumpImages();});}}
+function pumpImages() {while(imageActive<3&&imageQueue.length){const {id,img,version,still}=imageQueue.shift();imageActive++;tokenSvg(id,still).then(art=>{if(img.isConnected&&version===motionGeneration&&img.dataset.tokenId===String(id)){if(!art.revealed&&revealStates.get(String(id))===true){queueImage(id,img);return;}img.src=art.src;img.dataset.rendered='true';img.dataset.motion=still?'paused':'playing';updateImageReveal(img,id);}}).catch(e=>{if(version!==motionGeneration)return;img.alt=`GGOO #${id}: SVG unavailable. Open provenance to retry.`;img.closest('article')?.setAttribute('title',humanError(e));}).finally(()=>{imageActive--;pumpImages();});}}
 const observer='IntersectionObserver' in window?new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){observer.unobserve(e.target);queueImage(e.target.dataset.tokenId,e.target);}},{rootMargin:'300px'}):null;
 function applyMotionPreference() {
  const playing=animationsPlaying();motionGeneration++;
@@ -424,7 +497,7 @@ function applyMotionPreference() {
 function resetGallery(){galleryCursor=null;$('gallery-content').replaceChildren();loadGallery();}
 function loadGallery() {
  $('renderer-studies').hidden=live;
- if(!live){text('gallery-message','PREDEPLOY PREVIEW. No minted GGOOs are claimed here. The live gallery opens after verified Base mainnet deployment.');$('gallery-more').hidden=true;return;}
+ if(!live){text('gallery-message','These are illustrative art samples. Minted GGOOs will appear here when minting opens.');$('gallery-more').hidden=true;return;}
  if(minted===null){text('gallery-message','Waiting for a verified live supply read.');return;}
  if(!minted){text('gallery-message','No Ganja Ghoulballs summoned yet. The graveyard is hungry.');return;}
  if(galleryLoading)return;galleryLoading=true;
@@ -434,7 +507,7 @@ function loadGallery() {
  for(let id=galleryCursor;id>=lowerId;id--){
   const card=document.createElement('article');card.className='gallery-card';const a=document.createElement('a');a.href='#token/'+id;a.setAttribute('aria-label','View GGOO #'+id+' provenance');
   const img=document.createElement('img');img.className='gallery-art';img.alt=`GGOO #${id}: onchain animated SVG`;img.loading='lazy';img.width=512;img.height=512;img.dataset.tokenId=String(id);
-  const meta=document.createElement('div');meta.className='gallery-meta';const name=document.createElement('span');name.textContent='GGOO #'+String(id).padStart(3,'0');const arrow=document.createElement('span');arrow.textContent='PROVENANCE ↗';meta.append(name,arrow);a.append(img,meta);card.append(a);$('gallery-content').append(card);if(observer)observer.observe(img);else queueImage(String(id),img);
+  const meta=document.createElement('div');meta.className='gallery-meta';const name=document.createElement('span');name.textContent='GGOO #'+String(id).padStart(3,'0');const arrow=document.createElement('span');arrow.className='reveal-badge';arrow.textContent='READING REVEAL…';meta.append(name,arrow);a.append(img,meta);card.append(a);$('gallery-content').append(card);if(observer)observer.observe(img);else queueImage(String(id),img);
  }
  galleryCursor=lowerId-1;$('gallery-more').hidden=galleryCursor<1;galleryLoading=false;
 }
@@ -442,36 +515,55 @@ function fact(label,value,url) {const dt=document.createElement('dt'),dd=documen
 function updateWalletDeeplink() {
  if(location.protocol==='https:'){$('metamask-link').href='https://metamask.app.link/dapp/'+location.host+location.pathname+location.search+location.hash;$('metamask-link').hidden=false;}
 }
-async function routeToken() {
+function renderLineage(ids,genes,genome) {
+ const decoded=decodeLineage(ids,genes,genome),box=$('token-lineage');box.replaceChildren();box.hidden=false;
+ const heading=document.createElement('h3');heading.textContent='INHERITED DNA · AFTER REVEAL';box.append(heading);
+ paragraph(box,'These are the 13 permanent onchain parent chromosomes and the revealed genome. Dominance is an artistic rule, not biological genetics.');
+ const value=(locus,n)=>locus==='motion'?MOTIONS[n]:locus==='theme'?THEMES[n]:String(n);
+ for(const locus of decoded.loci){paragraph(box,`${locus.name}: #${locus.a.id} (${value(locus.field,locus.a[locus.field])}) + #${locus.b.id} (${value(locus.field,locus.b[locus.field])}) → inherited ${value(locus.field,locus.inherited)}${locus.final!==locus.inherited?' → mutated '+value(locus.field,locus.final):''}.`);}
+ paragraph(box,'Count dominance: 2 > 4 > 1 > 6. Motion/theme ranks: 0 > 1 > 2 > 3. When paired alleles differ, the artistic rule favors the dominant one 75% of the time before mutation; equal alleles express the same value.');
+ const mutations=['Count changed one category','Motion changed mode','Body tint shifted','Radius changed by one'].filter((_,i)=>decoded.mutations&(1<<i));
+ paragraph(box,'MUTATIONS: '+(mutations.length?mutations.join(' · '):'None of the four bounded mutations')+'.');
+ paragraph(box,`Body ${decoded.body}: parent #${decoded.bodyDonor.id}, ball ${decoded.bodyBall+1}. Accent ${decoded.accent}: parent #${decoded.accentDonor.id}, ball ${decoded.accentBall+1}. Sky ${decoded.sky}: parent #${decoded.skyDonor.id}. Before any body-tint mutation, each color mixes 75% donor color with 25% of the equally weighted parent-family mean. Radius ${decoded.radius} derives from parent means, with bounded mutation.`);
+ const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent='VIEW ALL 13 PARENT CHROMOSOMES';details.append(summary);
+ const grid=document.createElement('div');grid.className='lineage-grid';
+ for(const parent of decoded.parents){const card=document.createElement('article');card.className='lineage-parent';const a=document.createElement('a');a.href=`https://basescan.org/nft/${ORIGINAL}/${parent.id}`;a.target='_blank';a.rel='noopener noreferrer';a.textContent='ORIGINAL #'+parent.id+' ↗';card.append(a);paragraph(card,`${parent.count} ball${parent.count===1?'':'s'} · ${THEMES[parent.theme]} · ${MOTIONS[parent.motion]}`);const colors=document.createElement('div');colors.className='lineage-colors';for(const color of parent.colors){const chip=document.createElement('span');chip.style.backgroundColor=color;chip.title=color;chip.setAttribute('aria-label','Parent ball color '+color);colors.append(chip);}card.append(colors);paragraph(card,'Radii '+parent.radii.join(', '));grid.append(card);}details.append(grid);box.append(details);
+}
+async function routeToken(options={}) {
  updateWalletDeeplink();
  const match=location.hash.match(/^#token\/(\d+)$/),current=++tokenGeneration,renderMotion=motionGeneration;
- $('token-page').hidden=!match;if(!match)return;
- const id=BigInt(match[1]);text('token-title','GGOO #'+id);text('token-status','Reading immutable onchain provenance…');$('token-facts').replaceChildren();$('token-ingredients').replaceChildren();$('token-traits').replaceChildren();$('token-art').removeAttribute('src');delete $('token-art').dataset.tokenId;$('token-basescan').hidden=true;$('token-share').disabled=true;
+ $('token-page').hidden=!match;activeTokenId=null;if(!match)return;
+ const id=BigInt(match[1]);text('token-title','GGOO #'+id);text('token-status','Reading immutable onchain provenance…');$('token-facts').replaceChildren();$('token-ingredients').replaceChildren();$('token-traits').replaceChildren();$('token-lineage').replaceChildren();$('token-lineage').hidden=true;$('token-art').removeAttribute('src');delete $('token-art').dataset.tokenId;$('token-basescan').hidden=true;$('token-share').disabled=true;
  if(!live){text('token-status','This collection has not passed mainnet verification. No token is claimed or loaded.');return;}
  if(id<1n||id>420n){text('token-status','Token ID must be between 1 and 420.');return;}
  try {
-  const [owner,ids,seed,traits,src]=await Promise.all([call(cfg.ganjaCollection,'ownerOf',[id]),call(cfg.ganjaCollection,'ingredientsOf',[id]),call(cfg.ganjaCollection,'seedOf',[id]),call(cfg.ganjaCollection,'traitsOf',[id]),tokenSvg(String(id))]);
+  const [owner,ids,revealed,requestId,paid,mintBlock,minter]=await Promise.all([call(cfg.ganjaCollection,'ownerOf',[id]),call(cfg.ganjaCollection,'ingredientsOf',[id]),readReveal(id),call(cfg.ganjaCollection,'requestIdOf',[id]),call(cfg.ganjaCollection,'requestPaid',[id]),call(cfg.ganjaCollection,'mintBlockOf',[id]),call(cfg.ganjaCollection,'mintedBy',[id])]);
   if(current!==tokenGeneration)return;
-  if(ids.length!==COUNT)throw Error('Provenance must contain exactly 13 originals.');
-  $('token-art').dataset.tokenId=String(id);if(renderMotion===motionGeneration){$('token-art').src=src;$('token-art').dataset.rendered='true';$('token-art').dataset.motion=animationsPlaying()?'playing':'paused';}else queueImage(String(id),$('token-art'));$('token-art').alt='GGOO #'+id+' native onchain SVG';
-  fact('CURRENT OWNER',getAddress(owner),'https://basescan.org/address/'+owner);
+  if(ids.length!==COUNT||requestId<=0n||mintBlock<=0n||!validAddress(minter))throw Error('Invalid minted token provenance.');activeTokenId=String(id);
+  const [traits,art,final]=await Promise.all([call(cfg.ganjaCollection,'traitsOf',[id]),tokenSvg(String(id)),revealed?Promise.all([call(cfg.ganjaCollection,'seedOf',[id]),call(cfg.ganjaCollection,'genomeOf',[id]),call(cfg.ganjaCollection,'parentGenesOf',[id]),call(cfg.ganjaCollection,'parentDigestOf',[id])]):Promise.resolve(null)]);
+  if(current!==tokenGeneration)return;
+  if((!revealed&&art.revealed)||(!art.revealed&&revealStates.get(String(id))===true))return routeToken(options);
+  $('token-art').dataset.tokenId=String(id);if(renderMotion===motionGeneration){$('token-art').src=art.src;$('token-art').dataset.rendered='true';$('token-art').dataset.motion=animationsPlaying()?'playing':'paused';updateImageReveal($('token-art'),id);}else queueImage(String(id),$('token-art'));
+  fact('CURRENT OWNER',getAddress(owner),'https://basescan.org/address/'+owner);fact('ORIGINAL MINTER',getAddress(minter),'https://basescan.org/address/'+minter);
   fact('COLLECTION',getAddress(cfg.ganjaCollection),'https://basescan.org/address/'+cfg.ganjaCollection);
   fact('IMMUTABLE GRAVEYARD',getAddress(cfg.graveyard),'https://basescan.org/address/'+cfg.graveyard);
-  fact('GENERATION SEED',String(seed));
+  fact('REVEAL STATE',revealed?'Revealed onchain':'Awaiting Chainlink VRF · originals already locked');
+  fact('MINT BLOCK',String(mintBlock),'https://basescan.org/block/'+mintBlock);fact('ORACLE REQUEST',String(requestId));fact('SPONSOR-PAID REQUEST',formatEther(paid)+' ETH · no extra minter fee');
+  if(final){const [seed,genome,genes,digest]=final;renderLineage(ids,genes,genome);fact('GENERATION SEED',String(seed));fact('PARENT DIGEST',digest);fact('CHILD GENOME (UINT256)',String(genome));}
   let attributes;try{attributes=JSON.parse(traits);}catch{attributes=[];}
   for(const trait of (Array.isArray(attributes)?attributes:attributes.attributes||[])){const span=document.createElement('span');span.textContent=String(trait.trait_type)+': '+String(trait.value);$('token-traits').append(span);}
   for(const ingredient of ids){const a=document.createElement('a');a.textContent='#'+ingredient;a.href=`https://basescan.org/nft/${ORIGINAL}/${ingredient}`;a.target='_blank';a.rel='noopener noreferrer';$('token-ingredients').append(a);}
-  const url=`https://basescan.org/nft/${cfg.ganjaCollection}/${id}`;$('token-basescan').href=url;$('token-basescan').hidden=false;$('token-share').disabled=false;text('token-status','Art, traits, seed and original IDs read directly from Base. The original ERC-721s remain in the permanent vault.');
-  $('token-page').scrollIntoView({behavior:'smooth',block:'start'});
- }catch(e){if(current===tokenGeneration)text('token-status','This token is not minted or its onchain data is unavailable. '+humanError(e));}
+  const url=`https://basescan.org/nft/${cfg.ganjaCollection}/${id}`;$('token-basescan').href=url;$('token-basescan').hidden=false;$('token-share').disabled=false;text('token-status',revealed?'Revealed art, traits and inherited lineage read directly from Base. All 13 originals remain in the permanent vault.':'MINTED · AWAITING RANDOMNESS. The 13 originals are permanently locked already. Final offspring is not known yet. This page checks read-only; no second transaction is required. If the oracle never delivers, it may remain pending permanently. There is no cancellation or reroll.');
+  if(options.scroll!==false)$('token-page').scrollIntoView({behavior:'smooth',block:'start'});
+ }catch(e){if(current===tokenGeneration)text('token-status','Onchain token data is unavailable or invalid. No reveal is claimed. '+humanError(e));}
 }
 async function initialize() {
  try {
   const res=await fetch(siteURL('config.json'),{cache:'no-store'});if(!res.ok)throw Error('Missing deployment configuration.');cfg=await res.json();
   if(!Array.isArray(cfg.rpcUrls)||!cfg.rpcUrls.length||!Number.isSafeInteger(cfg.originalGenesisBlock)||cfg.originalGenesisBlock<0)throw Error('Invalid RPC or original deployment block configuration.');
   live=await verifyDeployment();
-  if(live){text('contract-status','● BASE CODE VERIFIED');$('contract-status').classList.add('live');text('launch-banner','BASE MAINNET · Runtime code and immutable contract wiring verified. 13 originals per GGOO. 0 ETH protocol fee.');status('Contract verified on Base. Connect your wallet and choose exactly 13 originals.');await refreshSupply();}
-  else{text('contract-status','● CONTRACT PENDING');status('Renderer preview only. The mainnet deployment is pending. All approvals and minting remain disabled.');updateSupply(null);}
+  if(live){text('contract-status','● BASE CODE VERIFIED');$('contract-status').classList.add('live');text('launch-banner','BASE MAINNET · Runtime code and immutable contract wiring verified. 13 originals per GGOO. 0 ETH protocol fee.');status('Contract verified on Base. Connect your wallet and choose exactly 13 originals.');await refreshSupply();await refreshReserve();}
+  else{text('contract-status','● MINTING NOT OPEN');status('Minting is not open. We are waiting for verified Base contracts. Approvals and minting remain disabled.');updateSupply(null);}
   loadGallery();bindProvider();
   updateWalletDeeplink();
   if(provider) {const [accounts,id]=await Promise.all([provider.request({method:'eth_accounts'}),provider.request({method:'eth_chainId'})]);applyAccount(accounts?.[0],lower(id));if(account)await refreshWallet();}
@@ -493,5 +585,7 @@ $('cancel-review').onclick=()=>{$('review-dialog').close();review=null;};$('revi
 $('review-consent').onchange=()=>{$('confirm-review').disabled=!$('review-consent').checked;};$('confirm-review').onclick=submitReview;
 $('gallery-more').onclick=loadGallery;window.addEventListener('hashchange',routeToken);
 $('token-share').onclick=async()=>{try{if(navigator.share)await navigator.share({title:$('token-title').textContent+' · Ganja Ghoulballs',url:location.href});else{await navigator.clipboard.writeText(location.href);notify('Provenance link copied.');}}catch(e){if(e.name!=='AbortError')notify('Copy this page address to share its provenance.');}};
-setInterval(()=>{if(live&&!document.hidden&&!busy&&!pending)refreshSupply();},30000);
+setInterval(()=>{if(live&&!document.hidden&&!busy&&!pending){refreshSupply();refreshReserve();}},30000);
+setInterval(pollReveals,12000);
+window.addEventListener('visibilitychange',()=>{if(!document.hidden)pollReveals();});
 initialize();

@@ -1,0 +1,85 @@
+{
+  "observedAt": "2026-10-18T03:55:27Z",
+  "method": "Normal Basescan Read Contract browser UI; read-only calls, no wallet connected or transaction",
+  "network": "Base mainnet",
+  "chainId": 8453,
+  "wrapper": "0xb0407dbe851f8318bd31404A49e658143C982F23",
+  "source": "https://basescan.org/address/0xb0407dbe851f8318bd31404A49e658143C982F23#readContract",
+  "officialNetworks": "https://docs.chain.link/vrf/v2-5/supported-networks",
+  "config": {
+    "fallbackWeiPerUnitLink": "3962147213857640",
+    "stalenessSeconds": 172800,
+    "fulfillmentFlatFeeNativePPM": 0,
+    "fulfillmentFlatFeeLinkDiscountPPM": 0,
+    "wrapperGasOverhead": 13400,
+    "coordinatorGasOverheadNative": 128500,
+    "coordinatorGasOverheadLink": 150400,
+    "coordinatorGasOverheadPerWord": 435,
+    "wrapperNativePremiumPercentage": 60,
+    "wrapperLinkPremiumPercentage": 50,
+    "keyHash": "0xdc2f87677b01473c763cb0aee938ed3341512f6057324a584e5944e786144d70",
+    "maxNumWords": 10
+  },
+  "quotes": [
+    {
+      "method": "estimateRequestPriceNative(uint32,uint32,uint256)",
+      "callbackGasLimit": 100000,
+      "numWords": 1,
+      "assumedRequestGasPriceWei": "1000000",
+      "quotedWei": "383480089862",
+      "quotedETH": "0.000000383480089862",
+      "times420ETH": "0.00016106163774204"
+    },
+    {
+      "method": "estimateRequestPriceNative(uint32,uint32,uint256)",
+      "callbackGasLimit": 100000,
+      "numWords": 1,
+      "assumedRequestGasPriceWei": "1000000000",
+      "quotedWei": "379699705281625",
+      "quotedETH": "0.000379699705281625",
+      "times420ETH": "0.1594738762182825"
+    },
+    {
+      "method": "estimateRequestPriceNative(uint32,uint32,uint256)",
+      "callbackGasLimit": 100000,
+      "numWords": 1,
+      "assumedRequestGasPriceWei": "5000000",
+      "quotedWei": "1901868858073",
+      "quotedETH": "0.000001901868858073",
+      "times420ETH": "0.00079878492039066",
+      "gasPriceReference": {
+        "url": "https://basescan.org/gastracker",
+        "gasGwei": "0.005",
+        "observedAt": "2026-10-18T03:55:00Z",
+        "displayedRefreshTime": "2026-10-18T03:54:51Z",
+        "blockNumber": 52753172
+      }
+    }
+  ],
+  "limitations": [
+    "Gas-price snapshots/scenario inputs, not a guaranteed future fee. The 0.005 gwei scenario uses a separately observed contemporaneous BaseScan gas-tracker snapshot.",
+    "Includes wrapper-calculated fulfillment charge; excludes separate mint/deployment transaction gas and any separate finalization.",
+    "Callback gas must be measured against actual consumer before setting immutable request limit.",
+    "Consumer's native price uses transaction gasprice; a shared sponsor reserve needs immutable per-request spend cap.",
+    "No funding, request transaction, subscription creation, or real NFT transfer was performed.",
+    "Wrapper is an externally governed service even if collection/consumer has no admin; service may delay or stop."
+  ],
+  "runtimeReference": {
+    "observedAt": "2026-10-18T03:58:47Z",
+    "url": "https://basescan.org/address/0xb0407dbe851f8318bd31404A49e658143C982F23#code",
+    "status": "Source Code Verified / Exact Match",
+    "contractName": "VRFV2PlusWrapper_Optimism",
+    "compiler": "v0.8.19+commit.7dd6d404",
+    "bytes": 15377,
+    "keccak256": "0x469c7e3d9661f7d7e41033d44b6198bcfdc4a501b0a9466a395f7842f02a2a8f",
+    "file": "chainlink-base-wrapper-runtime.hex",
+    "scope": "Explorer displayed deployed code; not a local full source rebuild or a fresh wallet-RPC code check"
+  },
+  "liveStatus": {
+    "observedAt": "2026-10-18T03:59:27Z",
+    "s_configured": true,
+    "s_disabled": false,
+    "s_vrfCoordinator": "0xd5D517aBE5cF79B7e95eC98dB0f0277788aFF634",
+    "typeAndVersion": "VRFV2PlusWrapper 1.0.0"
+  }
+}

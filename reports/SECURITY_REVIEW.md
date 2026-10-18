@@ -1,160 +1,115 @@
-# Ganja Ghoulballs security review
+# Ganja Ghoulballs: inherited DNA and VRF security review
 
-Review date: 2026-10-18 UTC. Status: **complete for the frozen source/site release; live Base verification remains an open production gate**.
+Reviewed 2026-10-18T04:40:54.507Z. **Local code review complete for the exact hashes below. Live deployment and funding gates remain open.** This replaces the pre-inheritance review; old deterministic-ID-only conclusions do not approve this release.
 
-This is an independent automated code review and local adversarial test pass, not a professional audit, formal verification, live Base fork test, or guarantee of safety. No real NFTs, wallet approvals, signatures, transactions, or deployment were used for this review.
+This is an independent automated code review with local adversarial testing, not a professional audit, formal verification or guarantee. No real NFTs, wallet approvals, signatures, broadcasts, oracle payments or deployment were used.
 
-## Executive result
+## Result
 
-No Critical, High or Medium vulnerability has been confirmed in the reviewed contract logic. The implemented economics are 420 maximum GGOO, exactly 13 distinct original Ghoulballs for each mint, zero ETH protocol payment, and no per-wallet mint limit. Originals remain ERC-721 tokens owned by the immutable graveyard; this is permanent custody, not an ERC-721 burn. Full mint-out locks 5,460 originals and does not reduce the original collection's `totalSupply`.
+No Critical, High or Medium exploitable code defect was confirmed in the reviewed final implementation. Important permanent-custody and external-oracle risks remain and must be accepted explicitly. The release flag can record only this exact local code-review checkpoint after its matching source commit and constructor cap are recorded. It is not transaction authorization or evidence of a live Base simulation.
 
-**Production activation is still gated.** The original contract’s verified source and displayed runtime were inspected on Basescan during this review. This is explorer evidence, not a direct-RPC snapshot. The exact new GGOO constructor has not been simulated on live Base, and this review does not attest to any deployed GGOO address or its explorer verification. Keep public approval/mint writes disabled until the post-deployment gates below are satisfied. The release flag may record completion of this local code review for the exact frozen bytecode and source commit; it must not be described as live-chain validation or transaction approval. Matching live RPC code to the verified explorer reference and constructor preflight remain required before the owner signs. The deployment page also permits explicit, read-only wallet connection and constructor simulation while the release flag is false; its transaction-send path remains separately locked.
+The contract permits 420 NFTs, exactly 13 distinct originals per mint, no per-wallet restriction and zero ETH value from the minter. A separately donated reserve pays the bounded oracle request. Originals remain owned by the immutable vault forever; they are not burned and original totalSupply does not decrease. Full mint-out locks 5,460 originals.
 
-## Scope and trust boundaries
+## Findings and boundaries
 
-Reviewed:
-- `contracts/GanjaGhoulballs.sol`: ownership, approval, reentrancy, supply, exact recipe, full final-custody postconditions, recipient hooks, deterministic seed, metadata encoding, and ERC-721 transfer paths.
-- `contracts/GooGraveyard.sol`: immutable original/redeemer wiring, receiver authorization, lack of withdrawal/approval/upgrade paths, and unavoidable raw-transfer deposits.
-- `contracts/GooRenderer.sol`: pure/deterministic output, no externally supplied SVG content or external media, trait derivation, code size and read-gas constraints.
-- `site/app.js`: ABI, approval scope, wallet/selection races, write gating, transaction outcome persistence, receipt/provenance validation, and image-cache identity.
-- `deploy-ui/`: exact creation data, release gate, wallet handoff, runtime template/immutable validation, receipt wiring, and uncertain-send handling.
+### R-01: Oracle liveness and governance can leave a permanent pending NFT
 
-The fixed Base source address is `0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c`. Constructor support for 31337 and 84532 is solely for local development and Base Sepolia. Test mocks are intentionally mutable and are not suitable production originals. A malicious source can lie consistently about ownership; local postcondition checks are defense in depth and do not replace validation of the real immutable source.
+**Material external-dependency risk; explicitly disclosed, not eliminated.** GanjaGhoulballs.mint commits all 13 parent IDs/genes, records the original caller and block, locks all originals, pays one request and creates a pending token. Only the immutable wrapper can supply its one entropy word. There is no cancellation, retry, alternative seed, admin replacement, rescue or withdrawal.
 
-## Findings and disposition
+If a valid callback never arrives, the NFT may stay pending permanently with its originals still locked. The pinned wrapper has externally administered configuration/coordinator and service dependencies; a code hash does not freeze that external governance. Three request confirmations do not prove immunity to Base reorganization. The authenticated callback stores only the word and revealed flag and emits events. A cold first nonzero write succeeded under a 100,000-gas call stipend, using 52880 gas including the independent call overhead. Unknown, malformed and duplicate callbacks are ignored; a legitimate zero word is accepted once. Out-of-order requests map by request ID.
 
-### R-01 — Live RPC code matching and constructor preflight remain production gates
+The UI explains the pending state before irrevocable consent, polls read-only and never requests another outcome. Chainlink recommends fixing inputs before requesting, matching callbacks by request ID, forbidding rerolls and keeping callbacks nonreverting; these controls are tested here. [Chainlink security guidance](https://docs.chain.link/vrf/v2-5/security).
 
-Severity: **release gate**, not a demonstrated contract exploit. Status: **original explorer source verified; live RPC comparison and GGOO constructor preflight open**.
+### R-02: Nonwithdrawable reserve and immutable fee ceiling
 
-`GanjaGhoulballs.sol:63-77` pins the production address, requires code, checks the ERC-721 interface, and deploys its own vault and renderer. The source-ID bound in `:91` is specifically 1 through 6667; 13 IDs fit without truncation into 208 bits of the packed recipe.
+**Operational/economic design risk.** Anyone can donate ETH, but donations and leftovers cannot be recovered. A request above the immutable cap or available reserve reverts before permanent effects. A failing wrapper request or NFT receiver rolls back all 13 transfers, storage and payment. A high-gas-price minter cannot spend more than the cap per accepted mint, but prices above the cap can halt new minting indefinitely until prices fall. Review the selected cap (10000000000000 wei in this candidate) separately from any funding amount. Current quotes are estimates, not future-price or reveal guarantees.
 
-The original project's [SolVideoNFT source](https://github.com/ColinPlatt/sol_vid/blob/main/src/SolVideoNFT.sol) retrieved during review declares a 6667 cap and increments supply before assigning each ID. Its [Base deployment record](https://github.com/ColinPlatt/sol_vid/blob/main/deployments/base.json) identifies the required address and reports prior bytecode matching. That is repository evidence, not independently observed current chain code. Source file blob SHA retrieved: `bd1b2ecc7efe2e53b81846190578d314e4f0c9f1`; deployment-record blob SHA: `ae91f824c92d6e57cfd79b038ef8fd4022b3bd1c`.
+The mint UI now obtains an explicit positive gas price, quotes estimateRequestPriceNative at that price and carries the same gasPrice through simulation, wallet estimation and send. This fixes a preflight defect where a default-zero eth_call price could incorrectly pass the budget check. Wallet fee edits or later state changes can still cause a safe revert and gas loss; the onchain cap/reserve checks are authoritative.
 
-On 2026-10-18 at approximately 01:27 UTC, a normal cloud-browser visit to the [original Basescan contract page](https://basescan.org/address/0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c#code) succeeded. The page showed **Source Code Verified / Exact Match**, `SolVideoNFT`, solc `v0.8.30+commit.73712a01`, optimizer 200, and Cancun. The visible source confirms `MAX_SUPPLY = 6667` and `tokenId = ++totalSupply`, supporting IDs 1..6667. The displayed ABI has standard ERC-721 transfer/approval functions, mint/mintTo and views; no owner/admin/upgrade/rescue/public-burn entry point was found.
+### R-03: Accidental raw NFT deposits are irrecoverable
 
-At approximately 01:29 UTC, the explorer’s public Read Contract UI, without a connected wallet, returned `true` for `supportsInterface(0x80ac58cd)`, `6667` for `MAX_SUPPLY`, and `158` for `totalSupply`. No block number was displayed; the supply observation is time-sensitive.
+**Low / inherent custody warning.** GooGraveyard.onERC721Received accepts only the pinned original collection with the redeemer as operator. ERC721.transferFrom bypasses that receiver hook: direct raw deposits can still strand originals without creating a GGOO. The same caution applies to raw deposits into the collection. No rescue function exists by design. Use only the reviewed atomic mint flow.
 
-The complete explorer-displayed deployed runtime is **8,229 bytes**, Keccak-256 **`0x4fe189e2554350c36d652e3573f8bbd0dc3b45c99a4bf799998623339ab3873a`**. Evidence is preserved in `reports/original-basescan-evidence.json`, `reports/original-basescan-runtime.hex` and `reports/original-basescan-abi.json`. This is current explorer evidence, not a direct-RPC or fork test. Earlier direct Base RPC returned HTTP 403, and the connected blockchain data source returned HTTP 402; the later successful browser read supersedes the earlier explorer-access limitation.
+### R-04: Narrow bytecode headroom
 
-The deployment UI now pins this exact hash and 8,229-byte length in both its fixed reference constants and generated manifest, and checks live `eth_getCode` before constructor simulation and again immediately before any wallet send request. Empty code, wrong length, and a same-length mutation are rejected in unit/UI regressions. Artifact fetching is module-relative and tested at a nested slashless deployment URL.
+**Build/release gate.** Final full initcode is 48,751 bytes including all 96 constructor-argument bytes, leaving 401 below EIP-3860. Renderer runtime is 23,802, leaving 774 below EIP-170. Earlier feature builds exceeded the hard initcode limit. Bounded serialization/arithmetic cleanup and optimizer 50 recovered a valid single-creation build. Compiler and deployment-helper checks now reject oversized artifacts and full creation data. Any source or compiler change invalidates this checkpoint.
 
-Required before production: perform this live wallet-RPC equality check on chain 8453 and simulate the exact final creation data against that actual source; local mocked tests do not establish that this live preflight has occurred. After the owner deploys, verify the receipt, all three runtime bytecodes and immutables, original/vault/renderer wiring, cap 420, count 13, and deployment chain ID 8453. Verify all three source contracts on the explorer before enabling mint writes.
+## Verified invariants
 
-### R-02 — Deterministic traits are selectable, not fair randomness
+- Input order is canonicalized. Exactly 13 unique IDs in 1–6667 are required; zero, large IDs, duplicates, nonexistent tokens and different owners fail. Operator authority over someone else’s NFTs does not grant redemption rights.
+- All ownership and approval checks precede transfers. Ownership of all 13 originals is rechecked after the last transfer to confirm custody in the vault. A no-op transfer, late theft of an earlier deposit, transfer failure, malformed recipe, failed request or rejected receiver rolls back the whole operation.
+- Source, wrapper and recipient callbacks cannot reenter mint. A legitimate receiver may transfer its new GGOO during its receiver hook. ERC721 model tests cover owner, token-approved, operator and both safe-transfer paths, self-transfers, balances and approval clearing.
+- The 420 cap is enforced before source transfers. Repeated same-wallet mints are allowed. No privileged mint, administrative owner role, upgrade, arbitrary-call, provider-switch, withdrawal or metadata setter exists.
+- Base construction pins the exact original address/runtime, original renderer runtime and wrapper address/runtime. Local/testnet exceptions are chain-specific and cannot select arbitrary sources on Base 8453.
+- Parent recipes are read only during mint. Bounded fields are packed into 13 permanent chromosomes; the digest commits to chain, original address, sorted IDs, genes and original seeds. Final art does not depend on later original calls.
+- Count, motion and theme select two distinct parent donors with explicit 75/25 dominant/recessive expression for heterozygotes. Color/radius/phase family means weight all 13 parents equally. Bounded one-shot mutations and donor indexes are independently reproduced. These are artistic genetics rules; integer quantization and random sampling do not guarantee every small parent edit is visibly distinguishable.
+- Final entropy is supplied after the irreversible commitment, not derived from a manipulable mint-block seed. Changing caller, input order, output position or deployment address cannot reroll a fixed parent commitment and entropy. Pending transfers do not change future genetics.
+- mintBlockOf and mintedBy are written once from block.number and msg.sender before the request. Tests mint at block 123, reveal at 456, read at 999 and transfer ownership without changing either value. A smart-contract minter remains the original minter; tx.origin is not substituted. No actual transaction-hash claim is made.
 
-Severity: **informational / product disclosure**. Status: accepted design boundary; disclose.
+## Fully onchain metadata and hidden provenance
 
-`GanjaGhoulballs.sol:126-128` hashes the public deployment domain, chain ID, contract address, output ID and chosen recipe. `GooRenderer.sol:17-34` maps the seed to weighted traits. A holder can enumerate ingredient combinations and choose a desired result at the next mint position. Front-running another mint can change that position. There is no VRF, hidden entropy, commit/reveal, or collection-level rarity quota.
+Pending and final tokenURI values are base64 JSON data URIs containing complete SVG data URIs. Native SMIL, vector paths and colors are supplied by immutable GGOO, renderer and backdrop code. There are no image, CSS, font, script, HTTP/IPFS/Arweave or other external media dependencies. The SVG namespace URL is only an identifier.
 
-Reproduction: offline enumeration for hypothetical chain 8453, collection `0x1111111111111111111111111111111111111111`, output #1, and 13-ID subsets of IDs 1..20 found a Golden Goo candidate after only 99 combinations. Recipe `[1,2,3,4,5,6,7,8,9,10,14,18,20]` yields material roll 27, below the threshold 42. This is a hypothetical demonstration, not a prediction for a live deployment.
+The dependency crawler examined 39 pending metadata documents, 39 revealed documents, 39 still outputs and 48 current-manifest fixtures, each byte-matched against the final renderer. Retained historical files are explicitly excluded. Fourteen negative tests reject external assets, fonts, scripts, foreign content and invalid fragment references. After reveal, transfer and complete local removal of both original and oracle code leave tokenURI byte-identical. This is a local proof-by-test plus source review, not a live-service outage experiment.
 
-Recommendation: describe traits as deterministic and previewable/selectable; do not promise random allocation, guaranteed scarcity, or exactly weighted outcomes across 420 tokens.
+Eighteen faint 2×2 RGB glints encode the full 256-bit mint block and 160-bit original minter address. Fixed position i is x=24+25i, y=455+4(i mod 4). First 11 RGB24 words reconstruct the block, last 7 the address, little-endian; unused high bits are zero. The independent decoder checked 165 outputs, including 16 zero/max/random provenance vectors across pending, still and animated rendering. Transfers change the owner, never this birth record. This encoding is provenance, not encryption or a transaction hash.
 
-### R-03 — Direct raw transfers are permanently lost without a mint
+The linked [original Ghoulballs OnChainChecker result](https://onchainchecker.xyz/collection/base/0xf3654D0ce6CF518F4eFbbe490F4a26483FB0969C/1) displayed 5/5 Fully On-Chain for the original token 1. It does not score an undeployed GGOO. A future checker run should use an ordinarily authorized minted token; never sacrifice real originals merely to test a checker. Marketplace caching or disabled SVG animation does not alter stored contract art.
 
-Severity: **low / inherent custody warning**. Status: documented contract limitation.
+## Arithmetic and encoding review
 
-`GooGraveyard.sol:19-23` rejects unauthorized safe deposits, but standard ERC-721 `transferFrom` does not call the receiver hook. Any approved owner/operator can raw-transfer an original to the graveyard; it becomes irretrievable and does not create a GGOO or provenance credit. Raw transfers to the GGOO contract itself can likewise strand tokens. This is not a mint bypass or a way for GGOO to seize unapproved tokens.
+GooGenetics unchecked sections retain validation before arithmetic: count 1/2/4/6 and matching lengths; radii 5–10 before 63−2r; bounded phases and RGB24; 13 parent iterations. Family channel sums are at most 3,315 and fixed-point radius sums at most 13,000. Canonical IDs are bounded before sorting. Production combine is reachable only with the stored validated chromosomes. Decimal conversion uses at most 78 digits. Renderer hex and provenance loops have fixed 6/18 bounds. Malformed maximum-uint inputs still reject in the independent tests.
 
-Reproduction: the contract suite's "raw transfers to vault" test transfers one original directly, confirms unchanged GGOO supply, confirms vault ownership, and proves the owner cannot retrieve it. The immutable vault exposes only `originalCollection`, `redeemer` and `onERC721Received`.
+The Base64 memory-safe annotation was reviewed against actual accessed ranges. Full-group loads end at the third consumed byte; partial loads end exactly at the final logical input byte, including short inputs whose load begins in their own length header. Table loads stay within its allocated header+64 bytes; output stores remain within the exact allocated output length. Free-memory and zero-slot values are not modified. 570 normal/dirty-tail/binary cases match Node Buffer through 32,769 input bytes. [Solidity memory-safety rules](https://docs.soliditylang.org/en/latest/assembly.html#memory-safety).
 
-Recommendation: warn users never to transfer NFTs directly to either contract. Use only the reviewed atomic mint flow. A rescue function would contradict the explicitly accepted permanent-custody design.
+## Executable evidence
 
-### R-04 — Renderer has limited EIP-170 headroom
+- Core suite: 23 groups, full 420 mint-out and 5,460 locked originals on the recorded pre-copy/pre-layout renderer hash. Final renderer changes remove the Art Version marketplace trait and correct maximum-radius Float framing without changing mint, genetics or callback logic. Exact collection, vault and backdrop executable runtime equality is independently rechecked after removing only the validated 51-byte Solidity CBOR trailer plus its two-byte length. ABI, immutable offsets and storage layouts also match. Fresh final-hash boundary tests pass 22 groups; constructor, actual source, callback, metadata and gas paths are rerun. The prior full-cap evidence retains its original hash in artifacts/contract-tests.json, with the explicit bridge in artifacts/core-runtime-equivalence.json.
+- Final renderer acceptance: 1000 genomes, 420 thumbnail rasters, 3360 worst-case motion/framing poses and 36 complete provenance vectors. All bind the final renderer and compiler hashes.
+- Independent VRF/custody: 524 assertions; independent ERC721 model: 2900 assertions and 120 transfer rounds.
+- Independent genetics: 2855 assertions; primary genetics suite: 22188; exact parent-renderer bytecode reproduction: 386 assertions across 96 recipes.
+- Exact original-runtime integration: captured 8,229-byte original and 15,787-byte renderer, 26 fresh local synthetic mints/consolidation, 13 real-code safe transfers and failed-request rollback. It is not a Base fork and uses a mock oracle.
+- Frontend: 67 independently rerun mocked Chromium scenarios plus a real local EVM chromosome fixture. Separate broad approval/exact 13 consent, wallet races, durable uncertain-send locks, explicit fees, provider/status/cap/reserve changes, receipt provenance and read-only reveal are covered. A delayed pending SVG cannot overwrite revealed art.
+- Deployment helper: independently rerun; exact artifact/ABI/immutable-reference hashes, original/renderer/wrapper pins, four-contract receipt wiring, nonce/account/chain freshness, exact durable intent read-back and uncertain-send locks. Read-only simulation is allowed while unapproved; sending remains separately gated. Funding handoff only simulates/downloads an unsigned user-entered donation and has no funding send handler.
 
-Severity: **informational / build gate**. Status: enforced by compiler script.
+Local gas: exact-original mint 1,376,819 execution gas; largest sampled full tokenURI 9,133,885 across 39 targeted structures. These exclude transaction intrinsic/calldata, Base L1 data/operator fees and wallet totals; real wrapper costs and RPC limits still require live preflight.
 
-The reviewed renderer is close to the 24,576-byte runtime ceiling. The compiler checks runtime and initcode limits. Preserve those checks and recompile after every art or compiler-setting change. Constructor creation data includes nested child creation code; its size must be checked independently of each deployed runtime. Final sizes are recorded below.
+## Frozen build
 
-### Resolved during the review
+Compiler 0.8.30+commit.73712a01.Emscripten.clang; optimizer 50; viaIR; Cancun. Settings SHA256: c90421359ec8eb643a01b820c72d11d4edd3973fba14cfce986532068db2f3c6.
 
-- **Metadata read-gas availability:** the original bytewise Base64 implementation exceeded a 20 million execution-gas test. It was replaced by a bounded 3-byte assembly encoder with explicit final-group masks and `=` padding. Independent dirty-memory/binary oracle tests pass. Representative six-ball metadata is now practical in local execution; exact current RPC caps still need a real read check.
-- **Missing final-custody postcondition:** mint now verifies ownership of all 13 originals after all transfers. A success-returning/no-op source and a source that steals an earlier deposit after transfer 13 both cause complete rollback.
-- **Mutable chain-domain art:** seed generation now uses immutable `deploymentChainId`, preventing art changes from later changes to the chain ID reported by an environment.
-- **Uncertain wallet responses:** UI owners added persisted pre-send intent locks, reload recovery and explicit handling of rejected versus uncertain requests. A missing transaction hash must not cause automatic resend.
-- **Wallet chain race:** mint and approval requests explicitly include Base chain ID in addition to wallet checks.
-- **Verification metadata integrity:** deployment manifests now hash complete artifacts, including ABI and compiler immutable-reference ranges, and receipt verification reads `deploymentChainId`.
-- **Gallery cache namespace:** same renderer code can serve different collection seeds; the cache must include chain and collection identity as well as runtime hashes and token ID. The final application uses chain, collection, main runtime hash, renderer runtime hash, token ID and motion mode; a bounded optional image cache cannot displace the strict pre-send persistence requirement.
-
-## Verified contract properties
-
-- Only the actual owner (`msg.sender`) can redeem originals; having operator authority over another person's originals does not grant redemption rights.
-- All ownership and approval checks occur before the first transfer. The source may use collection-wide or individual-token approvals.
-- Exactly 13 calldata IDs are consumed; duplicate, descending, zero, out-of-range, nonexistent and differently owned IDs revert. Strict sorting prevents permutation aliases of the same recipe.
-- A failed 13th transfer, no-op transfer, late custody theft, receiver revert or wrong selector rolls back the entire mint and all original transfers.
-- The mint lock spans external source transfers and output receiver callbacks. A receiver can legitimately transfer its newly received GGOO while reentrant minting is rejected.
-- All 420 sequential mints succeed with fresh inputs; mint 421 reverts before moving originals. The same wallet can mint repeatedly.
-- GGOO transfers clear token approvals, preserve recipe/seed/metadata, and maintain balances across owner, token-approved and operator paths, including self-transfers and safe-transfer overloads.
-- No owner/admin setter, arbitrary execution, upgrade, privileged mint, withdrawal or approval escape path was found in the GGOO/vault ABI or source.
-- Metadata and SVG are generated from immutable contract code, with no HTTP/IPFS/external `<image>` dependency. Standard marketplace animation support is outside the contract's control.
-
-## Fully-onchain acceptance check
-
-The linked [OnChainChecker result for original ghoulballs #1](https://onchainchecker.xyz/collection/base/0xf3654D0ce6CF518F4eFbbe490F4a26483FB0969C/1) was read on 2026-10-18. It displayed **5/5 Fully On-Chain**. Its highest score covers metadata, artwork, thumbnails and all dependencies. This result belongs to the original collection, **not** to an undeployed GGOO. The original’s displayed 34.6M tokenURI gas is likewise separate from GGOO’s local gas measurements. Evidence: `reports/onchainchecker-original-evidence.json`.
-
-The frozen GGOO implementation satisfies that zero-offchain-dependency design standard in the reviewed source and local outputs:
-- `tokenURI` returns base64 data-URI JSON whose `image` is a complete base64 data-URI SVG. The SVG contains native animation; there is no separate externally hosted thumbnail or animation asset.
-- The immutable onchain renderer supplies all shapes, colours, text metadata and motion. No HTTP, IPFS, Arweave, external image, CSS, font, JavaScript, iframe, or offchain asset is needed. The SVG XML namespace URL is an identifier, not a network dependency.
-- The dependency-crawl test passed 39 locally minted metadata documents and their 39 animated SVGs, 39 still SVGs, and 32 additional renderer fixtures, covering the existing full six-ball scene/headwear matrix. Fourteen negative fixtures demonstrated rejection of remote assets, scripts, fonts, external metadata and invalid fragment references.
-- The same test verifies immutable original/vault/renderer/chain fields, pure renderer functions, no metadata/admin setter, and no proxy/destruction path in the reviewed source. A transfer left the complete tokenURI byte-identical.
-
-Machine-readable evidence is `reports/onchain-metadata-probes.json`; the reproducible script is `reports/onchain-metadata-probes.mjs`; actual locally decoded examples are `reports/onchain-metadata-sample.json` and `.svg`. This is a source/output acceptance check, not a claim that OnChainChecker has scored a live GGOO. Repeat the external check only after deployment and an ordinarily authorized first mint; never sacrifice real originals merely to produce a test token. A marketplace may cache thumbnails, freeze its own presentation, or disable SVG animation, but that does not change the immutable onchain metadata or artwork.
-
-## Reproduction and evidence
-
-Run from the repository root after `npm ci`:
-
-```sh
-npm run compile
-node test/contracts.mjs
-node reports/security-probes.mjs
-node reports/base64-probes.mjs
-node reports/onchain-metadata-probes.mjs
-node --experimental-vm-modules deploy-ui/test.mjs
-CHROMIUM_PATH=/tmp/ghoulbatch-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell node test/frontend/mobile-wallet.mjs
-```
-
-Independent checks executed:
-- Contract suite: 22 groups, including 100 malformed recipes, receiver/source reentrancy and all 420 redemptions. Independently rerun successfully.
-- `security-probes.mjs`: 2,895 assertions with independent malicious-source behavior and 120 model-based transfer rounds. No RPC or signing.
-- `base64-probes.mjs`: 570 successful comparisons against Node Buffer. Lengths 0..256 and 511/512/513, 1023/1024/1025, 4095/4096/4097, 32767/32768/32769; arbitrary binary and repeated 00/ff/80/3d; both normal and deliberately nonzero trailing allocation.
-- Deployment UI tests: rerun on the final runtime-pin/subpath checkpoint, passing exact hash/economics/chain gates, immutable-only differences, explicit zero-value creation, stale nonce/review checks, rejection reset and uncertain-send lock across reload. The final split gate also allows read-only simulation without release approval, keeps Send disabled, and preserves successful evidence for an unfunded wallet while preventing deployment.
-- Final frontend rerun: 27 mocked Chromium scenarios independently passed, including uncertainty/reload recovery, rejected/reverted outcomes, wrong recipient, unknown supply, stale wallet/selection results, explicit Base transactions, and storage-quota failure before any send. The renderer also handled public edge seeds 0, 1, uint256 max−1 and uint256 max with maximum public token ID in both motion modes. Physical wallet behavior was not tested.
-
-Core review evidence files: `reports/security-probes.json`, `reports/base64-probes.json`, `artifacts/contract-tests.json`, `artifacts/build-manifest.json`, `artifacts/gas-profile.json`. Frozen source hashes and size measurements are below. An additional independent run of `npm run test:all` completed with exit code 0 on the frozen release, including 22 contract groups, independent probes, 28 frontend scenarios (including native SVG animation/reduced motion), and deployment UI tests.
-
-## Remaining limitations
-
-Testing uses an in-memory Cancun EVM and test sources. Execution gas excludes transaction intrinsic gas, calldata/creation overhead, Base L1 data and any operator fees, and wallet-specific behavior. Representative gas samples are not exhaustive over every seed. Real device wallets, third-party indexers, marketplace animation behavior, public-chain reorg handling and production hosting integrity require separate validation. The deployed bytecode and the served website must match this reviewed release; any subsequent source change invalidates these results for the changed code.
-
-## Frozen release checkpoint
-
-Compiler: solc 0.8.30+commit.73712a01, optimizer 200, viaIR, Cancun.
-
-Exact reviewed creation bytecode Keccak-256: `0x479fb353fa1c628ae5a97b72a05a7d713c87ecb188cd65fb06ee24243a72bc62`. Full deployment data, including the fixed original-address argument: `0xd222acf40438b5852558fd60093e63b15c0c885cec68fa284fe089c287129662` (33,456 bytes).
-
-| File | SHA-256 |
-|---|---|
-| contracts/GanjaGhoulballs.sol | 626c4bd259b14da38ea0f02012f075231e553c995a4dd46455c34577c50ea192 |
-| contracts/GooGraveyard.sol | 6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae |
-| contracts/GooRenderer.sol | 92037149681b52dfe671ac5b01ab602c5106e872bdfa165265b5ec3579062aa8 |
-| site/app.js | bc86466563cce723f61e6eb828e552ea41d0dededb5fe99087904d509c695b84 |
-| deploy-ui/deploy.js | 2215b3429694249c55e4a98e5bb10b53dd5689351dc168f08167df4a2c2dc134 |
-| deploy-ui/lib.mjs | 23c0b1ed8f0bd7b438e1aaf706bd3eb2e0bab732a2ee76230598da4c3c0a63c1 |
-| deploy-ui/build.mjs | 8f54d7242a3b2079adde5c1cf47d6b526db3f0073364f1126f8b3f2823772a33 |
-| deploy-ui/test.mjs | d822a3f393436070b9d63ea16c2736af8a98267e7089c8cca909f203487e7add |
-
-| Contract | Runtime bytes | Creation code bytes |
+| Contract | Runtime bytes | Creation bytes before args |
 |---|---:|---:|
-| GanjaGhoulballs | 7,911 | 33,424 |
+| GanjaGhoulballs | 15,308 | 48,655 |
 | GooGraveyard | 524 | 703 |
-| GooRenderer | 24,124 | 24,150 |
+| GooRenderer | 23,802 | 31,585 |
+| GooBackdrop | 7,634 | 7,660 |
 
-The GGOO full creation data is 33,456 bytes including its 32-byte constructor argument, below 49,152. Renderer runtime headroom is **452 bytes** below 24,576. The final local constructor used 6,618,815 EVM execution gas; sample operator-approval mint used 309,642 and first per-token-approval mint used 407,329. These are mock-source execution measurements, not Base fee estimates or live transaction gas guarantees.
+Creation Keccak256: 0xa499eb02ce18250506d2938be3998041e5eb4af0bea5b27e13e5077503c85b74
 
-Final corrected gas-profile evidence contains 39 locally minted samples, including all 36 distinct actual six-ball scene/headwear pairs. The reviewer independently recomputed those pairs from every recorded seed and found zero mismatches after fixing the third-eye/headwear helper. Maximum sampled `tokenURI` execution gas is 6,029,316 (38,305 output bytes); maximum sampled raw SVG execution gas is 1,046,481. These are representative structural samples, not an exhaustive bound over every seed or proof of a current RPC service limit.
+Full deployment-data Keccak256: 0xdbd21aeea3ce017adff5866f3903569a84ad5a2d7ee182ddd7dac98261a1a39c
 
-### Release recommendation
+Constructor arguments: original 0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c; wrapper 0xb0407dbe851f8318bd31404a49e658143c982f23; max request price 10000000000000 wei. Full data includes these arguments; a cap change requires a new exact-hash approval.
 
-The frozen source and fail-closed website are suitable for publication from this limited code-review perspective. No unresolved Critical, High, or Medium exploit finding remains in the reviewed local code. Keep public approval/mint controls disabled until actual deployment and verification. Local code-review approval is not approval of a mainnet transaction, a substitute for live RPC original-code matching, or permission to bypass the required live simulation, user wallet confirmation, receipt checks, and explorer source verification. The open R-01 production gate must remain clearly disclosed.
+| File | SHA256 |
+|---|---|
+| contracts/GanjaGhoulballs.sol | f19920a6b7919e3ed5ee27c8d2cf42b6480be56a961676f344f270967a0bca52 |
+| contracts/GooGenetics.sol | dd4b855c123392248214fb3c048d4e186e1db06d7ccdcc7444d9d521fa7aef90 |
+| contracts/GooGraveyard.sol | 6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae |
+| contracts/GooRenderer.sol | 09e0f93d90ad2bd03f2acddd92e06b11ed00de0d27f3699cd1b4318ade5fb41c |
+
+Frontend and deployment-helper exact hashes are recorded in security-review-summary.json, frontend-review.json and deployment-ui-review.json. All executable evidence binds source and compiler settings. The prior full-cap report is accepted only through the explicit executable-equivalence bridge above; other stale reports fail the report generator.
+
+## Remaining production gates and limitations
+
+1. Record the canonical source commit matching these exact reviewed files and deployment data; do not reuse any prior approval.
+2. Confirm the immutable request cap separately from any voluntary reserve donation amount.
+3. Live Base wallet RPC must match original, parent renderer and wrapper code pins and check wrapper configured/enabled/coordinator/current quote.
+4. Simulate the exact final constructor on live Base, check nonce and all fees/balance, then obtain the user’s own wallet confirmation.
+5. Verify deployment receipt, all four deployed runtimes and immutable wiring, and publish matching explorer source.
+6. Any reserve donation requires its own exact amount, recipient and personal wallet approval; leftovers cannot be withdrawn.
+7. Activate public writes only for verified deployed addresses/runtime hashes with a sufficient current reserve.
+
+No live Base fork or real Chainlink round-trip has been run. A public RPC route returned 403 and the connected blockchain data source returned 402; no access control was bypassed. Normal read-only explorer pages supplied verified runtime/source evidence and time-stamped quotes. Actual wallet-RPC code equality, constructor simulation, deployment receipt/source verification and separate funding approval remain necessary. This review cannot prove future oracle delivery, finalized-chain behavior, honest RPCs, physical-wallet behavior, marketplace rendering or hosting integrity.
+
+Reproduce from the repository with npm ci --ignore-scripts --include=dev, then npm run test:all. Standalone independent probes live in reports/vrf-security-probes.mjs, erc721-model-probes.mjs, inheritance-probes.mjs, base64-probes.mjs and onchain-metadata-probes.mjs. No test requires a real NFT or wallet signature.

@@ -1,0 +1,246 @@
+{
+  "contractName": "GooGraveyard",
+  "sourceName": "contracts/GooGraveyard.sol",
+  "compiler": "0.8.30+commit.73712a01.Emscripten.clang",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "originalCollection_",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "redeemer_",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "UnauthorizedDeposit",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "name": "onERC721Received",
+      "outputs": [
+        {
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "originalCollection",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "redeemer",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x60c03461008657601f6102bf38819003918201601f19168301916001600160401b0383118484101761008a57808492604094855283398101031261008657610052602061004b8361009e565b920161009e565b9060805260a05260405161020c90816100b3823960805181818160520152610137015260a051818181609a015261018e0152f35b5f80fd5b634e487b7160e01b5f52604160045260245ffd5b51906001600160a01b03821682036100865756fe6080806040526004361015610012575f80fd5b5f3560e01c908163150b7a02146100c9575080632ba29d3814610085576361dd277e1461003d575f80fd5b34610081575f366003190112610081576040517f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03168152602090f35b5f80fd5b34610081575f366003190112610081576040517f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03168152602090f35b34610081576080366003190112610081576004356001600160a01b03811690819003610081576100f76101c0565b5060643567ffffffffffffffff8111610081573660238201121561008157806004013567ffffffffffffffff8111610081573691016024011161008157337f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316148015919061018c575b5061017d57630a85bd0160e11b8152602090f35b63673e66cb60e11b5f5260045ffd5b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03161415905082610169565b602435906001600160a01b03821682036100815756fea264697066735822122025d44eb028bea9928322351211b1c8afaaccbb83cfda5703c6e350794288380c64736f6c634300081e0033",
+  "deployedBytecode": "0x6080806040526004361015610012575f80fd5b5f3560e01c908163150b7a02146100c9575080632ba29d3814610085576361dd277e1461003d575f80fd5b34610081575f366003190112610081576040517f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03168152602090f35b5f80fd5b34610081575f366003190112610081576040517f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03168152602090f35b34610081576080366003190112610081576004356001600160a01b03811690819003610081576100f76101c0565b5060643567ffffffffffffffff8111610081573660238201121561008157806004013567ffffffffffffffff8111610081573691016024011161008157337f00000000000000000000000000000000000000000000000000000000000000006001600160a01b0316148015919061018c575b5061017d57630a85bd0160e11b8152602090f35b63673e66cb60e11b5f5260045ffd5b7f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03161415905082610169565b602435906001600160a01b03821682036100815756fea264697066735822122025d44eb028bea9928322351211b1c8afaaccbb83cfda5703c6e350794288380c64736f6c634300081e0033",
+  "immutableReferences": {
+    "3818": [
+      {
+        "length": 32,
+        "start": 82
+      },
+      {
+        "length": 32,
+        "start": 311
+      }
+    ],
+    "3820": [
+      {
+        "length": 32,
+        "start": 154
+      },
+      {
+        "length": 32,
+        "start": 398
+      }
+    ]
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": null
+  },
+  "metadata": {
+    "compiler": {
+      "version": "0.8.30+commit.73712a01"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "originalCollection_",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "redeemer_",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "inputs": [],
+          "name": "UnauthorizedDeposit",
+          "type": "error"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "operator",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "",
+              "type": "bytes"
+            }
+          ],
+          "name": "onERC721Received",
+          "outputs": [
+            {
+              "internalType": "bytes4",
+              "name": "",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "originalCollection",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "redeemer",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ],
+      "devdoc": {
+        "details": "Raw ERC-721 transferFrom can bypass receiver hooks. Such accidental deposits      are permanently locked too, but never count toward minting a GGOO.No owner, arbitrary execution, approval, transfer, withdrawal, or upgrade path exists.",
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "notice": "Accepts safe deposits only from the immutable GanjaGhoulballs redeemer.",
+        "version": 1
+      }
+    },
+    "settings": {
+      "compilationTarget": {
+        "contracts/GooGraveyard.sol": "GooGraveyard"
+      },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "optimizer": {
+        "enabled": true,
+        "runs": 50
+      },
+      "remappings": [],
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/GooGraveyard.sol": {
+        "keccak256": "0x7c022b954211cf9ce5d88feafe5c7517c4565f2293c876da144f58989f7ac560",
+        "license": "MIT",
+        "urls": [
+          "bzz-raw://baa3cb8cdb7c7c4fdbe9e87c677f96641d2302aca406f0d0d5f393334825ab16",
+          "dweb:/ipfs/QmNSsPyuaFrAb5PVMATQTf17ksnnUvYm9nCGDu1F1DK7fA"
+        ]
+      }
+    },
+    "version": 1
+  }
+}
