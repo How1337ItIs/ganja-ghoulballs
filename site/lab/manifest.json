@@ -1,8 +1,12 @@
 {
-  "status": "SYNTHETIC POST-REVEAL RENDERER COVERAGE; NO LIVE OFFSPRING PREVIEW",
+  "status": "SYNTHETIC POST-REVEAL DEVELOPMENT FIXTURES; NO LIVE OFFSPRING PREDICTION",
+  "rendererSourceSha256": "eabf73e2e41970727142b7c3553b33ca905b67a78365cbaf4cf93d1769bb4ec5",
+  "rendererRuntimeBytes": 24196,
   "selected": [
     {
       "id": 17,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753188",
       "seed": "29071649007940038324701647560434494676343716853457004621196221226734216099157",
       "genome": "578432039402688907072264750959854567706820846752273273",
       "genes": {
@@ -43,98 +47,14 @@
         "Third Eye": "No",
         "Golden Veins": "No",
         "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
-    },
-    {
-      "id": 5,
-      "seed": "48730078681400754772527785157999547294433807708355567380962000187806653806265",
-      "genome": "674588618277939867608915306130924845553328009284929140",
-      "genes": {
-        "body": 4703860,
-        "accent": 15875950,
-        "count": 1,
-        "scene": 4,
-        "motion": 0,
-        "radius": 9,
-        "sky": 727096,
-        "theme": 1,
-        "xPhase": 91,
-        "yPhase": 67,
-        "bodyDonor": 4,
-        "accentDonor": 11,
-        "skyDonor": 7
       },
-      "fixtureType": "SYNTHETIC POST-REVEAL GENOME COVERAGE; NOT A LIVE RECIPE PREDICTION",
-      "traits": {
-        "Ball Count": 1,
-        "Inherited Ball Count": 1,
-        "Scene": "Basement Seance",
-        "Inherited Theme": "Lagoon",
-        "Material": "Lagoon Cannabutter",
-        "Motion": "Ricochet",
-        "Inherited Motion": "Ricochet",
-        "Body Radius": 9,
-        "Body Colour": "#47c674",
-        "Accent Colour": "#f23f6e",
-        "Sky Colour": "#0b1838",
-        "Mutation Flags": 0,
-        "Mood": "Couch Entombed",
-        "Headwear": "Grubby Beanie",
-        "Mouth Prop": "Crooked Spliff",
-        "Goo Texture": "Oat Crust",
-        "Silhouette": "Hand Rolled",
-        "Eyes": "Bloodshot Ember",
-        "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
-    },
-    {
-      "id": 41,
-      "seed": "47019052869929194011273709261341327720055858772464119812852299166842155615875",
-      "genome": "386118508806376483646270242564474359828407025366941003",
-      "genes": {
-        "body": 15416651,
-        "accent": 15380577,
-        "count": 1,
-        "scene": 4,
-        "motion": 2,
-        "radius": 9,
-        "sky": 2691381,
-        "theme": 2,
-        "xPhase": 46,
-        "yPhase": 1,
-        "bodyDonor": 1,
-        "accentDonor": 8,
-        "skyDonor": 4
-      },
-      "fixtureType": "SYNTHETIC POST-REVEAL GENOME COVERAGE; NOT A LIVE RECIPE PREDICTION",
-      "traits": {
-        "Ball Count": 1,
-        "Inherited Ball Count": 1,
-        "Scene": "Basement Seance",
-        "Inherited Theme": "Ultraviolet",
-        "Material": "Ultraviolet Resin",
-        "Motion": "Float",
-        "Inherited Motion": "Float",
-        "Body Radius": 9,
-        "Body Colour": "#eb3d4b",
-        "Accent Colour": "#eab061",
-        "Sky Colour": "#291135",
-        "Mutation Flags": 0,
-        "Mood": "Couch Entombed",
-        "Headwear": "Bare Cranium",
-        "Mouth Prop": "Crooked Spliff",
-        "Goo Texture": "Hash Crumble",
-        "Silhouette": "Hand Rolled",
-        "Eyes": "Bloodshot Ember",
-        "Third Eye": "No",
-        "Golden Veins": "No",
-        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
+      "svgBytes": 8087,
+      "executionGas": 475735
     },
     {
       "id": 61,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753232",
       "seed": "87365647732602965880851675342490260248146979267209493844383967422482246525761",
       "genome": "1054350814455874610906424496969340025786900774953317478",
       "genes": {
@@ -175,10 +95,110 @@
         "Third Eye": "No",
         "Golden Veins": "No",
         "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
+      },
+      "svgBytes": 9554,
+      "executionGas": 488896
+    },
+    {
+      "id": 5,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753176",
+      "seed": "48730078681400754772527785157999547294433807708355567380962000187806653806265",
+      "genome": "674588618277939867608915306130924845553328009284929140",
+      "genes": {
+        "body": 4703860,
+        "accent": 15875950,
+        "count": 1,
+        "scene": 4,
+        "motion": 0,
+        "radius": 9,
+        "sky": 727096,
+        "theme": 1,
+        "xPhase": 91,
+        "yPhase": 67,
+        "bodyDonor": 4,
+        "accentDonor": 11,
+        "skyDonor": 7
+      },
+      "fixtureType": "SYNTHETIC POST-REVEAL GENOME COVERAGE; NOT A LIVE RECIPE PREDICTION",
+      "traits": {
+        "Ball Count": 1,
+        "Inherited Ball Count": 1,
+        "Scene": "Basement Seance",
+        "Inherited Theme": "Lagoon",
+        "Material": "Lagoon Cannabutter",
+        "Motion": "Ricochet",
+        "Inherited Motion": "Ricochet",
+        "Body Radius": 9,
+        "Body Colour": "#47c674",
+        "Accent Colour": "#f23f6e",
+        "Sky Colour": "#0b1838",
+        "Mutation Flags": 0,
+        "Mood": "Couch Entombed",
+        "Headwear": "Grubby Beanie",
+        "Mouth Prop": "Crooked Spliff",
+        "Goo Texture": "Oat Crust",
+        "Silhouette": "Hand Rolled",
+        "Eyes": "Bloodshot Ember",
+        "Third Eye": "No",
+        "Golden Veins": "No",
+        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+      },
+      "svgBytes": 9296,
+      "executionGas": 486079
+    },
+    {
+      "id": 41,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753212",
+      "seed": "47019052869929194011273709261341327720055858772464119812852299166842155615875",
+      "genome": "386118508806376483646270242564474359828407025366941003",
+      "genes": {
+        "body": 15416651,
+        "accent": 15380577,
+        "count": 1,
+        "scene": 4,
+        "motion": 2,
+        "radius": 9,
+        "sky": 2691381,
+        "theme": 2,
+        "xPhase": 46,
+        "yPhase": 1,
+        "bodyDonor": 1,
+        "accentDonor": 8,
+        "skyDonor": 4
+      },
+      "fixtureType": "SYNTHETIC POST-REVEAL GENOME COVERAGE; NOT A LIVE RECIPE PREDICTION",
+      "traits": {
+        "Ball Count": 1,
+        "Inherited Ball Count": 1,
+        "Scene": "Basement Seance",
+        "Inherited Theme": "Ultraviolet",
+        "Material": "Ultraviolet Resin",
+        "Motion": "Float",
+        "Inherited Motion": "Float",
+        "Body Radius": 9,
+        "Body Colour": "#eb3d4b",
+        "Accent Colour": "#eab061",
+        "Sky Colour": "#291135",
+        "Mutation Flags": 0,
+        "Mood": "Couch Entombed",
+        "Headwear": "Bare Cranium",
+        "Mouth Prop": "Crooked Spliff",
+        "Goo Texture": "Hash Crumble",
+        "Silhouette": "Hand Rolled",
+        "Eyes": "Bloodshot Ember",
+        "Third Eye": "No",
+        "Golden Veins": "No",
+        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+      },
+      "svgBytes": 9020,
+      "executionGas": 487847
     },
     {
       "id": 18,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753189",
       "seed": "40547195018340612750316364336341532454997028331214315697174725950050662013005",
       "genome": "674588543815667929567155230354126548482437781425715763",
       "genes": {
@@ -219,10 +239,14 @@
         "Third Eye": "No",
         "Golden Veins": "No",
         "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
+      },
+      "svgBytes": 12953,
+      "executionGas": 642129
     },
     {
       "id": 22,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753193",
       "seed": "79277600192872393907311590734027224335166837136399389789041745462009141560649",
       "genome": "1054350785308615186509035078151885951815308981681620686",
       "genes": {
@@ -263,10 +287,14 @@
         "Third Eye": "No",
         "Golden Veins": "No",
         "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
+      },
+      "svgBytes": 13159,
+      "executionGas": 646313
     },
     {
       "id": 26,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753197",
       "seed": "7673214103573325920139672067656892015953694605008774462266585371660176509753",
       "genome": "193824788251752570968934289983523678522906283940217205",
       "genes": {
@@ -307,10 +335,14 @@
         "Third Eye": "No",
         "Golden Veins": "No",
         "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
+      },
+      "svgBytes": 14438,
+      "executionGas": 664151
     },
     {
       "id": 30,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753201",
       "seed": "27272773254843388356391035451488093262895517056402424314333030610809033395436",
       "genome": "578431874377443608011527804315160735373717475466439619",
       "genes": {
@@ -351,10 +383,14 @@
         "Third Eye": "No",
         "Golden Veins": "No",
         "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
+      },
+      "svgBytes": 12265,
+      "executionGas": 628154
     },
     {
       "id": 35,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753206",
       "seed": "7373953564911883339979488196772914501823259765574491216494353632816525836711",
       "genome": "1054350831448773282120884952109737083048337236739799516",
       "genes": {
@@ -395,10 +431,14 @@
         "Third Eye": "No",
         "Golden Veins": "No",
         "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
+      },
+      "svgBytes": 21989,
+      "executionGas": 1056393
     },
     {
       "id": 39,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753210",
       "seed": "18809026674481619278100068440575763277204137921740699787467466852348652957668",
       "genome": "193824416632037271217863811948916725977859032704921534",
       "genes": {
@@ -439,10 +479,14 @@
         "Third Eye": "No",
         "Golden Veins": "No",
         "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
+      },
+      "svgBytes": 21900,
+      "executionGas": 1055027
     },
     {
       "id": 43,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753214",
       "seed": "82557353277604548921895441655238879876310657780182142411532206943149724928641",
       "genome": "578432154184805475494158153658017371044564963153628544",
       "genes": {
@@ -483,10 +527,14 @@
         "Third Eye": "No",
         "Golden Veins": "No",
         "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
+      },
+      "svgBytes": 20993,
+      "executionGas": 1032881
     },
     {
       "id": 47,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753218",
       "seed": "71876652422967827183934341897123642272219065303930844920199012498696628046433",
       "genome": "958194095019110384179265608897473578903905029769624241",
       "genes": {
@@ -527,10 +575,14 @@
         "Third Eye": "No",
         "Golden Veins": "No",
         "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
+      },
+      "svgBytes": 20935,
+      "executionGas": 1030452
     },
     {
       "id": 52,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753223",
       "seed": "83060478815084424046250648765736415246395356917924733097361624703755569957729",
       "genome": "193824759282903526492878975765678010343733938897731920",
       "genes": {
@@ -571,10 +623,14 @@
         "Third Eye": "No",
         "Golden Veins": "No",
         "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
+      },
+      "svgBytes": 29452,
+      "executionGas": 1565331
     },
     {
       "id": 56,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753227",
       "seed": "36587445165678773371606697738459774683391666313670137577185172225153185761724",
       "genome": "578431721126537153791220920692506577353300909973476586",
       "genes": {
@@ -615,10 +671,14 @@
         "Third Eye": "No",
         "Golden Veins": "No",
         "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
+      },
+      "svgBytes": 28375,
+      "executionGas": 1526397
     },
     {
       "id": 60,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753231",
       "seed": "53750881024255264283256809138619405368997130248454865024691317773418437934356",
       "genome": "958194454774643788394179920645908556650507051030671096",
       "genes": {
@@ -659,10 +719,14 @@
         "Third Eye": "No",
         "Golden Veins": "No",
         "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
+      },
+      "svgBytes": 29437,
+      "executionGas": 1555935
     },
     {
       "id": 64,
+      "minter": "0x1111111111111111111111111111111111111111",
+      "mintBlock": "52753235",
       "seed": "34653045008705309208974286654402102969053487865928676187817603828619799931392",
       "genome": "97668255271607087637414013638670343740370946937076126",
       "genes": {
@@ -703,8 +767,293 @@
         "Third Eye": "No",
         "Golden Veins": "No",
         "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
-      }
+      },
+      "svgBytes": 28635,
+      "executionGas": 1533736
     }
   ],
-  "rendererSourceSha256": "f856e4afb48e5849d56b56f271df85a3425e29ddd006c59710f2f3eb30b40df4"
+  "lineage": [
+    {
+      "id": 1,
+      "mintBlock": "52753172",
+      "minter": "0x1111111111111111111111111111111111111111",
+      "seed": "33730911438451795901715874225014192112088876802660374431792806092293750032279",
+      "genome": "21216077378519337822950310750797781301173931053613792551946466085850929115",
+      "fixtureType": "13 mock originals, verified original recipe code, actual GooGenetics recombination, test entropy",
+      "testEntropy": 0,
+      "parentDigest": "0x284f38256bc5a9df77236a677ef5c660ebc2ef6a6baa1af39f78b238a2158146",
+      "traits": {
+        "Ball Count": 4,
+        "Inherited Ball Count": 4,
+        "Scene": "Deadwood Sesh",
+        "Inherited Theme": "Ultraviolet",
+        "Material": "Ultraviolet Resin",
+        "Motion": "Orbit",
+        "Inherited Motion": "Float",
+        "Body Radius": 8,
+        "Body Colour": "#5557db",
+        "Accent Colour": "#df514b",
+        "Sky Colour": "#76547a",
+        "Mutation Flags": 2,
+        "Mood": "Couch Entombed",
+        "Headwear": "Bare Cranium",
+        "Mouth Prop": "Resin Drool",
+        "Goo Texture": "Oat Crust",
+        "Silhouette": "Split Cranium",
+        "Eyes": "Bloodshot Ember",
+        "Third Eye": "No",
+        "Golden Veins": "No",
+        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+      },
+      "svgBytes": 20864,
+      "executionGas": 1031315
+    },
+    {
+      "id": 2,
+      "mintBlock": "52753172",
+      "minter": "0x1111111111111111111111111111111111111111",
+      "seed": "13951993615222393354243164006635008941655770785310319880741556167001346269903",
+      "genome": "12450966197375438970658591744407431919201896666590666021418436824549443538",
+      "fixtureType": "13 mock originals, verified original recipe code, actual GooGenetics recombination, test entropy",
+      "testEntropy": 1,
+      "parentDigest": "0x284f38256bc5a9df77236a677ef5c660ebc2ef6a6baa1af39f78b238a2158146",
+      "traits": {
+        "Ball Count": 4,
+        "Inherited Ball Count": 4,
+        "Scene": "Graveyard Parking Lot",
+        "Inherited Theme": "Ultraviolet",
+        "Material": "Ultraviolet Resin",
+        "Motion": "Ricochet",
+        "Inherited Motion": "Ricochet",
+        "Body Radius": 8,
+        "Body Colour": "#aa47d2",
+        "Accent Colour": "#e05bb5",
+        "Sky Colour": "#76547a",
+        "Mutation Flags": 0,
+        "Mood": "Couch Entombed",
+        "Headwear": "Lot Bandana",
+        "Mouth Prop": "Last Roach",
+        "Goo Texture": "Hash Crumble",
+        "Silhouette": "Melted Jaw",
+        "Eyes": "Bloodshot Ember",
+        "Third Eye": "No",
+        "Golden Veins": "No",
+        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+      },
+      "svgBytes": 21953,
+      "executionGas": 1052444
+    },
+    {
+      "id": 3,
+      "mintBlock": "52753172",
+      "minter": "0x1111111111111111111111111111111111111111",
+      "seed": "76992828927177840126824307247559986430098686158004463173425499625434969739739",
+      "genome": "7108880884905204029400352499965102335698011709487947691002937472384647885",
+      "fixtureType": "13 mock originals, verified original recipe code, actual GooGenetics recombination, test entropy",
+      "testEntropy": 2,
+      "parentDigest": "0x284f38256bc5a9df77236a677ef5c660ebc2ef6a6baa1af39f78b238a2158146",
+      "traits": {
+        "Ball Count": 4,
+        "Inherited Ball Count": 6,
+        "Scene": "Graveyard Parking Lot",
+        "Inherited Theme": "Ultraviolet",
+        "Material": "Ultraviolet Resin",
+        "Motion": "Ricochet",
+        "Inherited Motion": "Ricochet",
+        "Body Radius": 8,
+        "Body Colour": "#d242cd",
+        "Accent Colour": "#cd8181",
+        "Sky Colour": "#875378",
+        "Mutation Flags": 1,
+        "Mood": "Thousand Yard Stare",
+        "Headwear": "Bare Cranium",
+        "Mouth Prop": "Bone Pipe",
+        "Goo Texture": "Oat Crust",
+        "Silhouette": "Split Cranium",
+        "Eyes": "Bloodshot Ember",
+        "Third Eye": "No",
+        "Golden Veins": "No",
+        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+      },
+      "svgBytes": 21599,
+      "executionGas": 1050857
+    },
+    {
+      "id": 4,
+      "mintBlock": "52753172",
+      "minter": "0x1111111111111111111111111111111111111111",
+      "seed": "11589336539203797347548150247896435698910929058187096975438249680869099096801",
+      "genome": "8917353893839861554411435385400937742811312960928284816243632353591118147",
+      "fixtureType": "13 mock originals, verified original recipe code, actual GooGenetics recombination, test entropy",
+      "testEntropy": 3,
+      "parentDigest": "0x284f38256bc5a9df77236a677ef5c660ebc2ef6a6baa1af39f78b238a2158146",
+      "traits": {
+        "Ball Count": 4,
+        "Inherited Ball Count": 4,
+        "Scene": "Basement Seance",
+        "Inherited Theme": "Midnight",
+        "Material": "Midnight Hash",
+        "Motion": "Ricochet",
+        "Inherited Motion": "Ricochet",
+        "Body Radius": 8,
+        "Body Colour": "#d74943",
+        "Accent Colour": "#5557db",
+        "Sky Colour": "#76547a",
+        "Mutation Flags": 4,
+        "Mood": "Thousand Yard Stare",
+        "Headwear": "Bare Cranium",
+        "Mouth Prop": "Last Roach",
+        "Goo Texture": "Oat Crust",
+        "Silhouette": "Split Cranium",
+        "Eyes": "Bloodshot Ember",
+        "Third Eye": "Yes",
+        "Golden Veins": "No",
+        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+      },
+      "svgBytes": 21951,
+      "executionGas": 1057556
+    },
+    {
+      "id": 5,
+      "mintBlock": "52753172",
+      "minter": "0x1111111111111111111111111111111111111111",
+      "seed": "57598500364246360028603362447872978787966056140606506718148822333483221066267",
+      "genome": "7081327499768902038167847662507070780622823590466189313692140301609752545",
+      "fixtureType": "13 mock originals, verified original recipe code, actual GooGenetics recombination, test entropy",
+      "testEntropy": 4,
+      "parentDigest": "0x284f38256bc5a9df77236a677ef5c660ebc2ef6a6baa1af39f78b238a2158146",
+      "traits": {
+        "Ball Count": 1,
+        "Inherited Ball Count": 1,
+        "Scene": "Graveyard Parking Lot",
+        "Inherited Theme": "Ultraviolet",
+        "Material": "Ultraviolet Resin",
+        "Motion": "Figure Eight",
+        "Inherited Motion": "Figure Eight",
+        "Body Radius": 8,
+        "Body Colour": "#9257e1",
+        "Accent Colour": "#e1ba73",
+        "Sky Colour": "#875378",
+        "Mutation Flags": 0,
+        "Mood": "Couch Entombed",
+        "Headwear": "Skull Candle",
+        "Mouth Prop": "Crooked Spliff",
+        "Goo Texture": "Hash Crumble",
+        "Silhouette": "Split Cranium",
+        "Eyes": "Bloodshot Ember",
+        "Third Eye": "No",
+        "Golden Veins": "No",
+        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+      },
+      "svgBytes": 9562,
+      "executionGas": 488257
+    },
+    {
+      "id": 6,
+      "mintBlock": "52753172",
+      "minter": "0x1111111111111111111111111111111111111111",
+      "seed": "83390873685530790276543023721933232053531644931475817317461580906036699473603",
+      "genome": "10649719082736727634685771658117699501982613654095672049950329508647815122",
+      "fixtureType": "13 mock originals, verified original recipe code, actual GooGenetics recombination, test entropy",
+      "testEntropy": 5,
+      "parentDigest": "0x284f38256bc5a9df77236a677ef5c660ebc2ef6a6baa1af39f78b238a2158146",
+      "traits": {
+        "Ball Count": 2,
+        "Inherited Ball Count": 1,
+        "Scene": "Graveyard Parking Lot",
+        "Inherited Theme": "Ultraviolet",
+        "Material": "Ultraviolet Resin",
+        "Motion": "Figure Eight",
+        "Inherited Motion": "Figure Eight",
+        "Body Radius": 8,
+        "Body Colour": "#aa47d2",
+        "Accent Colour": "#df514b",
+        "Sky Colour": "#676183",
+        "Mutation Flags": 1,
+        "Mood": "Dead Stoned",
+        "Headwear": "Crooked Shades",
+        "Mouth Prop": "Crooked Spliff",
+        "Goo Texture": "Hash Crumble",
+        "Silhouette": "Split Cranium",
+        "Eyes": "Bloodshot Ember",
+        "Third Eye": "No",
+        "Golden Veins": "No",
+        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+      },
+      "svgBytes": 13590,
+      "executionGas": 650391
+    },
+    {
+      "id": 7,
+      "mintBlock": "52753172",
+      "minter": "0x1111111111111111111111111111111111111111",
+      "seed": "94565145213950633466580749994865154602896284630360449058560520331524282906678",
+      "genome": "21264523138518117582348640673809167258520186939823389398548012940683958413",
+      "fixtureType": "13 mock originals, verified original recipe code, actual GooGenetics recombination, test entropy",
+      "testEntropy": 6,
+      "parentDigest": "0x284f38256bc5a9df77236a677ef5c660ebc2ef6a6baa1af39f78b238a2158146",
+      "traits": {
+        "Ball Count": 6,
+        "Inherited Ball Count": 6,
+        "Scene": "Graveyard Parking Lot",
+        "Inherited Theme": "Ultraviolet",
+        "Material": "Ultraviolet Resin",
+        "Motion": "Ricochet",
+        "Inherited Motion": "Ricochet",
+        "Body Radius": 8,
+        "Body Colour": "#60d88d",
+        "Accent Colour": "#df514b",
+        "Sky Colour": "#76547a",
+        "Mutation Flags": 0,
+        "Mood": "Dead Stoned",
+        "Headwear": "Grubby Beanie",
+        "Mouth Prop": "Resin Drool",
+        "Goo Texture": "Chocolate Chunks",
+        "Silhouette": "Split Cranium",
+        "Eyes": "Spectral Acid",
+        "Third Eye": "No",
+        "Golden Veins": "No",
+        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+      },
+      "svgBytes": 28653,
+      "executionGas": 1528696
+    },
+    {
+      "id": 8,
+      "mintBlock": "52753172",
+      "minter": "0x1111111111111111111111111111111111111111",
+      "seed": "48080595499533164915266548548399854931742760368172991954898262084833846942377",
+      "genome": "1780974709121918328296314101453969447456025176227478301709341147093063821",
+      "fixtureType": "13 mock originals, verified original recipe code, actual GooGenetics recombination, test entropy",
+      "testEntropy": 7,
+      "parentDigest": "0x284f38256bc5a9df77236a677ef5c660ebc2ef6a6baa1af39f78b238a2158146",
+      "traits": {
+        "Ball Count": 1,
+        "Inherited Ball Count": 1,
+        "Scene": "Graveyard Parking Lot",
+        "Inherited Theme": "Midnight",
+        "Material": "Midnight Hash",
+        "Motion": "Ricochet",
+        "Inherited Motion": "Ricochet",
+        "Body Radius": 9,
+        "Body Colour": "#60d88d",
+        "Accent Colour": "#606adb",
+        "Sky Colour": "#85627d",
+        "Mutation Flags": 8,
+        "Mood": "Thousand Yard Stare",
+        "Headwear": "Bare Cranium",
+        "Mouth Prop": "Crooked Spliff",
+        "Goo Texture": "Chocolate Chunks",
+        "Silhouette": "Melted Jaw",
+        "Eyes": "Bloodshot Ember",
+        "Third Eye": "No",
+        "Golden Veins": "No",
+        "Art Version": "GANJA_GHOULBALLS_INHERITED_GOO_V3"
+      },
+      "svgBytes": 9313,
+      "executionGas": 485994
+    }
+  ],
+  "maxSvgExecutionGas": 1565331,
+  "maxSvgBytes": 29452
 }
