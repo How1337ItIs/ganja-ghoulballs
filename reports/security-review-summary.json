@@ -18,7 +18,7 @@
     "contracts/GanjaGhoulballs.sol": "626c4bd259b14da38ea0f02012f075231e553c995a4dd46455c34577c50ea192",
     "contracts/GooGraveyard.sol": "6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae",
     "contracts/GooRenderer.sol": "92037149681b52dfe671ac5b01ab602c5106e872bdfa165265b5ec3579062aa8",
-    "site/app.js": "bc86466563cce723f61e6eb828e552ea41d0dededb5fe99087904d509c695b84",
+    "site/app.js": "583e66f42ef862040d45f353a5877fe2ee7fe4c05a4dce26865095c088ebb7a1",
     "deploy-ui/deploy.js": "2215b3429694249c55e4a98e5bb10b53dd5689351dc168f08167df4a2c2dc134",
     "deploy-ui/lib.mjs": "23c0b1ed8f0bd7b438e1aaf706bd3eb2e0bab732a2ee76230598da4c3c0a63c1",
     "deploy-ui/build.mjs": "8f54d7242a3b2079adde5c1cf47d6b526db3f0073364f1126f8b3f2823772a33",
@@ -67,5 +67,17 @@
     "deploymentDataKeccak256": "0xd222acf40438b5852558fd60093e63b15c0c885cec68fa284fe089c287129662",
     "deploymentDataBytes": 33456,
     "originalCollectionArgument": "0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c"
+  },
+  "postReviewCoordinatorFrontendCheckpoint": {
+    "previousSiteHash": "bc86466563cce723f61e6eb828e552ea41d0dededb5fe99087904d509c695b84",
+    "currentSiteHash": "583e66f42ef862040d45f353a5877fe2ee7fe4c05a4dce26865095c088ebb7a1",
+    "scope": "Coordinator-reviewed nested-path asset resolution changes; 33 frontend scenarios passed. Historical independent frontend scenario count is unchanged."
+  },
+  "deploymentGateRecheck": {
+    "date": "2026-10-18",
+    "sourceCommit": "dfad40d9ad9c98514ac63c456f111bd1795952fd",
+    "result": "PASS local code-review gate only; all live deployment and user wallet gates retained",
+    "deploymentUITests": "passed",
+    "solidityAndDeployUIHashes": "all matched prior independent review"
   }
 }
