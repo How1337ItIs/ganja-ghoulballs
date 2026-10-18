@@ -380,9 +380,10 @@ async function trackPending() {
   await sleep(document.hidden?12000:4000);
  }
 }
-const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');
-let motionOverride=null,motionGeneration=0;
-const animationsPlaying=()=>motionOverride===null?!motionPreference.matches:motionOverride;
+// Old-school native SVG loops are the site default. A manual choice lasts this tab session.
+let motionOverride=true,motionGeneration=0;
+try{motionOverride=sessionStorage.getItem('ggoo:motion')!=='paused';}catch{}
+const animationsPlaying=()=>motionOverride;
 const svgMemory=new Map();
 function cacheSvg(key,svg) {
  try {
@@ -406,13 +407,13 @@ function applyMotionPreference() {
  const playing=animationsPlaying();motionGeneration++;
  document.documentElement.dataset.motion=playing?'playing':'paused';
  for(const picture of document.querySelectorAll('.goo-picture, .study-card picture')) {
-  // An always/never matching source lets an explicit choice override the OS default.
+  // An always/never matching source switches native animated/still renderer outputs.
   // Both choices are native outputs from the same immutable SVG renderer.
   picture.querySelector('source').media=playing?'not all':'all';
  }
  $('motion-toggle').disabled=false;$('motion-toggle').textContent=playing?'Pause animations':'Play animations';
  $('motion-toggle').setAttribute('aria-label',playing?'Pause animations':'Play animations');
- text('motion-note',playing?'Native SVG motion is playing.':motionOverride===null?'Paused to match your device’s reduced-motion setting.':'Native SVG motion is paused.');
+ text('motion-note',playing?'Native SVG motion is playing.':'Native SVG motion is paused for this session.');
  imageQueue=[];
  for(const img of document.querySelectorAll('.gallery-art[data-token-id], #token-art[data-token-id]')) {
   const wasLoaded=!!img.getAttribute('src')||img.dataset.rendered==='true';img.removeAttribute('src');img.dataset.motion=playing?'playing':'paused';
@@ -479,8 +480,7 @@ async function initialize() {
  }catch(e){live=false;updateSupply(null);text('contract-status','● MINT SAFETY LOCK');status('Cannot verify the Base deployment. All approval and mint controls are disabled. '+humanError(e),true);}
  render();
 }
-$('motion-toggle').onclick=()=>{motionOverride=!animationsPlaying();applyMotionPreference();};
-motionPreference.addEventListener('change',()=>{if(motionOverride===null)applyMotionPreference();});
+$('motion-toggle').onclick=()=>{motionOverride=!animationsPlaying();try{sessionStorage.setItem('ggoo:motion',motionOverride?'playing':'paused');}catch{}applyMotionPreference();};
 applyMotionPreference();
 $('animation-preview-link').href=siteURL('animation-preview.html',true);
 $('connect-wallet').onclick=connectWallet;$('switch-account').onclick=switchAccount;$('refresh-account').onclick=refreshAccount;$('switch-base').onclick=switchBase;
