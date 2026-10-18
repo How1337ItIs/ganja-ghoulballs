@@ -2,7 +2,21 @@
 
 420 fully onchain animated, pixel-edged goo ghosts on Base. Each GGOO is minted only by permanently locking **exactly 13 original Ghoulballs**. The minter sends zero ETH protocol fee. A separate sponsor reserve pays the one-shot Chainlink VRF reveal; network gas and the irreversible loss of the originals still matter. A wallet may mint repeatedly with new ingredients, subject to the absolute 420 cap.
 
-**Release status: HOLD pending inheritance/reveal integration review.** Source, executable local tests, synthetic post-reveal art samples, and a fail-closed website are included. This repository is not evidence of a mainnet deployment. Inspect `deployments/base.json` and the release report for actual network addresses and verified receipts. An unset deployment configuration disables approvals and minting.
+**Deployed on Base mainnet (chain 8453).** All four contracts have exact creation and runtime matches on Sourcify. This repository contains reproducible contract source, a static mint website, and local tests. Source verification is not a security audit or a guarantee that oracle service, reserve funding, or wallet transactions will succeed.
+
+## Deployment and verification
+
+- GGOO collection: [`0xeec423a9ed7b303e23f41fbc005944fa3fc631b8`](https://repo.sourcify.dev/8453/0xEec423a9eD7b303E23f41fBC005944fa3FC631b8)
+- Permanent graveyard: [`0x1e2eb50f4bdd0311e9cd9dad3e17ae5cf54b292f`](https://repo.sourcify.dev/8453/0x1e2Eb50f4BDD0311E9Cd9DaD3E17AE5cF54B292f)
+- SVG renderer: [`0xc5a2cceec73758464c3f50bf506cb49c6e621034`](https://repo.sourcify.dev/8453/0xc5a2CCEec73758464c3f50bF506cB49C6E621034)
+- Backdrop: [`0x72f2b22950cef2f56a03144b26fd228156a931df`](https://repo.sourcify.dev/8453/0x72f2b22950Cef2F56a03144B26Fd228156A931df)
+- Original Ghoulballs: `0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c`
+- Chainlink VRF wrapper: `0xb0407dbe851f8318bd31404a49e658143c982f23`
+- [Creation transaction](https://basescan.org/tx/0xfdc129e4da048f2736e054a936e2b68f4abb92004d3b97347b555680a1f0b064), block 52,758,373.
+
+The immutable per-request sponsor ceiling is **0.00001 ETH** (10,000,000,000,000 wei). Minting sends **zero ETH protocol fee**, but the minter pays gas and permanently gives up 13 originals. A separately donated reserve pays the oracle. Donations and unused reserve cannot be withdrawn. Reserve sufficiency and the live quote must be checked when minting; deployment does not guarantee readiness. See [deployment record](deployments/base.json) and [verification instructions](docs/VERIFICATION.md).
+
+GGOO #1 was independently checked on 18 October 2026: [Onchain Checker reports 5/5, Fully On-Chain](https://onchainchecker.xyz/collection/base/0xEec423a9eD7b303E23f41fBC005944fa3FC631b8/1). Its revealed tokenURI embeds its JSON and animated SVG. This is an artwork-storage check, not a contract security audit.
 
 ## Permanent lock, not a source-contract burn
 
@@ -12,7 +26,7 @@ Never transfer an NFT directly to the vault. Direct safe transfers are rejected;
 
 ## Reproducible development
 
-Node 24.x is pinned for deployment; 24.19.0 is the tested runtime. Dependencies and their integrity hashes are pinned in `package-lock.json`.
+Use Node 24.x. Dependencies and their integrity hashes are pinned in `package-lock.json`.
 
 ```sh
 npm ci --ignore-scripts --include=dev
@@ -34,7 +48,7 @@ The compiler is `solc@0.8.30`, optimizer 50, viaIR, Cancun. `compile` writes ABI
 
 Fresh-install reproducibility must be rerun for each release. Historical reports are not approval for changed inheritance, oracle or renderer code.
 
-Additional independent security and Base64 oracle probes live in `reports/`. See `docs/CONTRACT_TEST_REPORT.md` for precise coverage and limitations. Local EVM success is not a public Base fork test or a professional security audit.
+Additional independent security and Base64 oracle probes live in `reports/`. `npm test` regenerates `docs/CONTRACT_TEST_REPORT.md` with hash-bound coverage and limitations. Local EVM success is not a public Base fork test or a professional security audit.
 
 ## Contract interface and DNA inheritance
 
@@ -61,7 +75,7 @@ The production mint stays disabled until Base chain, collection/source/vault/ren
 
 The wallet flow verifies owned originals, obtains source approval when required, explains the permanent 13-token lock, and submits the atomic redemption only after the user's action. Synthetic post-reveal art samples are labeled as examples and do not predict the result of a selected 13-parent mint. After deployment, collectible metadata and art are read from the actual chain.
 
-See `docs/DEPLOYMENT.md` for the deployment handoff and release gates. Use a securely authorized funded wallet. Never put private keys or recovery phrases in chat, environment examples, code, or static files. Never use real originals in tests. A local/mock Base-compatible EVM run does not replace the still-required real-source Base simulation and verification.
+See `docs/DEPLOYMENT.md` for the deployment-helper safety model. Use a securely authorized funded wallet. Never put private keys or recovery phrases in chat, environment examples, code, or static files. Never use real originals in tests. A local/mock Base-compatible EVM run does not establish a live oracle round-trip or physical-wallet compatibility.
 
 ## Art and compatibility
 
@@ -69,4 +83,4 @@ SVG geometry, palette, character details, metadata and declarative SMIL animatio
 
 ## Attribution
 
-Independent parody inspired by the concept of [Ghoulballs](https://ghoulballs.vercel.app/) and [ColinPlatt/sol_vid](https://github.com/ColinPlatt/sol_vid), with newly authored character art and site. Unaffiliated with the original project. Historical input archives under `archive-inputs/` are retained for provenance and contain superseded 15-token requirements; the executable code and current 13-token documentation take precedence.
+Independent parody inspired by the concept of [Ghoulballs](https://ghoulballs.vercel.app/) and [ColinPlatt/sol_vid](https://github.com/ColinPlatt/sol_vid), with newly authored character art and site. Unaffiliated with the original project. Superseded input archives are excluded from the clean export. Dated technical reports and reproducible review tools are retained as checkpoint evidence; see RELEASE_STATUS.md. Project source is MIT-licensed; see [third-party notices and fixture provenance](THIRD_PARTY_NOTICES.md). No professional external audit, physical-wallet acceptance test, or successful live mint/reveal is claimed by these local test suites.

@@ -1,6 +1,6 @@
 const sharp=require('sharp'),fs=require('node:fs'),path=require('node:path');
 (async()=>{
- const out=path.resolve(__dirname,'../artifacts/art');const m=JSON.parse(fs.readFileSync(path.join(out,'manifest.json')));
+ const out=path.resolve(__dirname,'../artifacts/art-v3');const m=JSON.parse(fs.readFileSync(path.join(out,'manifest.json')));
  const panels=[],thumbs=[];const width=1536,cell=384,height=Math.ceil(m.selected.length/4)*448;
  for(let i=0;i<m.selected.length;i++){
   const s=m.selected[i];const svg=path.join(out,`goo-${s.id}-still.svg`);
