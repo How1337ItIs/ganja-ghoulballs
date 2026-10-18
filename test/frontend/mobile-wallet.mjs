@@ -111,6 +111,34 @@ async function expectPreviewMode(page,still){
 async function expectChainImageMode(page,selector,mode){await page.waitForFunction(({selector,mode})=>[...document.querySelectorAll(selector)].length>0&&[...document.querySelectorAll(selector)].every(img=>decodeURIComponent(img.getAttribute('src')||'').includes('data-mode="'+mode+'"')),{selector,mode});}
 
 try{
+ for(const width of [320,390]){
+  const {page,state}=await fixture(width,{revealed:false});
+  const actions=page.locator('#mint-actions .mint-button:visible');
+  assert.equal(await actions.count(),1);assert.match(await actions.textContent(),/CONNECT WALLET/);
+  assert.equal(await page.locator('#original-picker').isVisible(),false);assert.equal(await page.locator('#mint-consent').isVisible(),false);
+  await connect(page);await page.waitForFunction(()=>document.querySelectorAll('.id-chip').length===13);
+  assert.equal(await actions.count(),0);assert.match(await page.locator('#mint-flow-title').textContent(),/Choose 13/);
+  await page.locator('#inventory').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(OUT,'mint-ux-select-'+width+'.png')});
+  await select(page);assert.equal(await actions.count(),1);assert.equal(await page.locator('#approve-button').isVisible(),true);assert.equal(await page.locator('#mint-consent').isVisible(),false);assert.equal(await page.evaluate(()=>window.sent.length),0);
+  assert.match(await page.locator('#approval-note').textContent(),/ANY.*future.*not limited/s);
+  await page.locator('#mint-actions').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(OUT,'mint-ux-approve-'+width+'.png')});
+  await page.locator('#approve-button').click();assert.equal(await page.locator('#review-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth),true);assert.equal(await page.locator('#review-consent').isChecked(),false);
+  await page.locator('#review-consent').check();await page.locator('#confirm-review').click();await page.waitForFunction(()=>!document.querySelector('#consent').disabled&&!document.querySelector('#mint-consent').hidden);
+  assert.equal(await page.locator('#consent').isChecked(),false);assert.equal(await actions.count(),0);assert.equal(await page.locator('#mint-consent').isVisible(),true);assert.equal(await page.locator('#approve-button').isVisible(),false);
+  assert.match(await page.locator('#mint-flow-title').textContent(),/acknowledgment/);assert.equal(await page.evaluate(()=>window.sent.length),1);
+  const metrics=await page.locator('#mint-consent').evaluate(el=>{const s=getComputedStyle(el);return{height:el.getBoundingClientRect().height,size:parseFloat(s.fontSize),line:parseFloat(s.lineHeight),opacity:s.opacity,color:s.color,background:s.backgroundColor};});
+  assert.ok(metrics.height>=44&&metrics.size>=14&&metrics.line>=21);assert.equal(metrics.opacity,'1');
+  await page.locator('#mint-actions').evaluate(el=>el.scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:path.join(OUT,'mint-ux-acknowledgment-'+width+'.png')});
+  await page.locator('#mint-consent .lock-heading').click();assert.equal(await page.locator('#consent').isChecked(),true);assert.equal(await actions.count(),1);assert.equal(await page.locator('#main-mint-button').isEnabled(),true);
+  await page.locator('#main-mint-button').click();await page.waitForFunction(()=>document.querySelector('#review-dialog').open);assert.equal(await page.locator('#review-consent').isChecked(),false);assert.equal(await page.locator('#confirm-review').isDisabled(),true);assert.equal(await page.locator('#review-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth),true);
+  assert.equal(await page.locator('#review-dialog .critical').evaluateAll(els=>els.every(el=>parseFloat(getComputedStyle(el).fontSize)>=14)),true);
+  await page.screenshot({path:path.join(OUT,'mint-ux-review-'+width+'.png')});assert.equal(await page.evaluate(()=>window.sent.length),1);
+  state.pending=true;await page.locator('#review-consent').check();await page.locator('#confirm-review').click();await page.waitForFunction(()=>window.sent.length===2);assert.equal(await actions.count(),0);assert.equal(await page.locator('#mint-consent').isVisible(),false);
+  state.pending=false;await page.waitForFunction(()=>document.querySelector('#mint-flow-title').textContent.includes('awaiting randomness'));assert.match(await page.locator('#mint-state-message').textContent(),/MINT CONFIRMED/);assert.match(await page.locator('#mint-flow-description').textContent(),/permanently locked.*automatic.*no second/s);
+  await page.locator('#transaction-result').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(OUT,'mint-ux-receipt-'+width+'.png')});
+  state.revealed=true;await page.waitForFunction(()=>document.querySelector('#mint-state-message').textContent.includes('REVEALED'));assert.match(await page.locator('#mint-flow-title').textContent(),/is revealed/);assert.equal(await page.evaluate(()=>window.sent.length),2);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+  await page.close();await pass('readable '+width+'px connect/select/approval/unchecked acknowledgment/review/receipt/reveal flow has one applicable action and no automatic sends');
+ }
 
 
  {
@@ -126,7 +154,7 @@ try{
   const {page,state}=await fixture(390,{pending:true});await connect(page);await select(page);await page.locator('#approve-button').click();await page.locator('#review-consent').check();await page.locator('#confirm-review').click();await page.waitForFunction(()=>window.sent.length===1);
   if(changed==='account')await page.evaluate(B=>window.changeAccount(B),B);else state.ownerError=true;
   state.pending=false;await page.waitForFunction(()=>document.querySelector('#mint-state-message').textContent.toLowerCase().includes('approval confirmed'));await page.waitForFunction(()=>!document.querySelector('#connect-wallet').disabled);assert.equal(await page.locator('#consent').isDisabled(),true);assert.equal(await page.locator('#consent').isChecked(),false);assert.equal(await page.locator('#main-mint-button').isDisabled(),true);assert.equal(await page.evaluate(()=>window.sent.length),1);assert.equal(await page.locator('#review-dialog').evaluate(el=>el.open),false);
-  if(changed==='owner-read-failure'){assert.equal(await page.locator('#mint-next-step').isVisible(),true);assert.match(await page.locator('#mint-next-step').textContent(),/VERIFY THESE 13/);state.ownerError=false;await page.locator('#mint-next-step').click();await page.waitForFunction(()=>!document.querySelector('#consent').disabled);assert.equal(await page.locator('#consent').isChecked(),false);assert.equal(await page.evaluate(()=>window.sent.length),1);}
+  if(changed==='owner-read-failure'){assert.equal(await page.locator('#verify-ids').isVisible(),true);assert.match(await page.locator('#verify-ids').textContent(),/CHECK 13 ORIGINALS/);state.ownerError=false;await page.locator('#verify-ids').click();await page.waitForFunction(()=>!document.querySelector('#consent').disabled);assert.equal(await page.locator('#consent').isChecked(),false);assert.equal(await page.evaluate(()=>window.sent.length),1);}
   await page.close();await pass('approval receipt '+changed+' stays fail-closed; retry action remains beside acknowledgment');
  }
  for(const [width,mount] of [[320,'/'],[390,'/ganjaghoulballs/']]){
@@ -319,7 +347,7 @@ try{
   const {page}=await fixture(320,{ownedIds:ids.slice(0,count),config:{deploymentStatus:'awaiting-contract-deployment'}});await connect(page);await page.waitForFunction(()=>document.querySelector('#og-balance').textContent!=='—'&&document.querySelector('#scan-progress').hidden);assert.equal(await page.locator('.id-chip').count(),count);assert.equal(await page.locator('#select-thirteen').isDisabled(),true);assert.match(await page.locator('#inventory-status').textContent(),count?/need 8 additional/:/No original Ghoulballs/);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);await page.close();await pass('automatic discovery explains '+count+' originals without inventing an eligible set');
  }
  {
-  const {page}=await fixture(390,{reserve:0n});await connect(page);await page.waitForFunction(()=>document.querySelectorAll('.id-chip').length===13);await page.locator('#select-thirteen').click();assert.equal(await page.locator('#selected-count').textContent(),'13');await page.locator('#verify-ids').click();await page.waitForFunction(()=>!document.querySelector('#approve-button').hidden);assert.equal(await page.locator('#approve-button').isDisabled(),true);assert.equal(await page.locator('#main-mint-button').isDisabled(),true);assert.equal(await page.evaluate(()=>window.sent.length),0);await page.close();await pass('unfunded GGOO reserve does not block read-only original selection and still blocks approval');
+  const {page}=await fixture(390,{reserve:0n});await connect(page);await page.waitForFunction(()=>document.querySelectorAll('.id-chip').length===13);await page.locator('#select-thirteen').click();assert.equal(await page.locator('#selected-count').textContent(),'13');await page.locator('#verify-ids').click();await page.waitForFunction(()=>document.querySelector('#selection-feedback').textContent.includes('All 13 originals'));assert.equal(await page.locator('#approve-button').isVisible(),false);assert.equal(await page.locator('#approve-button').isDisabled(),true);assert.equal(await page.locator('#main-mint-button').isDisabled(),true);assert.equal(await page.evaluate(()=>window.sent.length),0);await page.close();await pass('unfunded GGOO reserve does not block read-only original selection and still blocks approval');
  }
  {
   const {page,state}=await fixture(390,{badOriginal:true,config:{deploymentStatus:'awaiting-contract-deployment'}});await connect(page);await page.waitForFunction(()=>document.querySelector('#inventory-status').textContent.includes('code could not be verified'));assert.equal(await page.locator('.id-chip').count(),0);assert.equal(state.logCalls||0,0);assert.equal(state.abiCalls.includes('balanceOf'),false);assert.equal(await page.locator('#manual-ids').isDisabled(),true);await page.close();await pass('wrong original runtime blocks prelaunch discovery before any balance or history read');

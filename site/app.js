@@ -174,6 +174,37 @@ function render() {
  const label=!live?'MINTING NOT OPEN':pending?'TRANSACTION PENDING':busy?'CHECKING YOUR WALLET…':minted===null?'SUPPLY UNAVAILABLE · MINT PAUSED':minted>=CAP?'ALL 420 SUMMONED':!reserve?.ready?'ORACLE RESERVE · MINT PAUSED':!connected?'CONNECT WALLET TO START':chain!==BASE?'SWITCH YOUR WALLET TO BASE':!verificationCurrent()?'VERIFY YOUR 13 ORIGINALS':!approved?'APPROVE BEFORE SUMMONING':!$('consent').checked?'ACKNOWLEDGE PERMANENT LOCK':'REVIEW 13 → 1 SUMMON';
  $('main-mint-button').querySelector('span').textContent=label;
  for(const [id,active] of [['step-connect',!connected||chain!==BASE],['step-select',connected&&!verificationCurrent()],['step-approve',needApproval],['step-redeem',verificationCurrent()&&approved]]) $(id).classList.toggle('active',!!active);
+ renderMintFlow();
+}
+function renderMintFlow() {
+ const checked=!!verificationCurrent(),eligible=!!(writable()&&reserve?.ready&&checked&&approved);
+ const receiptToken=$('transaction-result').dataset.tokenId;
+ $('original-picker').hidden=!account||chain!==BASE;
+ document.querySelector('.mint-panel').classList.toggle('selection-complete',checked);
+ $('selected-ids').hidden=selected.size===0;
+ text('selected-ids','Your selection: '+idsNow().map(id=>'#'+id).join(', '));
+ // One applicable action: checking is read-only; approval and mint keep their separate reviews.
+ $('mint-next-step').hidden=!!busy||!!pending||!!account&&chain===BASE;
+ $('verify-ids').hidden=!!busy||!!pending||!live||!account||chain!==BASE||selected.size!==COUNT||checked;
+ $('approve-button').hidden=!!busy||!!pending||!checked||approved||!writable()||!reserve?.ready;
+ $('approval-note').hidden=!checked||approved;
+ $('mint-consent').hidden=!eligible;
+ $('main-mint-button').hidden=!eligible||!$('consent').checked;
+ $('oracle-reserve').hidden=reserve?.ready===true;
+ let step='STEP 1 OF 4',title='Connect your wallet',description='Find the original Ghoulballs you own on Base. Connecting is free and never signs a transaction.';
+ if(pending){step='TRANSACTION STATUS';title=pending.hash?'Waiting for the Base receipt':'Check the open wallet request';description='Do not send again. Your transaction details and recovery options are below.';}
+ else if(busy){step='IN PROGRESS';title=busy==='connect'?'Continue in your wallet':busy==='verify'||busy==='approval-check'?'Checking your 13 originals':busy==='approve'?'Approval in progress':busy==='mint'?'Mint in progress':'Checking the current wallet';description=busy==='verify'||busy==='approval-check'?'Read-only checks. No signature, transfer or gas is needed.':'Follow the current wallet request. This page will update when the step completes.';}
+ else if(!account){}
+ else if(chain!==BASE){title='Switch to Base';description='Your connected wallet is on another network. Switch to Base to choose your originals.';}
+ else if(receiptToken&&selected.size===0){step='MINT CONFIRMED';title='GGOO #'+receiptToken+(revealStates.get(receiptToken)===true?' is revealed':' is awaiting randomness');description='Its 13 originals are permanently locked. Open your GGOO or receipt below. Reveal is automatic; no second transaction is needed.';}
+ else if(selected.size!==COUNT){step='STEP 2 OF 4 · SELECT';title=`Choose 13 originals · ${selected.size} selected`;description=scanning?'Your wallet is being checked. You can select originals as they appear.':'Tap the originals above. Only these 13 will be locked when you confirm the separate mint.';}
+ else if(!live){step='MINT UNAVAILABLE';title='Your selection is ready';description='Minting stays paused until the deployed Base contracts can be verified. No approval or mint can be sent.';}
+ else if(minted===null||minted>=CAP){step='MINT UNAVAILABLE';title=minted>=CAP?'All 420 GGOOs are minted':'Live supply is unavailable';description='Minting is paused. Your originals have not moved.';}
+ else if(!checked){step='STEP 2 OF 4 · CHECK';title='Check your 13 originals';description='Confirm current ownership and approval with a free, read-only check. No wallet prompt or gas.';}
+ else if(!reserve?.ready){step='MINT PAUSED';title='Randomness funding needs a check';description='The current oracle quote or reserve is unavailable. No approval or mint is requested. See the network status above.';}
+ else if(!approved){step='STEP 3 OF 4 · APPROVE';title='Approve the collection';description='This separate wallet transaction grants permission. It does not lock your originals or mint a GGOO. Network gas applies.';}
+ else {step='STEP 4 OF 4 · MINT';title=$('consent').checked?'Review your permanent-lock mint':'Read the permanent-lock acknowledgment';description=$('consent').checked?'Review the exact 13 IDs and recipient before your wallet opens. Nothing moves until you confirm the mint.':'Approval is confirmed. No originals have moved. Read and tick the acknowledgment below to continue.';}
+ text('mint-flow-step',step);text('mint-flow-title',title);text('mint-flow-description',description);
 }
 function updateSupply(value) {
  minted=value; text('live-supply',value===null?'—':value); text('mint-count-now',value===null?'—':value);
@@ -414,7 +445,7 @@ async function openReview(kind) {
   paragraph(box,'Approval does not lock NFTs. A separate, explicit mint is required afterward. Revoke this operator approval through your wallet or the original contract’s setApprovalForAll(spender, false) function when no longer needed. Network gas applies to approval and revocation.');
   text('review-consent-label','I understand this is collection-wide operator approval and authorize this separate approval transaction.');
  }
- $('review-consent').checked=false;$('confirm-review').disabled=true;$('review-dialog').showModal();
+ $('review-consent').checked=false;$('confirm-review').disabled=true;$('review-dialog').showModal();$('review-title').focus({preventScroll:true});$('review-dialog').scrollTop=0;
 }
 async function assertWallet(snap) {
  if(!provider||!same(snap))throw Error('Wallet, chain or selection changed. Review the current selection again.');
@@ -431,7 +462,7 @@ async function preflight(snap, kind) {
  const budget=await refreshReserve();if(!budget)throw Error('Oracle reserve could not be verified.');if(budget.quote>budget.cap)throw Error('RequestTooExpensive');if(!budget.ready)throw Error('ReserveInsufficient');await assertWallet(snap);return budget;
 }
 function resultLink(hash,kind,recipient,tokenId) {
- const box=$('transaction-result');box.hidden=false;box.replaceChildren();box.dataset.txHash=hash;
+ const box=$('transaction-result');box.hidden=false;box.replaceChildren();box.dataset.txHash=hash;box.dataset.tokenId=tokenId?String(tokenId):'';
  paragraph(box,`${kind==='mint'?'Mint':'Approval'} transaction for wallet ${getAddress(recipient)}.`);
  const a=document.createElement('a');a.href=`https://basescan.org/tx/${hash}`;a.target='_blank';a.rel='noopener noreferrer';a.textContent='VIEW TRANSACTION ON BASESCAN ↗';box.append(a);
  if(tokenId) {const b=document.createElement('a');b.href='#token/'+tokenId;b.textContent='VIEW GGOO #'+tokenId+' & ITS 13 ORIGINALS ↗';box.append(document.createElement('br'),b);}
@@ -522,7 +553,7 @@ async function trackPending() {
       verified=snap;approved=isApproved;
       if(!isApproved)throw Error('Approval is not active for these originals. Verify again before continuing.');
       status('Collection-wide approval confirmed. All 13 originals were rechecked. Read and tick the permanent-lock acknowledgment, then review your mint.');feedback('Approval did not lock or transfer any originals. Ownership and approval are verified; the permanent-lock acknowledgment is still yours to choose.');
-     }catch(e){verified=null;approved=false;$('consent').checked=false;status('Approval confirmed, but the current selection needs a fresh check. '+humanError(e),true);feedback('No originals were locked. Use Verify these 13 originals below to retry.',true);}
+     }catch(e){verified=null;approved=false;$('consent').checked=false;status('Approval confirmed, but the current selection needs a fresh check. '+humanError(e),true);feedback('No originals were locked. Use Check 13 originals below to retry.',true);}
     }else status('Collection-wide approval confirmed for '+getAddress(saved.recipient)+'. Wallet or selection changed; choose and verify your current 13 originals before minting.');
     if(ownsBusy)busy=null;
    }
@@ -579,7 +610,7 @@ async function pollReveals() {
    if(latestMint?.tokenId===id&&!busy&&!pending){const minted=latestMint;latestMint=null;if($('transaction-result').dataset.txHash===minted.hash){status(`REVEALED. GGOO #${id} was minted to ${getAddress(minted.recipient)}. Its final art and inherited lineage are now available. The 13 originals remain permanently locked.`);resultLink(minted.hash,'mint',minted.recipient,id);paragraph($('transaction-result'),'REVEALED ON BASE. Final art and inherited lineage are ready. No additional transaction was sent.');}else notify('GGOO #'+id+' has revealed. Its provenance page now shows final art and lineage.');}
   }catch{/* Keep pending and retry read-only. Never request another randomness outcome. */}});
   if(refreshedToken)await routeToken({scroll:false});
- }finally{revealPolling=false;}
+ }finally{revealPolling=false;renderMintFlow();}
 }
 let imageQueue=[],imageActive=0;
 function queueImage(id,img) {imageQueue.push({id,img,version:motionGeneration,still:!animationsPlaying()});pumpImages();}
