@@ -1,0 +1,11 @@
+node_modules/
+dist/
+artifacts/
+cache/
+.env
+.env.*
+.vercel/
+.broadcast/
+coverage/
+.DS_Store
+archive-inputs/
