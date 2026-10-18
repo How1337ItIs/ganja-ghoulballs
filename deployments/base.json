@@ -1,15 +1,29 @@
 {
   "chainId": 8453,
   "network": "Base mainnet",
-  "status": "not_deployed",
+  "status": "deployed-verified",
   "originalCollection": "0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c",
-  "ganjaCollection": null,
-  "graveyard": null,
-  "renderer": null,
-  "transactionHash": null,
-  "deployedBlock": null,
+  "ganjaCollection": "0xeec423a9ed7b303e23f41fbc005944fa3fc631b8",
+  "graveyard": "0x1e2eb50f4bdd0311e9cd9dad3e17ae5cf54b292f",
+  "renderer": "0xc5a2cceec73758464c3f50bf506cb49c6e621034",
+  "transactionHash": "0xfdc129e4da048f2736e054a936e2b68f4abb92004d3b97347b555680a1f0b064",
+  "deployedBlock": 52758373,
   "compiler": "0.8.30",
   "mintSupplyCap": 420,
   "originalsPerMint": 13,
-  "notes": "Zero Base deployment claimed until chain receipts and code verified."
+  "notes": "Successful Base creation receipt and exact creation input verified. All four runtime bytecodes match reviewed artifacts with compiler-reported immutable ranges checked through onchain getters. Original and VRF wrapper code pins verified. Browser still requires live wallet, ownership, supply, oracle and transaction checks; no real approval or NFT mint was used for testing.",
+  "backdrop": "0x72f2b22950cef2f56a03144b26fd228156a931df",
+  "vrfWrapper": "0xb0407dbe851f8318bd31404a49e658143c982f23",
+  "maxRequestPrice": "10000000000000",
+  "runtimeCodeHashes": {
+    "ganjaCollection": "0xe3cfe1ef4b81c234ec6c7ab5b8876a3fcab204a6f9e51f3a901d87c8102181fc",
+    "graveyard": "0x6afc8b77767d1ac581cfc6672bfcb02ae68b66741d040ccde2e4b44253c44d84",
+    "renderer": "0xe02ddf10a3dcf9a7db2bb733be4d27e034642ad1c03a61ea54fe6872d9e5a874",
+    "vrfWrapper": "0x469c7e3d9661f7d7e41033d44b6198bcfdc4a501b0a9466a395f7842f02a2a8f",
+    "backdrop": "0xfb401af3222b90f2245a42bcc7a1676a425d4494e060d6c5516645a6a68bc0b9"
+  },
+  "sourceCommit": "b1fb3c4f3a7bad833b37b339aa7a50b9a0bc4cd3",
+  "deploymentDataHash": "0xdbd21aeea3ce017adff5866f3903569a84ad5a2d7ee182ddd7dac98261a1a39c",
+  "verifiedAt": "2026-10-18T07:07:39.242Z",
+  "verificationBlock": "52758956"
 }
