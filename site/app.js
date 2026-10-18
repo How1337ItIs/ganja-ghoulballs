@@ -46,7 +46,7 @@ let selected = new Set(), owned = [], verified = null, approved = false, busy = 
 let originalReady=false, scanGeneration=0, inventoryTask=null;
 const originalCards=new Map(), recipeCache=new Map(), recipeRequests=new Map();
 let review = null, pending = null, galleryCursor = null, galleryLoading = false, tokenGeneration = 0;
-let toastTimer, providerBound = false, reserve=null, latestMint=null, revealPolling=false, reserveGeneration=0, activeTokenId=null;
+let toastTimer, providerBound = null, providerListeners = [], walletEpoch = 0, walletSession = 0, reserve=null, latestMint=null, revealPolling=false, reserveGeneration=0, activeTokenId=null;
 const revealStates=new Map(), pendingReveals=new Set();
 const checkedRpc = new Set();
 const lower = a => typeof a === 'string' ? a.toLowerCase() : '';
@@ -148,6 +148,8 @@ function render() {
  $('wallet-details').hidden=!connected;
  text('wallet-address',account ? getAddress(account) : '');
  text('connect-wallet',connected?short(getAddress(account))+' ↗':'CONNECT WALLET ↗');
+ $('connect-wallet').disabled=!!busy||!!pending;
+ renderWalletDialog();
  $('switch-base').hidden=!connected || chain===BASE;
  for(const id of ['switch-account','refresh-account','disconnect-wallet','switch-base']) $(id).disabled=!!busy || !!pending;
  $('wallet-summary').hidden=!connected;
@@ -158,6 +160,10 @@ function render() {
  $('select-thirteen').disabled=!selectable() || owned.length<COUNT;
  $('clear-selection').disabled=!selectable() || !selected.size;
  $('consent').disabled=!writable() || !verificationCurrent() || !approved;
+ const next=!connected?'connect':chain!==BASE?'network':selected.size!==COUNT?'select':!verificationCurrent()?'verify':null;
+ $('mint-next-step').hidden=!!busy||!!pending||!next||next==='verify'&&!live;
+ $('mint-next-step').disabled=next==='verify'&&!writable();
+ text('mint-next-step',next==='connect'?'CONNECT WALLET TO START':next==='network'?'SWITCH TO BASE':next==='select'?`SELECT ${COUNT} ORIGINALS · ${selected.size} CHOSEN`:'VERIFY THESE 13 ORIGINALS');
  text('selected-count',selected.size);
  renderInventory();
  const needApproval=verificationCurrent() && !approved;
@@ -195,37 +201,76 @@ function applyAccount(next, nextChain=chain) {
  if(account!==normalized || chain!==nextChain) {account=normalized;chain=nextChain;invalidate(true);feedback('Wallet changed. Select and verify originals again.');}
  render();
 }
-function bindProvider() {
- provider=window.ethereum || null;
- if(!provider || providerBound)return;
- providerBound=true;
- provider.on?.('accountsChanged',arr=>{applyAccount(arr?.[0]);if(account)refreshWallet().catch(()=>{});});
- provider.on?.('chainChanged',id=>{chain=lower(id);invalidate(true);if(chain!==BASE)status('Your wallet is on another network. Switch to Base before approving or minting.',true);else if(account)refreshWallet().catch(()=>{});});
- provider.on?.('disconnect',()=>{applyAccount(null,null);status('Wallet disconnected. Any submitted transaction is still tracked separately.');});
+function renderWalletDialog() {
+ const connected=!!account;
+ text('wallet-dialog-title',connected?'Your wallet':'Connect your wallet');
+ text('wallet-dialog-address',connected?getAddress(account):'');
+ $('wallet-dialog-connected').hidden=!connected;
+ $('wallet-dialog-external').hidden=!!provider;
+ $('wallet-connect-injected').hidden=!provider||connected;
+ $('wallet-dialog-base').hidden=!connected||chain===BASE;
+ for(const id of ['wallet-connect-injected','wallet-dialog-switch','wallet-dialog-refresh','wallet-dialog-base','wallet-dialog-disconnect'])$(id).disabled=!!busy||!!pending;
+ updateWalletDeeplink();
 }
+function walletStatus(message,error=false) {text('wallet-dialog-status',message);status(message,error);}
+function openWalletDialog(message='') {
+ bindProvider();renderWalletDialog();text('wallet-dialog-status',message);
+ if(!$('wallet-dialog').open)$('wallet-dialog').showModal();
+}
+function bindProvider() {
+ const next=typeof window.ethereum?.request==='function'?window.ethereum:null;
+ if(next===providerBound)return;
+ for(const [name,fn] of providerListeners)providerBound?.removeListener?.(name,fn);
+ providerListeners=[];provider=next;providerBound=next;walletEpoch++;walletSession++;
+ if(account)applyAccount(null,null);
+ if(!provider)return;
+ const current=provider;
+ const listen=(name,fn)=>{const guarded=(...args)=>{if(provider!==current)return;walletEpoch++;fn(...args);};providerListeners.push([name,guarded]);current.on?.(name,guarded);};
+ listen('accountsChanged',arr=>{applyAccount(arr?.[0]);syncWallet(current);});
+ listen('chainChanged',id=>{chain=lower(id);invalidate(true);if(chain!==BASE)status('Your wallet is on another network. Switch to Base before approving or minting.',true);else if(account)refreshWallet().catch(()=>{});syncWallet(current);});
+ listen('disconnect',()=>{walletSession++;applyAccount(null,null);walletStatus('Wallet disconnected. Any submitted transaction is still tracked separately.');});
+}
+async function readWalletAccount(current=provider) {
+ const epoch=++walletEpoch;
+ try{const [arr,id]=await Promise.all([current.request({method:'eth_accounts'}),current.request({method:'eth_chainId'})]);
+ if(provider!==current||epoch!==walletEpoch)return false;
+ applyAccount(arr?.[0],lower(id));return true;
+ }catch(e){if(provider!==current||epoch!==walletEpoch)return false;throw e;}
+}
+async function syncWallet(current=provider){try{if(current&&await readWalletAccount(current)&&account)refreshWallet();}catch{}}
 async function connectWallet() {
  if(busy||pending)return;
- bindProvider();
- if(!provider) { $('wallet-details').hidden=false;$('wallet-help').open=true;status('Open this site in your Ethereum wallet’s browser, or install a compatible wallet. No wallet was detected.');return; }
- busy='connect';render();
- try {const accounts=await provider.request({method:'eth_requestAccounts'});const id=lower(await provider.request({method:'eth_chainId'}));applyAccount(accounts?.[0],id);status(chain===BASE?'Wallet connected. Finding your original Ghoulballs automatically. Minting still requires verified contracts.':'Wallet connected on another network. Use Switch to Base.');refreshWallet();}
- catch(e){status(humanError(e),true);}finally{busy=null;render();}
+ openWalletDialog();
+ if(account)return;
+ if(!provider){walletStatus('No wallet is connected in this browser. Choose Open in MetaMask below, or open this page in your wallet’s browser.');return;}
+ const current=provider,session=walletSession;
+ busy='connect';render();walletStatus('Continue in your wallet to connect this site. No signature or transaction is requested.');
+ try {
+  await current.request({method:'eth_requestAccounts'});
+  if(provider!==current||session!==walletSession||!await readWalletAccount(current))return;
+  if(!account){walletStatus('No account was selected. Unlock your wallet and try Connect browser wallet again.');return;}
+  $('wallet-dialog').close();status(chain===BASE?'Wallet connected. Finding your original Ghoulballs automatically.':'Wallet connected on another network. Use Switch to Base.');refreshWallet();
+ }catch(e){if(provider===current)walletStatus(humanError(e),true);}finally{busy=null;render();}
 }
 async function refreshAccount() {
  if(!provider||busy||pending)return;
- try {const [arr,id]=await Promise.all([provider.request({method:'eth_accounts'}),provider.request({method:'eth_chainId'})]);applyAccount(arr?.[0],lower(id));refreshWallet();}catch(e){status(humanError(e),true);}
+ const current=provider;busy='account';render();
+ try {if(await readWalletAccount(current)){walletStatus(account?'Account refreshed. Check the full recipient address before choosing originals.':'No account connected. Use Connect browser wallet.');refreshWallet();}}
+ catch(e){if(provider===current)walletStatus(humanError(e),true);}finally{busy=null;render();}
 }
 async function switchAccount() {
  if(!provider||busy||pending)return;
- busy='account';render();
- try {await provider.request({method:'wallet_requestPermissions',params:[{eth_accounts:{}}]});const [arr,id]=await Promise.all([provider.request({method:'eth_accounts'}),provider.request({method:'eth_chainId'})]);applyAccount(arr?.[0],lower(id));status('Account refreshed. Check the full recipient address before choosing originals.');refreshWallet();}
- catch(e) {if([4200,-32601].includes(e?.code)||/unsupported|not supported/i.test(e?.message||'')){$('wallet-help').open=true;status('Change accounts inside your wallet, then choose Refresh account here.');}else status(humanError(e),true);}
+ const current=provider,session=walletSession;busy='account';render();
+ try {await current.request({method:'wallet_requestPermissions',params:[{eth_accounts:{}}]});if(provider!==current||session!==walletSession||!await readWalletAccount(current))return;walletStatus('Account refreshed. Check the full recipient address before choosing originals.');refreshWallet();}
+ catch(e) {if(provider!==current)return;if([4200,-32601].includes(e?.code)||/unsupported|not supported/i.test(e?.message||'')){$('wallet-help').open=true;openWalletDialog('Change accounts inside your wallet, then choose Refresh account here.');status('Change accounts inside your wallet, then choose Refresh account here.');}else walletStatus(humanError(e),true);}
  finally{busy=null;render();}
 }
 async function switchBase() {
  if(!provider||busy||pending)return;
- try {await provider.request({method:'wallet_switchEthereumChain',params:[{chainId:BASE}]});await refreshAccount();}
- catch(e) {if(e.code===4902)status('Add Base (chain 8453) in your wallet, then refresh this account. Official network details: base.org.',true);else status(humanError(e),true);}
+ const current=provider;busy='network';render();
+ try {await current.request({method:'wallet_switchEthereumChain',params:[{chainId:BASE}]});if(provider!==current||!await readWalletAccount(current))return;walletStatus('Base selected. Check the full recipient address before choosing originals.');refreshWallet();}
+ catch(e) {if(provider!==current)return;if(e.code===4902)walletStatus('Add Base (chain 8453) in your wallet, then refresh this account. Official network details: base.org.',true);else walletStatus(humanError(e),true);}
+ finally{busy=null;render();}
 }
 async function refreshWallet() {
  if(!account||chain!==BASE||!cfg)return;
@@ -466,7 +511,20 @@ async function trackPending() {
     paragraph($('transaction-result'),'AWAITING RANDOMNESS. Originals are permanently locked already. This page checks the reveal read-only; no further signature is required.');
     await refreshSupply();await refreshReserve();refreshWallet();resetGallery();pollReveals();
    } else {
-    pending=null;cacheDelete(pendingKey());invalidate();status('Collection-wide approval confirmed. Verify your 13 originals again, then review a separate permanent-lock mint.');feedback('Approval did not lock or transfer any originals.');
+    const ownsBusy=!busy;if(ownsBusy)busy='approval-check';
+    const sameSelection=account===saved.recipient&&chain===BASE&&idsNow().join(',')===saved.ids.join(',');
+    pending=null;cacheDelete(pendingKey());invalidate();status('Collection-wide approval confirmed. Checking your selected originals again…');feedback('Approval did not lock or transfer any originals.');
+    if(sameSelection&&live&&originalReady&&selected.size===COUNT){
+     const snap=snapshot();
+     try {
+      try{await verifyOriginal();}catch(e){originalReady=false;throw e;}await assertWallet(snap);await checkOwnership(snap);const isApproved=await checkApproval(snap);await refreshReserve();await assertWallet(snap);
+      if(!same(snap))throw Error('Wallet or selection changed. Verify the current selection again.');
+      verified=snap;approved=isApproved;
+      if(!isApproved)throw Error('Approval is not active for these originals. Verify again before continuing.');
+      status('Collection-wide approval confirmed. All 13 originals were rechecked. Read and tick the permanent-lock acknowledgment, then review your mint.');feedback('Approval did not lock or transfer any originals. Ownership and approval are verified; the permanent-lock acknowledgment is still yours to choose.');
+     }catch(e){verified=null;approved=false;$('consent').checked=false;status('Approval confirmed, but the current selection needs a fresh check. '+humanError(e),true);feedback('No originals were locked. Use Verify these 13 originals below to retry.',true);}
+    }else status('Collection-wide approval confirmed for '+getAddress(saved.recipient)+'. Wallet or selection changed; choose and verify your current 13 originals before minting.');
+    if(ownsBusy)busy=null;
    }
    render();return;
   }
@@ -564,7 +622,9 @@ function loadGallery() {
 }
 function fact(label,value,url) {const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=label;if(url){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=value;dd.append(a);}else dd.textContent=value;$('token-facts').append(dt,dd);}
 function updateWalletDeeplink() {
- if(location.protocol==='https:'){$('metamask-link').href='https://metamask.app.link/dapp/'+location.host+location.pathname+location.search+location.hash;$('metamask-link').hidden=false;}
+ const url=location.href;
+ $('wallet-page-url').value=url;
+ if(location.protocol==='https:'){$('metamask-link').href='https://link.metamask.io/dapp/'+location.host+location.pathname+location.search+location.hash;$('metamask-link').hidden=!!pending||!!busy;}
 }
 function renderLineage(ids,genes,genome) {
  const decoded=decodeLineage(ids,genes,genome),box=$('token-lineage');box.replaceChildren();box.hidden=false;
@@ -613,12 +673,14 @@ async function initialize() {
   const res=await fetch(siteURL('config.json'),{cache:'no-store'});if(!res.ok)throw Error('Missing deployment configuration.');cfg=await res.json();
   if(!Array.isArray(cfg.rpcUrls)||!cfg.rpcUrls.length||!Number.isSafeInteger(cfg.originalGenesisBlock)||cfg.originalGenesisBlock<0)throw Error('Invalid RPC or original deployment block configuration.');
   live=await verifyDeployment();
+  if(live){const saved=cacheGet(pendingKey());if(saved&&(hashPattern.test(saved.hash)||saved.hash===null)&&saved.chainId===8453&&lower(saved.collection)===lower(cfg.ganjaCollection)&&validAddress(saved.recipient)&&['mint','approve'].includes(saved.kind)&&Array.isArray(saved.ids)&&saved.ids.length===COUNT){pending=saved;}}
   if(live){text('contract-status','● BASE CODE VERIFIED');$('contract-status').classList.add('live');text('launch-banner','BASE MAINNET · Runtime code and immutable contract wiring verified. 13 originals per GGOO. 0 ETH protocol fee.');status('Contract verified on Base. Connect your wallet and choose exactly 13 originals.');await refreshSupply();await refreshReserve();}
   else{text('contract-status','● MINTING NOT OPEN');status('Minting is not open. We are waiting for verified Base contracts. Approvals and minting remain disabled.');updateSupply(null);}
   loadGallery();bindProvider();
+  if(pending){const saved=pending;if(!saved.hash){saved.phase='uncertain';cacheSet(pendingKey(),saved);showUncertain(saved);}else if(saved.needsReview){live=false;status('A previously submitted receipt needs manual review. Use its Basescan link before any further mint.',true);resultLink(saved.hash,saved.kind,saved.recipient);}else trackPending().catch(e=>status(humanError(e),true));}
   updateWalletDeeplink();
-  if(provider) {const [accounts,id]=await Promise.all([provider.request({method:'eth_accounts'}),provider.request({method:'eth_chainId'})]);applyAccount(accounts?.[0],lower(id));if(account)refreshWallet();}
-  if(live){const saved=cacheGet(pendingKey());if(saved&&(hashPattern.test(saved.hash)||saved.hash===null)&&saved.chainId===8453&&lower(saved.collection)===lower(cfg.ganjaCollection)&&validAddress(saved.recipient)&&['mint','approve'].includes(saved.kind)&&Array.isArray(saved.ids)&&saved.ids.length===COUNT){pending=saved;if(!saved.hash){saved.phase='uncertain';cacheSet(pendingKey(),saved);showUncertain(saved);}else if(saved.needsReview){live=false;status('A previously submitted receipt needs manual review. Use its Basescan link before any further mint.',true);resultLink(saved.hash,saved.kind,saved.recipient);}else trackPending().catch(e=>status(humanError(e),true));}}
+  if(provider&&!busy) {try{if(await readWalletAccount()&&account)refreshWallet();}catch(e){walletStatus('Wallet connection could not be read. Tap Connect wallet to try again. '+humanError(e),true);}}
+
   await routeToken();
  }catch(e){live=false;updateSupply(null);text('contract-status','● MINT SAFETY LOCK');status('Cannot verify the Base deployment. All approval and mint controls are disabled. '+humanError(e),true);}
  render();
@@ -627,10 +689,21 @@ $('motion-toggle').onclick=()=>{motionOverride=!animationsPlaying();try{sessionS
 applyMotionPreference();
 $('animation-preview-link').href=siteURL('animation-preview.html',true);
 $('connect-wallet').onclick=connectWallet;$('switch-account').onclick=switchAccount;$('refresh-account').onclick=refreshAccount;$('switch-base').onclick=switchBase;
-$('disconnect-wallet').onclick=()=>{if(!busy&&!pending){applyAccount(null,chain);status('Disconnected from this page. You can also revoke this site’s connection in your wallet.');}};
+function disconnectWallet(){if(!busy&&!pending){walletEpoch++;walletSession++;applyAccount(null,chain);walletStatus('Disconnected from this page. You can also revoke this site’s connection in your wallet.');}}
+$('disconnect-wallet').onclick=disconnectWallet;
+$('wallet-help-open').onclick=()=>openWalletDialog();
+$('wallet-dialog-close').onclick=()=>$('wallet-dialog').close();
+$('wallet-connect-injected').onclick=connectWallet;
+$('wallet-dialog-switch').onclick=switchAccount;$('wallet-dialog-refresh').onclick=refreshAccount;$('wallet-dialog-base').onclick=switchBase;$('wallet-dialog-disconnect').onclick=disconnectWallet;
+$('metamask-link').onclick=event=>{if(busy||pending){event.preventDefault();return;}updateWalletDeeplink();};
+$('wallet-page-url').onclick=event=>event.target.select();
+window.addEventListener('ethereum#initialized',()=>{bindProvider();render();});
+window.addEventListener('focus',()=>{bindProvider();render();});
+updateWalletDeeplink();
 $('scan-inventory').onclick=()=>scanInventory();$('cancel-inventory').onclick=()=>stopInventory();$('manual-ids').oninput=applyManual;$('verify-ids').onclick=verifyIds;
 $('select-thirteen').onclick=()=>{if(!selectable())return;selected=new Set(owned.slice(0,COUNT));invalidate();$('manual-ids').value=idsNow().join(', ');};
 $('clear-selection').onclick=()=>{if(!selectable())return;selected.clear();invalidate();$('manual-ids').value='';};
+$('mint-next-step').onclick=()=>{if(busy||pending)return;if(!account)return connectWallet();if(chain!==BASE)return switchBase();if(selected.size===COUNT)return verifyIds();$('inventory').scrollIntoView({behavior:'smooth',block:'start'});$('select-thirteen').focus({preventScroll:true});};
 $('consent').onchange=render;$('approve-button').onclick=()=>openReview('approve');$('main-mint-button').onclick=()=>openReview('mint');
 $('cancel-review').onclick=()=>{$('review-dialog').close();review=null;};$('review-dialog').addEventListener('cancel',()=>{review=null;});
 $('review-consent').onchange=()=>{$('confirm-review').disabled=!$('review-consent').checked;};$('confirm-review').onclick=submitReview;
