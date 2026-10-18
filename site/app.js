@@ -7,9 +7,11 @@ const SITE_ROOT = new URL('./', import.meta.url);
 const siteURL = (relative, preserveQuery = false) => { const url = new URL(relative, SITE_ROOT); if(preserveQuery)url.search=location.search; return url.href; };
 const ORIGINAL = '0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c';
 const BASE = '0x2105', COUNT = 13, CAP = 420;
+const ORIGINAL_HASH='0x4fe189e2554350c36d652e3573f8bbd0dc3b45c99a4bf799998623339ab3873a';
 const COORDINATOR='0xd5d517abe5cf79b7e95ec98db0f0277788aff634';
 const WRAPPER='0xb0407dbe851f8318bd31404a49e658143c982f23', WRAPPER_HASH='0x469c7e3d9661f7d7e41033d44b6198bcfdc4a501b0a9466a395f7842f02a2a8f';
 const ABI = new Interface([
+ 'function recipeOf(uint256) view returns((uint256 seed,uint256 scene,uint256 ballCount,bytes palette,(uint256 radius,uint256 xPhase,uint256 yPhase,bytes3 colour)[] balls,uint256 theme,uint256 motion))',
  'function totalSupply() view returns(uint256)', 'function MAX_SUPPLY() view returns(uint256)',
  'function SACRIFICE_COUNT() view returns(uint256)', 'function deploymentChainId() view returns(uint256)',
  'function originalCollection() view returns(address)', 'function graveyard() view returns(address)',
@@ -41,6 +43,8 @@ const ZERO = '0x0000000000000000000000000000000000000000';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let cfg, provider, account = null, chain = null, generation = 0, live = false, minted = null;
 let selected = new Set(), owned = [], verified = null, approved = false, busy = null, scanning = false;
+let originalReady=false, scanGeneration=0, inventoryTask=null;
+const originalCards=new Map(), recipeCache=new Map(), recipeRequests=new Map();
 let review = null, pending = null, galleryCursor = null, galleryLoading = false, tokenGeneration = 0;
 let toastTimer, providerBound = false, reserve=null, latestMint=null, revealPolling=false, reserveGeneration=0, activeTokenId=null;
 const revealStates=new Map(), pendingReveals=new Set();
@@ -53,7 +57,8 @@ const idsNow = () => [...selected].sort((a,b) => BigInt(a) < BigInt(b) ? -1 : 1)
 const snapshot = () => ({account, chain, generation, ids:idsNow(), collection:cfg?.ganjaCollection});
 const same = s => s.generation === generation && s.account === account && s.chain === chain && s.ids.join(',') === idsNow().join(',');
 const verificationCurrent = () => verified && same(verified);
-const writable = () => live && account && chain === BASE && Number.isInteger(minted) && minted < CAP && !busy && !pending;
+const selectable = () => originalReady && account && chain===BASE && !busy && !pending;
+const writable = () => live && originalReady && account && chain === BASE && Number.isInteger(minted) && minted < CAP && !busy && !pending;
 const text = (id, value) => { $(id).textContent = value; };
 function status(message, error = false) { text('mint-state-message',message); $('mint-state-message').classList.toggle('error',error); }
 function feedback(message, error = false) { text('selection-feedback',message); $('selection-feedback').classList.toggle('error',error); }
@@ -86,7 +91,7 @@ function savePendingIntent(value) {
 }
 function invalidate(clear = false) {
  generation++; verified=null; approved=false; $('consent').checked=false;
- if(clear) { selected.clear(); owned=[]; $('manual-ids').value=''; text('og-balance','—'); }
+ if(clear) { stopInventory(false); selected.clear(); owned=[]; $('manual-ids').value=''; text('og-balance','—'); text('inventory-status',account ? chain===BASE?'Finding this wallet’s original Ghoulballs…':'Switch to Base to find this wallet’s original Ghoulballs.':'Connect your wallet to automatically find your original Ghoulballs on Base.'); }
  if($('review-dialog').open) $('review-dialog').close(); review=null;
  render();
 }
@@ -146,19 +151,15 @@ function render() {
  $('switch-base').hidden=!connected || chain===BASE;
  for(const id of ['switch-account','refresh-account','disconnect-wallet','switch-base']) $(id).disabled=!!busy || !!pending;
  $('wallet-summary').hidden=!connected;
- $('scan-inventory').disabled=!connected || !live || scanning || !!busy || !!pending;
- $('manual-ids').disabled=!writable();
+ $('scan-inventory').disabled=!connected || chain!==BASE || scanning || !!busy || !!pending;
+ $('cancel-inventory').hidden=!scanning;
+ $('manual-ids').disabled=!selectable();
  $('verify-ids').disabled=!writable() || selected.size!==COUNT;
- $('select-thirteen').disabled=!writable() || owned.length<COUNT;
- $('clear-selection').disabled=!writable() || !selected.size;
+ $('select-thirteen').disabled=!selectable() || owned.length<COUNT;
+ $('clear-selection').disabled=!selectable() || !selected.size;
  $('consent').disabled=!writable() || !verificationCurrent() || !approved;
  text('selected-count',selected.size);
- $('inventory').replaceChildren();
- for(const id of owned) {
-  const button=document.createElement('button'); button.type='button'; button.className='id-chip'+(selected.has(id)?' selected':''); button.textContent='#'+id; button.setAttribute('aria-pressed',String(selected.has(id))); button.disabled=!writable();
-  button.onclick=()=>{ if(selected.has(id))selected.delete(id);else if(selected.size<COUNT)selected.add(id);else {notify('Select exactly 13 originals. Remove one to change your selection.');return;} invalidate(); $('manual-ids').value=idsNow().join(', '); };
-  $('inventory').append(button);
- }
+ renderInventory();
  const needApproval=verificationCurrent() && !approved;
  $('approval-note').hidden=!verificationCurrent();
  text('approval-note',approved?'Approval checked: the GGOO contract may transfer all 13 selected originals. Review the irreversible mint next.':'Approval is a separate transaction. Collection-wide approval allows the GGOO contract to transfer ANY original Ghoulball in this wallet, including future originals, until revoked. It is not limited to the 13 selected here. Approval alone does not lock or mint anything.');
@@ -207,17 +208,17 @@ async function connectWallet() {
  bindProvider();
  if(!provider) { $('wallet-details').hidden=false;$('wallet-help').open=true;status('Open this site in your Ethereum wallet’s browser, or install a compatible wallet. No wallet was detected.');return; }
  busy='connect';render();
- try {const accounts=await provider.request({method:'eth_requestAccounts'});const id=lower(await provider.request({method:'eth_chainId'}));applyAccount(accounts?.[0],id);status(chain===BASE?'Wallet connected. Select 13 originals when the verified mint opens.':'Wallet connected on another network. Use Switch to Base.');await refreshWallet();}
+ try {const accounts=await provider.request({method:'eth_requestAccounts'});const id=lower(await provider.request({method:'eth_chainId'}));applyAccount(accounts?.[0],id);status(chain===BASE?'Wallet connected. Finding your original Ghoulballs automatically. Minting still requires verified contracts.':'Wallet connected on another network. Use Switch to Base.');refreshWallet();}
  catch(e){status(humanError(e),true);}finally{busy=null;render();}
 }
 async function refreshAccount() {
  if(!provider||busy||pending)return;
- try {const [arr,id]=await Promise.all([provider.request({method:'eth_accounts'}),provider.request({method:'eth_chainId'})]);applyAccount(arr?.[0],lower(id));await refreshWallet();}catch(e){status(humanError(e),true);}
+ try {const [arr,id]=await Promise.all([provider.request({method:'eth_accounts'}),provider.request({method:'eth_chainId'})]);applyAccount(arr?.[0],lower(id));refreshWallet();}catch(e){status(humanError(e),true);}
 }
 async function switchAccount() {
  if(!provider||busy||pending)return;
  busy='account';render();
- try {await provider.request({method:'wallet_requestPermissions',params:[{eth_accounts:{}}]});const [arr,id]=await Promise.all([provider.request({method:'eth_accounts'}),provider.request({method:'eth_chainId'})]);applyAccount(arr?.[0],lower(id));status('Account refreshed. Check the full recipient address before choosing originals.');await refreshWallet();}
+ try {await provider.request({method:'wallet_requestPermissions',params:[{eth_accounts:{}}]});const [arr,id]=await Promise.all([provider.request({method:'eth_accounts'}),provider.request({method:'eth_chainId'})]);applyAccount(arr?.[0],lower(id));status('Account refreshed. Check the full recipient address before choosing originals.');refreshWallet();}
  catch(e) {if([4200,-32601].includes(e?.code)||/unsupported|not supported/i.test(e?.message||'')){$('wallet-help').open=true;status('Change accounts inside your wallet, then choose Refresh account here.');}else status(humanError(e),true);}
  finally{busy=null;render();}
 }
@@ -227,11 +228,8 @@ async function switchBase() {
  catch(e) {if(e.code===4902)status('Add Base (chain 8453) in your wallet, then refresh this account. Official network details: base.org.',true);else status(humanError(e),true);}
 }
 async function refreshWallet() {
- if(!account||!cfg)return;
- const snap=snapshot();
- try {const balance=await call(ORIGINAL,'balanceOf',[snap.account]);if(same(snap))text('og-balance',balance.toString());}
- catch(e){if(same(snap))feedback('Could not read original balance. '+humanError(e),true);}
- render();
+ if(!account||chain!==BASE||!cfg)return;
+ return scanInventory();
 }
 function parseIds(value) {
  if(!value.trim())return [];
@@ -269,30 +267,82 @@ async function verifyIds() {
  catch(e){verified=null;approved=false;feedback(humanError(e),true);}
  finally{busy=null;render();}
 }
-async function scanInventory() {
- if(scanning||!live||!account||busy||pending)return;
- scanning=true;const snap=snapshot();const key=`ggoo:inventory:8453:${ORIGINAL}:${snap.account}`;const cache=cacheGet(key);
- const candidates=new Set(Array.isArray(cache?.ids)?cache.ids.filter(id=>/^\d+$/.test(id)&&BigInt(id)>=1n&&BigInt(id)<=6667n):[]);
- const genesis=cfg.originalGenesisBlock;let cursor=Number.isSafeInteger(cache?.block)?Math.max(genesis,cache.block-128):genesis;
- $('scan-progress').hidden=false;render();feedback('Discovering original Transfer events. You can paste IDs while this read-only scan runs.');
+function stopInventory(announce=true) {
+ scanGeneration++;scanning=false;inventoryTask=null;$('scan-progress').hidden=true;
+ if(announce){text('inventory-status',`Search stopped. ${owned.length} originals found so far. Choose Refresh owned to continue.`);render();}
+}
+async function verifyOriginal() {
+ if(cfg?.chainId!==8453||lower(cfg.originalCollection)!==ORIGINAL)throw Error('Original collection configuration does not match Base.');
+ const code=await rpc('eth_getCode',[ORIGINAL,'latest']);
+ if(!/^0x[0-9a-f]+$/i.test(code)||(code.length-2)/2!==8229||lower(keccak256(code))!==ORIGINAL_HASH)throw Error('Original Ghoulballs code could not be verified.');
+}
+function scanInventory() {
+ if(!cfg||!account||chain!==BASE||pending)return Promise.resolve();
+ if(scanning)return inventoryTask;
+ const version=++scanGeneration,snap={account,chain},current=()=>version===scanGeneration&&snap.account===account&&snap.chain===chain;
+ const assertCurrent=()=>{if(!current())throw Error('Search cancelled.');};
+ const show=message=>{if(current())text('inventory-status',message);};
+ const read=async(method,args=[],block='latest')=>{assertCurrent();const value=await call(ORIGINAL,method,args,block);assertCurrent();return value;};
+ originalReady=false;scanning=true;$('scan-progress').value=0;$('scan-progress').hidden=false;show('Checking original Ghoulballs on Base…');render();
+ inventoryTask=(async()=>{
+  const key=`ggoo:inventory:8453:${ORIGINAL}:${snap.account}`,cache=cacheGet(key);
+  const candidates=new Set(Array.isArray(cache?.ids)?cache.ids.filter(id=>typeof id==='string'&&/^\d+$/.test(id)&&BigInt(id)>=1n&&BigInt(id)<=6667n):[]);for(const id of owned)candidates.add(id);
+  try {
+   await verifyOriginal();assertCurrent();originalReady=true;render();
+   const height=await rpc('eth_blockNumber');assertCurrent();const latest=Number(BigInt(height)),genesis=cfg.originalGenesisBlock,block='0x'+latest.toString(16);
+   if(!Number.isSafeInteger(latest)||latest<genesis)throw Error('RPC block height is invalid.');
+   const balance=await read('balanceOf',[snap.account],block);if(balance<0n||balance>6667n)throw Error('Original balance is out of bounds.');text('og-balance',String(balance));
+   const check=async ids=>{let checked=0,failures=0;const valid=await mapLimit(ids,5,async id=>{assertCurrent();try{const owner=await read('ownerOf',[id],block);checked++;show(`Checking current ownership: ${checked} / ${ids.length}.`);return lower(owner)===snap.account?id:null;}catch(e){assertCurrent();failures++;return null;}});assertCurrent();owned=valid.filter(Boolean).sort((a,b)=>BigInt(a)<BigInt(b)?-1:1);render();return failures;};
+   if(balance===0n){owned=[];selected.clear();$('manual-ids').value='';invalidate();cacheSet(key,{block:latest,ids:[]});show('No original Ghoulballs found in this wallet on Base. You need 13 to summon one GGOO.');return;}
+   let failures=candidates.size?await check([...candidates]):0;
+   if(owned.length!==Number(balance)){
+    let cursor=Number.isSafeInteger(cache?.block)&&cache.block<=latest?Math.max(genesis,cache.block-128):genesis;
+    const start=cursor,topic='0x'+snap.account.slice(2).padStart(64,'0');let range=100000;
+    while(cursor<=latest){
+     assertCurrent();const end=Math.min(latest,cursor+range-1);let logs;
+     try{logs=await rpc('eth_getLogs',[{address:ORIGINAL,fromBlock:'0x'+cursor.toString(16),toBlock:'0x'+end.toString(16),topics:[TRANSFER,null,topic]}]);assertCurrent();}
+     catch(e){assertCurrent();if(range>100){range=Math.max(100,Math.floor(range/4));continue;}throw e;}
+     if(!Array.isArray(logs))throw Error('Invalid original Transfer-event response.');
+     for(const log of logs)if(!log.removed&&lower(log.address)===ORIGINAL&&lower(log.topics?.[0])===lower(TRANSFER)&&lower(log.topics?.[2])===topic&&/^0x[0-9a-f]{64}$/i.test(log.topics?.[3]||'')){const id=BigInt(log.topics[3]);if(id>=1n&&id<=6667n)candidates.add(String(id));}
+     assertCurrent();cacheSet(key,{block:end,ids:[...candidates]});cursor=end+1;
+     $('scan-progress').value=Math.min(100,Math.round(100*(cursor-start)/Math.max(1,latest-start+1)));show(`Finding your originals: ${$('scan-progress').value}% of Base history checked. ${candidates.size} candidates; current owners are checked next.`);
+    }
+    failures=await check([...candidates]);
+   }
+   assertCurrent();
+   if(owned.length!==Number(balance))throw Error(`Found ${owned.length} of ${balance} originals. Some ownership reads or history are unavailable. Retry the search or use manual IDs.`);
+   const before=idsNow().join(',');selected=new Set(idsNow().filter(id=>owned.includes(id)));if(before!==idsNow().join(',')){invalidate();$('manual-ids').value=idsNow().join(', ');}
+   cacheSet(key,{block:latest,ids:[...owned]});show(`${owned.length} originals found. ${owned.length<COUNT?`You need ${COUNT-owned.length} additional originals to select 13.`:'Tap the originals you want to permanently lock. Choose exactly 13.'}${!live?' Selection is read-only while minting is not open.':''}`);
+  }catch(e){if(current()){if(!originalReady)invalidate();cacheSet(key,{block:cfg.originalGenesisBlock,ids:[...candidates]});show('Discovery incomplete. '+humanError(e)+' Refresh owned to retry the full history; manual IDs are an optional fallback.');}}
+  finally{if(current()){scanning=false;inventoryTask=null;$('scan-progress').hidden=true;render();}}
+ })();return inventoryTask;
+}
+const recipeQueue=[];let recipesActive=0;
+function pumpRecipes(){while(recipesActive<3&&recipeQueue.length){const [id,card]=recipeQueue.shift();if(!card.isConnected)continue;recipesActive++;loadOriginalRecipe(id,card).finally(()=>{recipesActive--;pumpRecipes();});}}
+const recipeObserver=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting){recipeObserver.unobserve(entry.target);recipeQueue.push([entry.target.dataset.originalId,entry.target]);pumpRecipes();}}, {root:$('inventory'),rootMargin:'120px'});
+function paintRecipe(card,data) {
+ card.querySelector('.original-traits').textContent=`${data.count} ball${data.count===1?'':'s'} · ${THEMES[data.theme]} · ${MOTIONS[data.motion]}`;
+ const colors=card.querySelector('.original-colors');colors.replaceChildren();for(const color of data.colors){const swatch=document.createElement('span');swatch.style.backgroundColor=color;swatch.title=color;swatch.setAttribute('aria-label','Original ball colour '+color);colors.append(swatch);}
+}
+async function loadOriginalRecipe(id,card) {
+ const key=`ggoo:recipe:8453:${ORIGINAL_HASH}:${id}`;let data=recipeCache.get(id)||cacheGet(key);
+ const valid=d=>d&&[1,2,4,6].includes(d.count)&&Number.isInteger(d.theme)&&d.theme>=0&&d.theme<=3&&Number.isInteger(d.motion)&&d.motion>=0&&d.motion<=3&&Array.isArray(d.colors)&&d.colors.length===d.count&&d.colors.every(c=>/^#[0-9a-f]{6}$/i.test(c));
+ if(valid(data)){recipeCache.set(id,data);if(card.isConnected)paintRecipe(card,data);return;}
+ if(!originalReady)return;
  try {
-  const latest=Number(BigInt(await rpc('eth_blockNumber'))),start=cursor;let range=100000;
-  if(!Number.isSafeInteger(latest)||latest<genesis)throw Error('RPC block height is invalid.');
-  while(cursor<=latest) {
-   if(snap.account!==account||snap.chain!==chain)throw Error('Wallet changed. Scan cancelled.');
-   const end=Math.min(latest,cursor+range-1);let logs;
-   try {logs=await rpc('eth_getLogs',[{address:ORIGINAL,fromBlock:'0x'+cursor.toString(16),toBlock:'0x'+end.toString(16),topics:[TRANSFER,null,'0x'+snap.account.slice(2).padStart(64,'0')]}]);}
-   catch(e){if(range>2000){range=Math.max(2000,Math.floor(range/4));continue;}throw e;}
-   for(const log of logs)if(!log.removed&&log.topics?.[3]){const id=BigInt(log.topics[3]);if(id>=1n&&id<=6667n)candidates.add(String(id));}
-   cacheSet(key,{block:end,ids:[...candidates]});cursor=end+1;
-   $('scan-progress').value=Math.round(100*(cursor-start)/Math.max(1,latest-start+1));
-   feedback(`Scanning Base blocks: ${Math.min(100,$('scan-progress').value)}%. ${candidates.size} candidate originals found. Ownership is checked next.`);
-  }
-  let checked=0;const valid=await mapLimit([...candidates],5,async id=>{let owner;try{owner=await call(ORIGINAL,'ownerOf',[id]);}catch{return null;}checked++;if(snap.account===account)feedback(`Checking current ownership: ${checked} / ${candidates.size}.`);return lower(owner)===snap.account?id:null;});
-  if(snap.account!==account||snap.chain!==chain)throw Error('Wallet changed. Scan cancelled.');
-  owned=valid.filter(Boolean).sort((a,b)=>BigInt(a)<BigInt(b)?-1:1);feedback(`${owned.length} originals currently owned. Choose any 13, or paste IDs to verify directly.`);
- }catch(e){if(snap.account===account)feedback('Automatic scan incomplete. '+humanError(e)+' Paste your 13 IDs for direct ownership verification.',true);}
- finally{scanning=false;$('scan-progress').hidden=true;render();}
+  let request=recipeRequests.get(id);if(!request){request=call(ORIGINAL,'recipeOf',[id]).then(recipe=>{const value={count:Number(recipe.ballCount),theme:Number(recipe.theme),motion:Number(recipe.motion),colors:recipe.balls.map(b=>'#'+b.colour.slice(2))};if(!valid(value))throw Error('Unsupported original recipe.');recipeCache.set(id,value);cacheSet(key,value);try{const keys=Object.keys(localStorage).filter(k=>k.startsWith('ggoo:recipe:8453:'+ORIGINAL_HASH+':'));for(const old of keys.slice(0,Math.max(0,keys.length-128)))cacheDelete(old);}catch{}return value;});recipeRequests.set(id,request);request.finally(()=>recipeRequests.delete(id)).catch(()=>{});}
+  data=await request;if(card.isConnected)paintRecipe(card,data);
+ }catch{if(card.isConnected)card.querySelector('.original-traits').textContent='Traits unavailable · selection still works';}
+}
+function renderInventory() {
+ const inventory=$('inventory'),wanted=new Set(owned);for(const [id,card]of originalCards)if(!wanted.has(id)){recipeObserver.unobserve(card);card.remove();originalCards.delete(id);}
+ for(const id of owned){let card=originalCards.get(id);if(!card){card=document.createElement('article');card.className='original-card';card.dataset.originalId=id;
+  const choose=document.createElement('button');choose.type='button';choose.className='id-chip';choose.innerHTML='<span class="original-kind">OG GHOULBALL</span><strong>#'+id+'</strong><span class="original-choice">SELECT</span>';choose.onclick=()=>{if(!selectable())return;if(selected.has(id))selected.delete(id);else if(selected.size<COUNT)selected.add(id);else{notify('13 selected. Remove one before choosing another.');return;}invalidate();$('manual-ids').value=idsNow().join(', ');};card.append(choose);
+  const traits=document.createElement('p');traits.className='original-traits';traits.textContent='Reading original traits…';card.append(traits);const colors=document.createElement('div');colors.className='original-colors';card.append(colors);
+  const link=document.createElement('a');link.className='original-link';link.href=`https://basescan.org/nft/${ORIGINAL}/${id}`;link.target='_blank';link.rel='noopener noreferrer';link.textContent='VIEW ORIGINAL ↗';card.append(link);originalCards.set(id,card);inventory.append(card);recipeObserver.observe(card);
+ }
+ const choose=card.querySelector('.id-chip'),isSelected=selected.has(id);choose.disabled=!selectable();choose.classList.toggle('selected',isSelected);choose.setAttribute('aria-pressed',String(isSelected));choose.setAttribute('aria-label',(isSelected?'Deselect':'Select')+' original Ghoulball #'+id);card.classList.toggle('selected',isSelected);card.querySelector('.original-choice').textContent=isSelected?'✓ SELECTED':'SELECT';
+ }
 }
 function paragraph(parent,value,className='') {const p=document.createElement('p');p.textContent=value;if(className)p.className=className;parent.append(p);}
 async function openReview(kind) {
@@ -328,6 +378,7 @@ async function assertWallet(snap) {
 }
 async function preflight(snap, kind) {
  await assertWallet(snap);
+ try{await verifyOriginal();}catch(e){originalReady=false;verified=null;approved=false;render();throw e;}
  if(!(await verifyDeployment()))throw Error('The verified deployment is unavailable.');
  const total=await supplyRead();updateSupply(total);if(total>=CAP)throw Error('SoldOut');
  await checkOwnership(snap);await assertWallet(snap);
@@ -413,7 +464,7 @@ async function trackPending() {
     resultLink(saved.hash,saved.kind,saved.recipient,tokenId);
     pending=null;cacheDelete(pendingKey());invalidate(true);latestMint={tokenId,recipient:saved.recipient,hash:saved.hash};pendingReveals.add(tokenId);status(`MINT CONFIRMED. GGOO #${tokenId} was minted to ${getAddress(saved.recipient)}. Its 13 originals are permanently locked now. Awaiting Chainlink randomness; no second transaction is needed.`);notify('GGOO #'+tokenId+' minted. Originals locked; awaiting reveal.');
     paragraph($('transaction-result'),'AWAITING RANDOMNESS. Originals are permanently locked already. This page checks the reveal read-only; no further signature is required.');
-    await refreshSupply();await refreshReserve();await refreshWallet();resetGallery();pollReveals();
+    await refreshSupply();await refreshReserve();refreshWallet();resetGallery();pollReveals();
    } else {
     pending=null;cacheDelete(pendingKey());invalidate();status('Collection-wide approval confirmed. Verify your 13 originals again, then review a separate permanent-lock mint.');feedback('Approval did not lock or transfer any originals.');
    }
@@ -566,7 +617,7 @@ async function initialize() {
   else{text('contract-status','● MINTING NOT OPEN');status('Minting is not open. We are waiting for verified Base contracts. Approvals and minting remain disabled.');updateSupply(null);}
   loadGallery();bindProvider();
   updateWalletDeeplink();
-  if(provider) {const [accounts,id]=await Promise.all([provider.request({method:'eth_accounts'}),provider.request({method:'eth_chainId'})]);applyAccount(accounts?.[0],lower(id));if(account)await refreshWallet();}
+  if(provider) {const [accounts,id]=await Promise.all([provider.request({method:'eth_accounts'}),provider.request({method:'eth_chainId'})]);applyAccount(accounts?.[0],lower(id));if(account)refreshWallet();}
   if(live){const saved=cacheGet(pendingKey());if(saved&&(hashPattern.test(saved.hash)||saved.hash===null)&&saved.chainId===8453&&lower(saved.collection)===lower(cfg.ganjaCollection)&&validAddress(saved.recipient)&&['mint','approve'].includes(saved.kind)&&Array.isArray(saved.ids)&&saved.ids.length===COUNT){pending=saved;if(!saved.hash){saved.phase='uncertain';cacheSet(pendingKey(),saved);showUncertain(saved);}else if(saved.needsReview){live=false;status('A previously submitted receipt needs manual review. Use its Basescan link before any further mint.',true);resultLink(saved.hash,saved.kind,saved.recipient);}else trackPending().catch(e=>status(humanError(e),true));}}
   await routeToken();
  }catch(e){live=false;updateSupply(null);text('contract-status','● MINT SAFETY LOCK');status('Cannot verify the Base deployment. All approval and mint controls are disabled. '+humanError(e),true);}
@@ -577,9 +628,9 @@ applyMotionPreference();
 $('animation-preview-link').href=siteURL('animation-preview.html',true);
 $('connect-wallet').onclick=connectWallet;$('switch-account').onclick=switchAccount;$('refresh-account').onclick=refreshAccount;$('switch-base').onclick=switchBase;
 $('disconnect-wallet').onclick=()=>{if(!busy&&!pending){applyAccount(null,chain);status('Disconnected from this page. You can also revoke this site’s connection in your wallet.');}};
-$('scan-inventory').onclick=scanInventory;$('manual-ids').oninput=applyManual;$('verify-ids').onclick=verifyIds;
-$('select-thirteen').onclick=()=>{if(!writable())return;selected=new Set(owned.slice(0,COUNT));invalidate();$('manual-ids').value=idsNow().join(', ');};
-$('clear-selection').onclick=()=>{if(!writable())return;selected.clear();invalidate();$('manual-ids').value='';};
+$('scan-inventory').onclick=()=>scanInventory();$('cancel-inventory').onclick=()=>stopInventory();$('manual-ids').oninput=applyManual;$('verify-ids').onclick=verifyIds;
+$('select-thirteen').onclick=()=>{if(!selectable())return;selected=new Set(owned.slice(0,COUNT));invalidate();$('manual-ids').value=idsNow().join(', ');};
+$('clear-selection').onclick=()=>{if(!selectable())return;selected.clear();invalidate();$('manual-ids').value='';};
 $('consent').onchange=render;$('approve-button').onclick=()=>openReview('approve');$('main-mint-button').onclick=()=>openReview('mint');
 $('cancel-review').onclick=()=>{$('review-dialog').close();review=null;};$('review-dialog').addEventListener('cancel',()=>{review=null;});
 $('review-consent').onchange=()=>{$('confirm-review').disabled=!$('review-consent').checked;};$('confirm-review').onclick=submitReview;

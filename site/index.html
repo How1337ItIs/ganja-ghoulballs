@@ -84,12 +84,13 @@
         <div class="steps"><span class="step active" id="step-connect"><b>01</b> CONNECT</span><span class="step" id="step-select"><b>02</b> SELECT 13</span><span class="step" id="step-approve"><b>03</b> APPROVE</span><span class="step" id="step-redeem"><b>04</b> SUMMON</span></div>
         <div id="oracle-reserve" class="oracle-reserve" role="status">0 ETH protocol mint fee. You pay Base network gas. Randomness is publisher-funded.</div>
         <div id="mint-state-message" class="state-message" role="status">Checking Base contracts…</div>
-        <div class="wallet-summary" id="wallet-summary" hidden><span>YOUR OG GHOULBALLS</span><strong id="og-balance">—</strong><button class="mini" id="scan-inventory" type="button">SCAN MY WALLET ↻</button></div>
-        <progress id="scan-progress" aria-label="Wallet scan progress" max="100" value="0" hidden></progress><div class="selection-actions"><button id="select-thirteen" class="mini" type="button" disabled>SELECT FIRST 13</button><button id="clear-selection" class="mini" type="button" disabled>CLEAR SELECTION</button></div>
+        <div class="wallet-summary" id="wallet-summary" hidden><span>YOUR OG GHOULBALLS</span><strong id="og-balance">—</strong><button class="mini" id="scan-inventory" type="button">REFRESH OWNED ↻</button><button class="mini" id="cancel-inventory" type="button" hidden>STOP SEARCH</button></div>
+        <p id="inventory-status" class="inventory-status" role="status">Connect your wallet to automatically find your original Ghoulballs on Base.</p>
+        <progress id="scan-progress" aria-label="Wallet scan progress" max="100" value="0" hidden></progress>
+        <div class="selected-line"><span>SELECTED <b id="selected-count" aria-live="polite">0</b> / 13</span><button id="verify-ids" class="mini" type="button" disabled>VERIFY OWNERSHIP →</button></div>
+        <div class="selection-actions"><button id="select-thirteen" class="mini" type="button" disabled>SELECT FIRST 13</button><button id="clear-selection" class="mini" type="button" disabled>CLEAR SELECTION</button></div>
         <div id="inventory" class="inventory" aria-label="Original Ghoulballs found in wallet"></div>
-        <label for="manual-ids" class="input-label">PASTE YOUR ORIGINAL TOKEN IDS <small>(separate with spaces or commas)</small></label>
-        <textarea id="manual-ids" rows="2" placeholder="e.g. 21, 58, 104, ... (13 unique IDs)" spellcheck="false" disabled></textarea>
-        <div class="selected-line"><span>SELECTED <b id="selected-count">0</b> / 13</span><button id="verify-ids" class="mini" type="button" disabled>VERIFY OWNERSHIP →</button></div>
+        <details id="manual-fallback" class="manual-fallback"><summary>ENTER TOKEN IDS MANUALLY</summary><p>Optional fallback if automatic discovery is unavailable. Ownership is always rechecked before approval or mint.</p><label for="manual-ids" class="input-label">ORIGINAL TOKEN IDS <small>(spaces or commas)</small></label><textarea id="manual-ids" rows="2" placeholder="e.g. 21, 58, 104, … (13 unique IDs)" spellcheck="false" disabled></textarea></details>
         <div id="selection-feedback" class="feedback" role="status"></div>
         <div id="approval-note" class="approval-note" hidden></div>
         <button id="approve-button" class="secondary-button" type="button" disabled hidden>REVIEW COLLECTION APPROVAL</button>

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-18T05:07:42.016Z",
+  "pass": true,
+  "recommendation": "GO for publication of this source-bound frontend inventory checkpoint",
+  "scope": "Independent local code/diff review and browser regression of automatic read-only owned-original inventory selection. Addendum to the earlier contract and frontend reviews; no contract or deployment authorization is granted.",
+  "independentBrowserScenarios": 89,
+  "actualEVMLinageFixture": "passed",
+  "staticInvariants": "passed",
+  "sourceSha256": {
+    "site/app.js": "6b890b4e861bd22333f8e21ff1f398810fe2bf309d18708972e25c085d51bab6",
+    "site/index.html": "ffb60bb6d5138be15a1f4aa989238c1d5fa741892c3e7bf97785cfc114f91e77",
+    "site/style.css": "d4c85a5fef93db2c468d96e3a69405ccb3ec3a93745d038249d18d19efa2cfed",
+    "site/lineage.js": "93104dff989671b974e0860773ca44af0f60b0d428ffdc870034ec51ef66569d",
+    "site/config.json": "a4d135e18fa689a5a646da50fd4771194ab5c759015741cb03813d73d3edd1a8",
+    "test/frontend/mobile-wallet.mjs": "36fd1b313a2fcfe030b128ff3adafdc918300ea8c6160c85b102dbf93c8c703e",
+    "test/frontend/lineage.mjs": "b299e608980a4bee2ff2b05f8c8e44773825869b4da1ac347f19b8cc188cef6a"
+  },
+  "priorFrontendReview": "reports/frontend-review.json (historical 67-scenario checkpoint)",
+  "baselineAppSha256": "3047e988d13dd9f949df71c30fb76ff652bfc3ee95064ce13f145ce20ce29208",
+  "contractSourceSha256": {
+    "contracts/GanjaGhoulballs.sol": "f19920a6b7919e3ed5ee27c8d2cf42b6480be56a961676f344f270967a0bca52",
+    "contracts/GooGenetics.sol": "dd4b855c123392248214fb3c048d4e186e1db06d7ccdcc7444d9d521fa7aef90",
+    "contracts/GooGraveyard.sol": "6d2ccc8af0f1e3d2321a4368416d3d74cf306003ce5915b1b4bcd3b74b8951ae",
+    "contracts/GooRenderer.sol": "09e0f93d90ad2bd03f2acddd92e06b11ed00de0d27f3699cd1b4318ade5fb41c",
+    "solc-settings.json": "c90421359ec8eb643a01b820c72d11d4edd3973fba14cfce986532068db2f3c6"
+  },
+  "unchangedDeploymentDataHash": "0xdbd21aeea3ce017adff5866f3903569a84ad5a2d7ee182ddd7dac98261a1a39c",
+  "creationBytecodeHash": "0xa499eb02ce18250506d2938be3998041e5eb4af0bea5b27e13e5077503c85b74",
+  "deploymentDataBytes": 48751,
+  "originalPin": {
+    "chainId": 8453,
+    "address": "0xf3654d0ce6cf518f4efbbe490f4a26483fb0969c",
+    "runtimeBytes": 8229,
+    "runtimeKeccak256": "0x4fe189e2554350c36d652e3573f8bbd0dc3b45c99a4bf799998623339ab3873a"
+  },
+  "findings": {
+    "openBlocking": [],
+    "resolved": [
+      "Incomplete history responses now reset the cached scan cursor to genesis, so refresh can recover old holdings instead of reusing a poisoned recent-only cursor.",
+      "Original-code verification failure now disables every write gate and invalidates prior consent; preflight rechecks the exact original runtime before either approval or mint.",
+      "Nonexistent extra cached candidates no longer poison a complete balance-matched currently-owned set; completed caches retain only verified owned IDs."
+    ]
+  },
+  "checks": [
+    "Automatic discovery is read-only and is available with an undeployed or unfunded GGOO collection; original chain/address/runtime must verify first.",
+    "Separate scan epoch plus account and chain identity rejects stale responses, including A-to-B-to-A, Base exit/return, Stop and refresh races.",
+    "Incoming logs are collection/event/recipient/ID validated. Owner and balance reconciliation uses one pinned block. Current ownership is rechecked before each write.",
+    "At most 13 unique in-range IDs can be selected; manual-ID fallback remains available.",
+    "Recipe cards use bounded enums/count and strict RGB hex data, lazy three-call concurrency, and a bounded cache. Malicious cache values are discarded.",
+    "No tokenURI, imageURI, GIF, script or remote artwork loader is introduced. Original art links use the fixed Basescan collection URL.",
+    "No automatic approval or mint. Separate explicit broad-approval and exact-13 permanent-custody consent remain required.",
+    "Existing runtime/wiring/oracle quote/cap/reserve, explicit gasPrice, account/chain, durable intent, receipt recipient/provenance and pending reveal safeguards pass regression.",
+    "The 390px inventory screenshot was visually inspected: clear 13/13 counter, read-only status and selectable bounded-trait cards."
+  ],
+  "evidence": {
+    "independentCommand": "CHROMIUM_PATH=/tmp/ghoulbatch-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell node test/frontend/mobile-wallet.mjs && node test/frontend/lineage.mjs && npm run check",
+    "testLogSha256": "1508f6cf09dfdd3f7f16deec10f6f70eed82c97796f68edb6075e49c76c387aa",
+    "screenshot": "artifacts/frontend/owned-selection-viewport-390.png",
+    "screenshotSha256": "2213bc0bb113c11c9bd3416aff516f95cd4da08b1a22d530a35a7487d8c8912f",
+    "sourceHashesUnchangedBeforeAndAfterRun": true
+  },
+  "limitations": [
+    "Browser wallet and Base RPC were mocked in local headless Chromium. No physical-wallet or live-wallet holdings test, transaction, approval, funding or NFT transfer was performed.",
+    "RPC availability, history completeness and chain reorganizations remain external limitations; refresh and manual-ID fallback may be needed.",
+    "Inventory ownership is a pinned-block snapshot. A later transfer can change eligibility; preflight and the contract enforce current ownership.",
+    "This is automated/local security review, not a formal external audit. Existing mandatory live Base preflight and direct owner wallet confirmation remain required."
+  ]
+}

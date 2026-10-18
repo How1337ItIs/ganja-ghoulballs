@@ -18,7 +18,7 @@ Runtime hashes must be captured from the actual deployed contracts. Compiler run
 ## UX and transaction protections
 
 - Full checksum wallet/recipient address, explicit account chooser, manual fallback, Base switching and local disconnect.
-- Transfer-log ownership discovery with progress, range fallback, candidate checkpoint cache and onchain current-owner verification. Manual IDs reject zero, out-of-range, duplicate, malformed and excess IDs without truncation.
+- Automatic Transfer-log ownership discovery after connect, account changes and switching to Base, with progress, Stop, adaptive ranges, candidate checkpoints and current-owner verification. Discovery verifies the exact original runtime independently of GGOO deployment; selectable owned cards work before minting opens and while the oracle reserve is unavailable. Manual IDs are a collapsed optional fallback and reject zero, out-of-range, duplicate, malformed and excess IDs without truncation.
 - Broad `setApprovalForAll` consent clearly states that it covers all current and future originals. Approval never automatically proceeds to mint.
 - A separate mint review lists all 13 IDs, the exact recipient and vault, permanent-loss consequences, 0 ETH protocol fee and additional Base gas.
 - Account/chain/selection generation guards invalidate stale verification and consent. Wallet, code, supply, ownership and approval are rechecked before sends, followed by exact transaction simulation and gas estimation. Every wallet transaction is explicitly pinned to Base.
@@ -32,7 +32,7 @@ Runtime hashes must be captured from the actual deployed contracts. Compiler run
 
 Run `npm run test:frontend` (or `node test/frontend/mobile-wallet.mjs`). Install Playwright Chromium first on a clean machine; `CHROMIUM_PATH` can select an existing executable. The supplied environment uses the existing cached headless Chromium binary. No browser download or live signing is required.
 
-The completed 2026-10-18 launch-copy checkpoint passed 67 scenarios, plus an actual-EVM lineage decoding fixture and static invariants. Earlier 39-scenario autoplay reports are historical; the current reveal/fee/race coverage is described in [Frontend reveal integration](FRONTEND_REVEAL_QA.md). Current coverage includes:
+The completed 2026-10-18 automatic-inventory checkpoint passed 89 scenarios, plus an actual-EVM lineage decoding fixture, static invariants and the four-page/47-asset build gate. Earlier 39-scenario autoplay and 67-scenario launch-copy reports are historical; reveal/fee/race coverage is described in [Frontend reveal integration](FRONTEND_REVEAL_QA.md). Current coverage includes:
 
 - Responsive screenshots at 320, 360, 390, 412, 768 and 1440 CSS pixels, no horizontal overflow, and untruncated full addresses.
 - Rejected wrong chain, wrong runtime, wrong immutable wiring, missing hashes, wrong original source and wrong 13-for-1 count.
@@ -45,6 +45,17 @@ The completed 2026-10-18 launch-copy checkpoint passed 67 scenarios, plus an act
 - Two-timestamp native SVG pixel comparison: moving art changes while the explicitly paused native still output stays identical.
 
 Additional coverage includes mounted root/nested navigation, fee-quote consistency, provider changes during review, uncached cocoons, stale pending SVG rejection, precise uint256 genealogy and pending/revealed screenshots.
+
+## Automatic owned-original selection
+
+- A pinned 8,229-byte original collection runtime and its Keccak hash must verify before inventory reads. This is independent of GGOO deployment; approval and mint still require all deployment, supply, reserve and consent gates. The original runtime is checked again before either wallet send.
+- Account/network changes and Stop advance a dedicated search epoch. Old responses and old cleanup handlers cannot replace a newer wallet's inventory, even after A → B → A or Base → another chain → Base.
+- Transfer candidates are scoped to the original collection, Transfer topic and recipient. Every candidate is owner-checked at the same Base block as the balance read. Matching unique verified owners to that balance establishes completeness. Incomplete discovery resets its cursor to genesis for a recoverable full-history retry; cached IDs never establish ownership by themselves.
+- Owned cards allow at most 13 selections, show the counter, and keep manual entry collapsed. Zero/fewer holdings, unavailable RPC/history and bad source code have explicit states. Successful mint confirmation triggers a fresh ownership scan and removes locked originals.
+- Original trait cards read lightweight `recipeOf` data lazily with three concurrent requests. Known theme/motion names and validated RGB colors come from the originals; they do not predict offspring. The small metadata cache is capped at 128 entries. No `tokenURI`, `imageURI`, large GIF render or external image request runs automatically. The original's Basescan link remains available.
+- Tests include truncated logs, failing owner/balance/history reads, poisoned future cursors, nonexistent cached candidates, wrong source/event/recipient logs, same-length runtime mutations, malformed cached recipe colors and unchanged write/receipt protections.
+
+Final application SHA256: `6b890b4e861bd22333f8e21ff1f398810fe2bf309d18708972e25c085d51bab6`. The inspected mobile viewport is `artifacts/frontend/owned-selection-viewport-390.png`; the suite also captures the full mint panel.
 
 Screenshots and machine-readable output: `artifacts/frontend/`.
 
