@@ -380,6 +380,9 @@ async function trackPending() {
   await sleep(document.hidden?12000:4000);
  }
 }
+const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');
+let motionOverride=null,motionGeneration=0;
+const animationsPlaying=()=>motionOverride===null?!motionPreference.matches:motionOverride;
 const svgMemory=new Map();
 function cacheSvg(key,svg) {
  try {
@@ -389,17 +392,34 @@ function cacheSvg(key,svg) {
   localStorage.setItem(key,JSON.stringify(svg));
  } catch {} // Artwork caching is optional; never let it affect an onchain read.
 }
-async function tokenSvg(id) {
- const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+async function tokenSvg(id,still=!animationsPlaying()) {
  const key=`ggoo:svg:8453:${lower(cfg.ganjaCollection)}:${cfg.runtimeCodeHashes.ganjaCollection}:${cfg.runtimeCodeHashes.renderer}:${id}:${still?'still':'animated'}`;
  let svg=svgMemory.get(key)||cacheGet(key);
  if(!svg) {svg=await call(cfg.ganjaCollection,still?'svgStill':'svg',[id]);if(typeof svg!=='string'||svg.length>750000||!/^\s*<svg\b/.test(svg)||!svg.trim().endsWith('</svg>'))throw Error('Invalid onchain SVG response.');svgMemory.set(key,svg);if(svgMemory.size>36)svgMemory.delete(svgMemory.keys().next().value);cacheSvg(key,svg);}
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
 let imageQueue=[],imageActive=0;
-function queueImage(id,img) {imageQueue.push({id,img});pumpImages();}
-function pumpImages() {while(imageActive<3&&imageQueue.length){const {id,img}=imageQueue.shift();imageActive++;tokenSvg(id).then(src=>{if(img.isConnected)img.src=src;}).catch(e=>{img.alt=`GGOO #${id}: SVG unavailable. Open provenance to retry.`;img.closest('article')?.setAttribute('title',humanError(e));}).finally(()=>{imageActive--;pumpImages();});}}
+function queueImage(id,img) {imageQueue.push({id,img,version:motionGeneration,still:!animationsPlaying()});pumpImages();}
+function pumpImages() {while(imageActive<3&&imageQueue.length){const {id,img,version,still}=imageQueue.shift();imageActive++;tokenSvg(id,still).then(src=>{if(img.isConnected&&version===motionGeneration&&img.dataset.tokenId===String(id)){img.src=src;img.dataset.rendered='true';img.dataset.motion=still?'paused':'playing';}}).catch(e=>{if(version!==motionGeneration)return;img.alt=`GGOO #${id}: SVG unavailable. Open provenance to retry.`;img.closest('article')?.setAttribute('title',humanError(e));}).finally(()=>{imageActive--;pumpImages();});}}
 const observer='IntersectionObserver' in window?new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){observer.unobserve(e.target);queueImage(e.target.dataset.tokenId,e.target);}},{rootMargin:'300px'}):null;
+function applyMotionPreference() {
+ const playing=animationsPlaying();motionGeneration++;
+ document.documentElement.dataset.motion=playing?'playing':'paused';
+ for(const picture of document.querySelectorAll('.goo-picture, .study-card picture')) {
+  // An always/never matching source lets an explicit choice override the OS default.
+  // Both choices are native outputs from the same immutable SVG renderer.
+  picture.querySelector('source').media=playing?'not all':'all';
+ }
+ $('motion-toggle').disabled=false;$('motion-toggle').textContent=playing?'Pause animations':'Play animations';
+ $('motion-toggle').setAttribute('aria-label',playing?'Pause animations':'Play animations');
+ text('motion-note',playing?'Native SVG motion is playing.':motionOverride===null?'Paused to match your device’s reduced-motion setting.':'Native SVG motion is paused.');
+ imageQueue=[];
+ for(const img of document.querySelectorAll('.gallery-art[data-token-id], #token-art[data-token-id]')) {
+  const wasLoaded=!!img.getAttribute('src')||img.dataset.rendered==='true';img.removeAttribute('src');img.dataset.motion=playing?'playing':'paused';
+  if(wasLoaded||img.id==='token-art')queueImage(img.dataset.tokenId,img);
+  else if(observer)observer.observe(img);else queueImage(img.dataset.tokenId,img);
+ }
+}
 function resetGallery(){galleryCursor=null;$('gallery-content').replaceChildren();loadGallery();}
 function loadGallery() {
  $('renderer-studies').hidden=live;
@@ -423,16 +443,16 @@ function updateWalletDeeplink() {
 }
 async function routeToken() {
  updateWalletDeeplink();
- const match=location.hash.match(/^#token\/(\d+)$/),current=++tokenGeneration;
+ const match=location.hash.match(/^#token\/(\d+)$/),current=++tokenGeneration,renderMotion=motionGeneration;
  $('token-page').hidden=!match;if(!match)return;
- const id=BigInt(match[1]);text('token-title','GGOO #'+id);text('token-status','Reading immutable onchain provenance…');$('token-facts').replaceChildren();$('token-ingredients').replaceChildren();$('token-traits').replaceChildren();$('token-art').removeAttribute('src');$('token-basescan').hidden=true;$('token-share').disabled=true;
+ const id=BigInt(match[1]);text('token-title','GGOO #'+id);text('token-status','Reading immutable onchain provenance…');$('token-facts').replaceChildren();$('token-ingredients').replaceChildren();$('token-traits').replaceChildren();$('token-art').removeAttribute('src');delete $('token-art').dataset.tokenId;$('token-basescan').hidden=true;$('token-share').disabled=true;
  if(!live){text('token-status','This collection has not passed mainnet verification. No token is claimed or loaded.');return;}
  if(id<1n||id>420n){text('token-status','Token ID must be between 1 and 420.');return;}
  try {
   const [owner,ids,seed,traits,src]=await Promise.all([call(cfg.ganjaCollection,'ownerOf',[id]),call(cfg.ganjaCollection,'ingredientsOf',[id]),call(cfg.ganjaCollection,'seedOf',[id]),call(cfg.ganjaCollection,'traitsOf',[id]),tokenSvg(String(id))]);
   if(current!==tokenGeneration)return;
   if(ids.length!==COUNT)throw Error('Provenance must contain exactly 13 originals.');
-  $('token-art').src=src;$('token-art').alt='GGOO #'+id+' native onchain SVG';
+  $('token-art').dataset.tokenId=String(id);if(renderMotion===motionGeneration){$('token-art').src=src;$('token-art').dataset.rendered='true';$('token-art').dataset.motion=animationsPlaying()?'playing':'paused';}else queueImage(String(id),$('token-art'));$('token-art').alt='GGOO #'+id+' native onchain SVG';
   fact('CURRENT OWNER',getAddress(owner),'https://basescan.org/address/'+owner);
   fact('COLLECTION',getAddress(cfg.ganjaCollection),'https://basescan.org/address/'+cfg.ganjaCollection);
   fact('IMMUTABLE GRAVEYARD',getAddress(cfg.graveyard),'https://basescan.org/address/'+cfg.graveyard);
@@ -459,6 +479,9 @@ async function initialize() {
  }catch(e){live=false;updateSupply(null);text('contract-status','● MINT SAFETY LOCK');status('Cannot verify the Base deployment. All approval and mint controls are disabled. '+humanError(e),true);}
  render();
 }
+$('motion-toggle').onclick=()=>{motionOverride=!animationsPlaying();applyMotionPreference();};
+motionPreference.addEventListener('change',()=>{if(motionOverride===null)applyMotionPreference();});
+applyMotionPreference();
 $('animation-preview-link').href=siteURL('animation-preview.html',true);
 $('connect-wallet').onclick=connectWallet;$('switch-account').onclick=switchAccount;$('refresh-account').onclick=refreshAccount;$('switch-base').onclick=switchBase;
 $('disconnect-wallet').onclick=()=>{if(!busy&&!pending){applyAccount(null,chain);status('Disconnected from this page. You can also revoke this site’s connection in your wallet.');}};

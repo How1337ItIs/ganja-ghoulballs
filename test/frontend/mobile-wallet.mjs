@@ -25,7 +25,7 @@ const browser=await chromium.launch({headless:true,executablePath:process.env.CH
 const errors=[];
 async function fixture(width=390,options={}){
  const state={approved:false,supply:1,rpcChain:'0x2105',owner:A,receiptStatus:'0x1',pending:false,ownerDelay:0,receiptRecipient:A,missingMint:false,badCode:false,badWiring:false,...options};
- const page=await browser.newPage({viewport:{width,height:850},isMobile:width<700,hasTouch:width<700,reducedMotion:'reduce'});
+ const page=await browser.newPage({viewport:{width,height:850},isMobile:width<700,hasTouch:width<700,reducedMotion:options.reducedMotion||'reduce'});
  page.on('pageerror',e=>errors.push(e.message));
  state.requests=[];page.on('request',r=>state.requests.push(r.url()));
  const targetOrigin=options.secure?'https://midaswhale.wtf':origin;
@@ -73,7 +73,7 @@ async function fixture(width=390,options={}){
      case'isApprovedForAll':value=state.approved;break;case'getApproved':value=zero;break;
      case'ingredientsOf':value=ids;break;case'seedOf':value=123456789n;break;
      case'traitsOf':value=JSON.stringify([{trait_type:'Texture',value:'Chocolate hash'},{trait_type:'Mood',value:'Cosmic stoner'}]);break;
-     case'svg':case'svgStill':value='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#251f1a"/><path d="M128 128H384V384H128Z" fill="#75623e"/><path d="M170 220h50v30h-50zm120 0h50v30h-50z" fill="#e15c38"/></svg>';break;
+     case'svg':case'svgStill':if(state.artDelay&&fn.name==='svg')await new Promise(r=>setTimeout(r,state.artDelay));value='<svg data-mode="'+fn.name+'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#251f1a"/><path d="M128 128H384V384H128Z" fill="#75623e"/><path d="M170 220h50v30h-50zm120 0h50v30h-50z" fill="#e15c38"/></svg>';break;
      case'setApprovalForAll':case'mint':result='0x';break;
      default:throw Error('Unexpected ABI '+fn.name);
     }
@@ -89,6 +89,13 @@ async function connect(p){await p.locator('#connect-wallet').click();await p.wai
 async function select(p){await p.locator('#manual-ids').fill(ids.join(', '));await p.locator('#verify-ids').click();await p.waitForFunction(()=>document.querySelector('#selection-feedback').textContent.includes('All 13 originals'));}
 async function mintReview(p){await p.locator('#consent').check();await p.locator('#main-mint-button').click();await p.locator('#review-consent').check();}
 async function pass(name){passed++;console.log('PASS',name);}
+async function expectPreviewMode(page,still){
+ const images=page.locator('.goo-picture img, .study-card img');assert.equal(await images.count(),5);
+ for(const image of await images.all())await image.scrollIntoViewIfNeeded();
+ await page.waitForFunction(still=>[...document.querySelectorAll('.goo-picture img, .study-card img')].every(img=>img.complete&&img.naturalWidth>0&&(img.currentSrc.endsWith('-still.svg')===still)),still);
+}
+async function expectChainImageMode(page,selector,mode){await page.waitForFunction(({selector,mode})=>[...document.querySelectorAll(selector)].length>0&&[...document.querySelectorAll(selector)].every(img=>decodeURIComponent(img.getAttribute('src')||'').includes('data-mode="'+mode+'"')),{selector,mode});}
+
 try{
  for(const width of [320,360,390,412,768,1440]){
   const {page}=await fixture(width,{config:{deploymentStatus:'awaiting-contract-deployment',ganjaCollection:null,graveyard:null,renderer:null}});
@@ -186,6 +193,20 @@ try{
  }
  {
   const {page}=await fixture(390,{approved:true,startPath:'/ganjaghoulballs/?ref=pending'});await connect(page);await select(page);await mintReview(page);await page.evaluate(()=>window.mode='transport');await page.locator('#confirm-review').click();await page.waitForFunction(()=>document.querySelector('#transaction-result').textContent.includes('no transaction hash'));await page.goto(origin+'/?ref=other-mount');await page.waitForFunction(()=>document.querySelector('#transaction-result').textContent.includes('no transaction hash'));assert.equal(await page.locator('#main-mint-button').isDisabled(),true);assert.equal(await page.evaluate(()=>window.sent.length),0);const keys=await page.evaluate(()=>Object.keys(localStorage).filter(k=>k.startsWith('ggoo:pending')));assert.deepEqual(keys,['ggoo:pending:8453:'+G]);await page.close();await pass('same-domain root and nested mount share durable pending protection for same chain and collection');
+ }
+ {
+  const {page}=await fixture(390,{config:{deploymentStatus:'awaiting-contract-deployment'},reducedMotion:'reduce'});await expectPreviewMode(page,true);assert.equal(await page.locator('#motion-toggle').textContent(),'Play animations');assert.match(await page.locator('#motion-note').textContent(),/reduced-motion/);
+  await page.getByRole('button',{name:'Play animations',exact:true}).click();await expectPreviewMode(page,false);assert.equal(await page.locator('#motion-toggle').textContent(),'Pause animations');await page.locator('.goo-specimen').scrollIntoViewIfNeeded();const a=await page.locator('.goo-specimen').screenshot({path:path.join(OUT,'motion-opt-in-t0.png')});await page.waitForTimeout(1300);const b=await page.locator('.goo-specimen').screenshot({path:path.join(OUT,'motion-opt-in-t1.png')});assert.equal(a.equals(b),false,'explicit reduced-motion opt-in displays actual moving native SVG');
+  await page.getByRole('button',{name:'Pause animations',exact:true}).click();await expectPreviewMode(page,true);assert.equal(await page.evaluate(()=>window.sent.length),0);await page.screenshot({path:path.join(OUT,'motion-control-mobile-390.png'),fullPage:true});await page.close();await pass('reduced-motion begins still; explicit Play/Pause switches all five native preview sources and real pixels');
+ }
+ {
+  const {page}=await fixture(390,{config:{deploymentStatus:'awaiting-contract-deployment'},reducedMotion:'no-preference'});await expectPreviewMode(page,false);assert.equal(await page.locator('#motion-toggle').textContent(),'Pause animations');await page.getByRole('button',{name:'Pause animations',exact:true}).focus();await page.keyboard.press('Enter');await expectPreviewMode(page,true);assert.equal(await page.locator('#motion-toggle').textContent(),'Play animations');await page.keyboard.press('Space');await expectPreviewMode(page,false);await page.emulateMedia({reducedMotion:'reduce'});await expectPreviewMode(page,false);assert.equal(await page.evaluate(()=>window.sent.length),0);await page.close();await pass('normal motion starts playing; keyboard-accessible Pause/Play and explicit choice survive OS preference change');
+ }
+ {
+  const {page}=await fixture(390,{supply:2,reducedMotion:'reduce'});await page.locator('#gallery-content').scrollIntoViewIfNeeded();await expectChainImageMode(page,'.gallery-art','svgStill');await page.getByRole('button',{name:'Play animations',exact:true}).click();await expectChainImageMode(page,'.gallery-art','svg');await page.locator('#gallery-content a[href="#token/1"]').click();await expectChainImageMode(page,'#token-art','svg');await page.getByRole('button',{name:'Pause animations',exact:true}).click();await expectChainImageMode(page,'.gallery-art, #token-art','svgStill');assert.equal(await page.locator('#token-ingredients a').count(),13);assert.equal(await page.evaluate(()=>window.sent.length),0);assert.equal(await page.evaluate(()=>window.calls.some(c=>c.method==='eth_requestAccounts')),false);await page.close();await pass('same control switches onchain gallery and provenance between svg and svgStill without wallet activity');
+ }
+ {
+  const {page,state}=await fixture(390,{supply:2,reducedMotion:'reduce',artDelay:400});await page.locator('#gallery-content').scrollIntoViewIfNeeded();await expectChainImageMode(page,'.gallery-art','svgStill');await page.getByRole('button',{name:'Play animations',exact:true}).click();await page.getByRole('button',{name:'Pause animations',exact:true}).click();await expectChainImageMode(page,'.gallery-art','svgStill');await page.waitForTimeout(550);await expectChainImageMode(page,'.gallery-art','svgStill');assert.equal(await page.locator('#motion-toggle').textContent(),'Play animations');assert.equal(await page.evaluate(()=>window.sent.length),0);await page.close();await pass('late animated RPC responses cannot overwrite a newer Pause choice');
  }
  assert.ok(fs.readFileSync(path.join(ROOT,'site/app.js'),'utf8').includes('ggoo:svg:8453:${lower(cfg.ganjaCollection)}:${cfg.runtimeCodeHashes.ganjaCollection}'),'SVG cache is isolated by Base collection and deployed main code');
  assert.deepEqual(errors,[]);console.log(`PASS ${passed} frontend/mobile scenarios. All wallets, approvals, transfers and RPC writes mocked. No live transaction sent.`);
