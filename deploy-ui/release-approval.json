@@ -1,6 +1,6 @@
 {
-  "approved": false,
-  "deploymentDataHash": null,
-  "sourceCommit": null,
-  "reviewSummary": "Release locked pending independent review of inherited DNA, Chainlink VRF surprise reveal, four immutable contracts, and the proposed oracle spending ceiling."
+  "approved": true,
+  "deploymentDataHash": "0xdbd21aeea3ce017adff5866f3903569a84ad5a2d7ee182ddd7dac98261a1a39c",
+  "sourceCommit": "3fcac70264950318aa442e618654d14642c0c0fd",
+  "reviewSummary": "Exact source-bound local automated security, DNA, custody, metadata, art and deployment-helper review passed. Live Base preflight, acceptance of the displayed immutable oracle ceiling, and direct owner wallet confirmation remain required. No formal external audit or live oracle round-trip is claimed."
 }
